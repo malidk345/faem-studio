@@ -13,12 +13,12 @@ import MainLayout from './layouts/MainLayout';
 
 function AppRoutes() {
   const location = useLocation();
-  const isAdminPath = location.pathname.startsWith('/admin');
+  const isAdminPath = location.pathname.startsWith('/fatihveemirinadminportali');
 
   if (isAdminPath) {
     return (
       <Routes>
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/fatihveemirinadminportali" element={<Admin />} />
       </Routes>
     );
   }

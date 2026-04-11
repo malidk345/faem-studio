@@ -13,7 +13,7 @@ type Tab = 'dashboard' | 'products' | 'categories' | 'orders' | 'customers' | 's
 
 export default function Admin() {
   const { user } = useAuth();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null); 
+  const [isAdmin, setIsAdmin] = useState<boolean | null | 'LOGIN'>(null); 
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   
@@ -30,7 +30,7 @@ export default function Admin() {
       // PROD MODE: check supabase
       if (import.meta.env.VITE_SUPABASE_URL) {
         if (!user) {
-          setIsAdmin(false);
+          setIsAdmin('LOGIN');
           return;
         }
         const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
@@ -73,8 +73,9 @@ export default function Admin() {
     setAddProductModalOpen(false);
   }
 
-  if (isAdmin === null) return <div className="h-screen flex items-center justify-center font-bold">Admin Doğrulanıyor...</div>;
-  if (isAdmin === false) return <div className="h-screen flex flex-col items-center justify-center gap-4"><p className="font-bold">Yetkisiz Erişim</p><Link to="/" className="underline">Ana Sayfaya Dön</Link></div>;
+  if (isAdmin === null) return <div className="h-screen flex items-center justify-center font-bold">Yüklanıyor...</div>;
+  if (isAdmin === 'LOGIN') return <AdminLogin />;
+  if (isAdmin === false) return <div className="h-screen flex flex-col items-center justify-center gap-4 bg-[#FDFDFD] text-black"><p className="font-bold text-xl tracking-tight">Yetkisiz Erişim</p><Link to="/" className="text-black/50 hover:text-black underline text-sm transition-colors">Ana Sayfaya Dön</Link></div>;
 
   const handleTabSwitch = (tab: Tab) => {
     setActiveTab(tab);
@@ -183,6 +184,43 @@ export default function Admin() {
 }
 
 // ─── TAB COMPONENTS ────────────────────────────────────────────────────────────
+
+function AdminLogin() {
+  const [email, setEmail] = useState('');
+  const [msg, setMsg] = useState('');
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMsg('Sihirli bağlantı gönderiliyor...');
+    const { error } = await supabase.auth.signInWithOtp({ email });
+    if (error) setMsg(error.message);
+    else setMsg('Giriş bağlantısı e-posta adresinize gönderildi! Lütfen gelen kutunuzu kontrol edin.');
+  };
+
+  return (
+    <div className="min-h-screen bg-[#FDFDFD] flex items-center justify-center p-6 text-black">
+      <div className="max-w-md w-full bg-white p-8 md:p-10 rounded-[2rem] border border-black/5 shadow-2xl flex flex-col items-center text-center">
+        <Link to="/" className="text-3xl font-black tracking-tighter mb-2">FAEM</Link>
+        <p className="text-[10px] uppercase tracking-widest text-black/40 font-bold mb-8">Admin Portal Girişi</p>
+        
+        <form onSubmit={submit} className="w-full flex flex-col gap-4">
+          <input 
+            type="email" 
+            placeholder="Yönetici E-Posta Adresi" 
+            required
+            value={email}
+            onChange={e=>setEmail(e.target.value)}
+            className="w-full px-5 py-4 bg-black/[0.03] border border-transparent rounded-xl text-sm font-medium focus:outline-none focus:border-black/20 focus:bg-white transition-colors"
+          />
+          <button type="submit" className="w-full bg-black text-white font-bold py-4 rounded-xl text-sm transition-colors hover:bg-zinc-800 shadow-xl shadow-black/10">
+            Sihirli Bağlantı Gönder
+          </button>
+        </form>
+        {msg && <p className="mt-6 text-xs font-bold text-black/60">{msg}</p>}
+      </div>
+    </div>
+  );
+}
 
 function DashboardTab({ orders, products }: any) {
   return (
