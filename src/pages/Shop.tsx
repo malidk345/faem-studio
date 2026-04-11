@@ -2,8 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
 import { supabase } from '../lib/supabase';
-import type { Product } from '../data/products';
-import { PRODUCTS } from '../data/products';
+interface Product {
+  id: string;
+  name: string;
+  price: string;
+  image: string;
+  category: string;
+  description: string;
+  images?: string[];
+  sizes?: string[];
+  features?: string[];
+}
 import { useSEO } from '../hooks/useSEO';
 
 export default function Shop() {
@@ -24,7 +33,7 @@ export default function Shop() {
       try {
         const { data, error } = await supabase.from('products').select('*');
         if (error || !data || data.length === 0) {
-          setProducts(PRODUCTS); // fallback to local mock data
+          setProducts([]);
         } else {
           // Map DB columns to our Product interface
           const mapped = data.map(p => ({
@@ -41,7 +50,7 @@ export default function Shop() {
           setProducts(mapped);
         }
       } catch {
-         setProducts(PRODUCTS);
+         setProducts([]);
       } finally {
         setIsLoading(false);
       }

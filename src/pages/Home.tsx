@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
+import { supabase } from '../lib/supabase';
 import ProductCard from '../components/ProductCard';
 import { useSEO } from '../hooks/useSEO';
 import { useLanguage } from '../context/LanguageContext';
@@ -47,9 +47,26 @@ export default function Home() {
   });
 
   const [activeSlide, setActiveSlide] = useState(0);
+  const [products, setProducts] = useState<any[]>([]);
   const slide = HERO_SLIDES[activeSlide];
   const BG = '#FFFFFF';
   const { t } = useLanguage();
+
+  React.useEffect(() => {
+    const fetchFeatured = async () => {
+      const { data } = await supabase.from('products').select('*').limit(4);
+      if (data) {
+        setProducts(data.map(p => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          image: p.image_url,
+          category: p.category
+        })));
+      }
+    };
+    fetchFeatured();
+  }, []);
 
   return (
     <div style={{ backgroundColor: BG }}>
@@ -154,7 +171,7 @@ export default function Home() {
           gap-y: vertical spacing between rows
         */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-10 md:gap-x-5 md:gap-y-14">
-          {PRODUCTS.map((product) => (
+          {products.map((product) => (
             <ProductCard
               key={product.id}
               product={product}

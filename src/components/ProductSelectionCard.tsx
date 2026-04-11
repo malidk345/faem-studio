@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronUp, Minus, Plus } from 'lucide-react';
-import { Product } from '../data/products';
+interface Product {
+  id: string;
+  name: string;
+  price: string;
+  sizes: string[];
+}
 
 interface ProductSelectionCardProps {
   product: Product;

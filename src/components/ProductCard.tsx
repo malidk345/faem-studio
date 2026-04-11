@@ -1,7 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Star } from 'lucide-react';
-import { Product } from '../data/products';
+interface Product {
+  id: string;
+  name: string;
+  price: string;
+  image: string;
+  category: string;
+}
 
 interface ProductCardProps {
   product: Product;

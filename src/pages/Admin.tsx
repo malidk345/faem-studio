@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Package, ShoppingCart, Users, Tags, Settings as SettingsIcon,
   Plus, Search, Filter, MoreVertical, X, UploadCloud, Edit, Trash2, ArrowUpRight, Menu
 } from 'lucide-react';
-import { PRODUCTS } from '../data/products';
+
 
 type Tab = 'dashboard' | 'products' | 'categories' | 'orders' | 'customers' | 'settings';
 
@@ -17,7 +17,7 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   
-  const [products, setProducts] = useState<any[]>(PRODUCTS);
+  const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([
     { id: 'ORD-1204', user: 'Ahmet Y.', total: '8.450 ₺', status: 'beklemede', date: '2 dk önce', items: 1 }
   ]);

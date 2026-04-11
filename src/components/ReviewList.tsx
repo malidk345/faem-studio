@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Star, Heart, MessageCircle, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Review } from '../data/products';
+interface Review {
+  id: string;
+  user: string;
+  rating: number;
+  comment: string;
+  date: string;
+  isVerified?: boolean;
+}
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 

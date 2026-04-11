@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { supabase } from '../lib/supabase';
 import { useCart } from '../context/CartContext';
 import ProductSelectionCard from '../components/ProductSelectionCard';
 import ProductInfoSections from '../components/ProductInfoSections';
 import ReviewList from '../components/ReviewList';
-import { PRODUCTS, REVIEWS, ProductImage } from '../data/products';
+import { REVIEWS, ProductImage } from '../data/products';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
 
