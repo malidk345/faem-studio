@@ -1,0 +1,375 @@
+@import "tailwindcss";
+
+/* ===========================
+   FAEM — DESIGN SYSTEM (LIGHT)
+   Cream × Obsidian
+   =========================== */
+
+@layer utilities {
+
+  /* Light glass for Selection Card */
+  .glass-apple {
+    background: rgba(20, 20, 20, 0.5);
+    backdrop-filter: blur(40px) saturate(1.5);
+    -webkit-backdrop-filter: blur(40px) saturate(1.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  }
+
+  /* CodePen Reference Header/Nav Style + Glassmorphism */
+  .glass-nav {
+    /* Exact equivalent of color-mix(in hsl, canvasText 8%, canvas) in Light mode */
+    --base-bg-color: color-mix(in hsl, #000000 8%, #ffffff);
+    /* Injecting transparency into the exact color for the glass effect */
+    --bg-color: color-mix(in srgb, var(--base-bg-color) 70%, transparent);
+    --text-color: color-mix(in hsl, #000000 92%, #ffffff);
+
+    color: var(--text-color);
+    box-shadow: none;
+    background: var(--bg-color);
+    backdrop-filter: blur(36px) saturate(1.8);
+    -webkit-backdrop-filter: blur(36px) saturate(1.8);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .glass-nav-btn {
+    color: inherit;
+    background: transparent;
+    transition: background-color 0.2s, outline-color 0.2s;
+  }
+
+  .glass-nav-btn:hover,
+  .glass-nav-btn:focus-visible {
+    outline: none;
+    /* Transparent hover so it blends nicely on the glass */
+    background: rgba(0, 0, 0, 0.06);
+  }
+
+  /* CodePen Menu Content Styles */
+  .menu-content h3 {
+    font-size: 0.875rem;
+    margin: 0;
+    opacity: 0.675;
+    font-weight: 400;
+    padding: 0 12px;
+    margin-block: 6px;
+  }
+
+  .menu-content ul {
+    margin: 0;
+    padding: 0;
+    padding-inline: 4px;
+    list-style-type: none;
+  }
+
+  .menu-content li a {
+    font-weight: 300;
+    display: flex;
+    color: var(--text-color, #0C0C0C);
+    align-items: center;
+    height: 40px;
+    gap: 12px;
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+  }
+
+  .menu-content li a:hover,
+  .menu-content li a:focus-visible {
+    outline: none;
+    background: rgba(0, 0, 0, 0.05);
+    /* Transparent hover */
+  }
+
+  .menu-content li a svg {
+    width: 16px;
+  }
+
+  .menu-heading {
+    padding-top: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+  }
+
+  .menu-pill {
+    font-size: 0.75rem;
+    text-decoration: none;
+    border: 1px solid color-mix(in hsl, currentColor, transparent 75%);
+    background: rgba(0, 0, 0, 0.06);
+    /* Darker transparent pill */
+    color: inherit;
+    padding: 2px 4px;
+    border-radius: 4px;
+    margin-left: 0.75rem;
+  }
+
+  .menu-pill:hover,
+  .menu-pill:focus-visible {
+    background: #0C0C0C;
+    color: #ffffff;
+    outline: none;
+  }
+
+  .menu-search {
+    width: 100%;
+    padding: 0.75rem;
+    background: transparent;
+    border: 0;
+    color: inherit;
+  }
+
+  .menu-search:focus-visible {
+    outline: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .marquee-inner {
+    display: flex;
+    gap: 0;
+    animation: marquee 28s linear infinite;
+    will-change: transform;
+  }
+
+  .marquee-inner:hover {
+    animation-play-state: paused;
+  }
+}
+
+@theme {
+  --font-sans: "SF Pro Text", "SF Pro Icons", "AOS Icons", "Helvetica Neue", Helvetica, Arial, sans-serif, system-ui;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: #FFFFFF;
+  color: #0C0C0C;
+  font-family: "SF Pro Text", "SF Pro Icons", "AOS Icons", "Helvetica Neue", Helvetica, Arial, sans-serif, system-ui;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: rgba(12, 12, 12, 0.08);
+}
+
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFFFFF;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D0CBC3;
+  border-radius: 2px;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.anim-fade-up {
+  opacity: 0;
+  animation: fadeUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.anim-fade-in {
+  opacity: 0;
+  animation: fadeIn 1.2s ease forwards;
+}
+
+.delay-100 {
+  animation-delay: 0.1s;
+}
+
+.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* Burst Animation Check properties */
+:root {
+  --text-speed: 0.26;
+  --base-delay: calc(var(--text-speed) * 0.25);
+  --tick-speed: 0.12;
+  --ring-speed: 0.2;
+  --check-speed: 0.1;
+  --burst-speed: 0.32;
+  --step-delay: 4;
+  --speed: 1;
+}
+
+.add-to-cart-text {
+  clip-path: circle(100% at 50% 50%);
+  transition-property: clip-path, opacity, filter, translate;
+  transition-duration: calc(var(--text-speed) * 0.6s * var(--speed)), calc(var(--text-speed) * 1s * var(--speed));
+  transition-timing-function: ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+button[data-adding='true'] .add-to-cart-text {
+  clip-path: circle(0% at 50% 50%);
+  filter: blur(2px);
+  opacity: 0;
+  translate: 0 4px;
+}
+
+.added-state {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.checkmark-burst {
+  width: 32px;
+  overflow: visible !important;
+}
+
+.checkmark-burst .burst {
+  rotate: 20deg;
+}
+
+.checkmark-burst .check {
+  opacity: 0;
+  scale: 0.3;
+  filter: blur(2px);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.checkmark-burst :is(.ring, .wiggle, .line, .burst, .tick) {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.checkmark-burst :is(.wiggle, .line) {
+  stroke-dasharray: 1.5 1.5;
+  stroke-dashoffset: -1.5;
+  translate: 0 -180%;
+}
+
+button[data-adding="true"] .check {
+  transition-property: opacity, scale, filter;
+  transition-duration: calc(var(--check-speed) * 1s * var(--speed));
+  transition-delay: calc(var(--base-delay) * 1s * var(--speed));
+  transition-timing-function: ease-in-out;
+  opacity: 1;
+  scale: 1;
+  filter: blur(0);
+}
+
+button[data-adding="true"] .tick {
+  scale: 1.5;
+  transition-property: scale;
+  transition-duration: calc(var(--tick-speed) * 1s * var(--speed));
+  transition-delay: calc((var(--base-delay) + (var(--check-speed) * var(--step-delay) * 1.1)) * 1s * var(--speed));
+  transition-timing-function: ease-out;
+}
+
+button[data-adding="true"] .ring {
+  transition-property: opacity, scale, filter;
+  transition-duration: calc(var(--ring-speed) * 1s * var(--speed));
+  transition-delay: calc((var(--base-delay) + (var(--check-speed) * var(--step-delay))) * 1s * var(--speed));
+  transition-timing-function: ease-in-out;
+  opacity: 0;
+  scale: 1;
+  filter: blur(1px);
+}
+
+button[data-adding="true"] .checkmark-burst .burst :is(.wiggle, .line) {
+  transition-property: stroke-dashoffset;
+  transition-duration: calc(var(--burst-speed) * 1s * var(--speed));
+  transition-delay: calc((var(--base-delay) + (var(--check-speed) * var(--step-delay)) + (var(--index) * 0.05)) * 1s * var(--speed));
+  transition-timing-function: ease-out;
+  stroke-dashoffset: 1.5;
+}
+
+.checkmark-burst .burst g.burst-p {
+  transform-origin: center;
+  rotate: calc(var(--index) * 45deg);
+}
+
+.checkmark-burst .burst g.burst-p:nth-of-type(odd) .line,
+.checkmark-burst .burst g.burst-p:nth-of-type(even) .wiggle {
+  display: none;
+}
+
+.checkmark-burst .burst g.burst-p:nth-of-type(even) .line,
+.checkmark-burst .burst g.burst-p:nth-of-type(odd) .wiggle {
+  display: block;
+}
