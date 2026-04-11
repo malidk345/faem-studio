@@ -15,24 +15,19 @@ import MainLayout from './layouts/MainLayout';
 function AppRoutes() {
   return (
     <Routes>
-      {/* Admin Route - Isolated from MainLayout */}
+      {/* Admin Route - Strictly isolated */}
       <Route path="/fatihveemirinadminportali" element={<Admin />} />
+
+      {/* Storefront Routes - Consistently wrapped through MainLayout or individual elements */}
+      <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+      <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
+      <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
+      <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
+      <Route path="/signin" element={<MainLayout><SignIn /></MainLayout>} />
+      <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
       
-      {/* Storefront Routes - Wrapped in MainLayout */}
-      <Route path="*" element={
-        <MainLayout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/signin" element={<SignIn />} />
-            <Route path="/account" element={<Account />} />
-            {/* Catch-all to Home if path not found */}
-            <Route path="*" element={<Home />} />
-          </Routes>
-        </MainLayout>
-      } />
+      {/* Catch-all redirect to Home */}
+      <Route path="*" element={<MainLayout><Home /></MainLayout>} />
     </Routes>
   );
 }
