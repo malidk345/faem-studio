@@ -1,14 +1,15 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 import { containerVariants, itemVariants } from '../../utils/animations';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface MenuPanelProps {
   onClose?: () => void;
 }
 
 const MenuPanel: React.FC<MenuPanelProps> = ({ onClose }) => {
+  const { language, toggleLanguage, t } = useLanguage();
   return (
     <motion.div variants={containerVariants} className="menu-content h-full p-1 pb-4">
       <div className="menu-heading pb-2">
@@ -25,7 +26,7 @@ const MenuPanel: React.FC<MenuPanelProps> = ({ onClose }) => {
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918" />
                 </svg>
-                <span>All Collections</span>
+                <span>{t('nav.collection')}</span>
               </Link>
             </li>
             <li>

@@ -3,6 +3,7 @@ import { Grid3X3, ShoppingBag, Search, X, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useCart } from '../context/CartContext';
+import { useLanguage } from '../context/LanguageContext';
 import SearchPanel from './HeaderPanels/SearchPanel';
 import MenuPanel from './HeaderPanels/MenuPanel';
 import ProfilePanel from './HeaderPanels/ProfilePanel';
@@ -11,6 +12,7 @@ import { springTransition, contentTransition } from '../utils/animations';
 
 export default function Header({ isAbsolute = false }: { isAbsolute?: boolean }) {
   const { cartCount } = useCart();
+  const { language, toggleLanguage } = useLanguage();
   const [activePanel, setActivePanel] = useState<'search' | 'profile' | 'menu' | 'cart' | null>(null);
 
   const positionClass = isAbsolute ? 'absolute' : 'fixed';
@@ -46,6 +48,10 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
                 transition={contentTransition}
                 className="flex items-center h-full"
               >
+                <button onClick={toggleLanguage} className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn text-[10px] font-black uppercase">
+                  {language}
+                </button>
+                <div className="w-[1px] h-3 bg-black/10 mx-0.5"></div>
                 <button onClick={() => setActivePanel('search')} className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn">
                   <Search size={18} strokeWidth={2} />
                 </button>

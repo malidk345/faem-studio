@@ -5,7 +5,7 @@ import { ArrowUpRight, ArrowRight } from 'lucide-react';
 import { PRODUCTS } from '../data/products';
 import ProductCard from '../components/ProductCard';
 import { useSEO } from '../hooks/useSEO';
-
+import { useLanguage } from '../context/LanguageContext';
 
 const HERO_SLIDES = [
   {
@@ -49,6 +49,7 @@ export default function Home() {
   const [activeSlide, setActiveSlide] = useState(0);
   const slide = HERO_SLIDES[activeSlide];
   const BG = '#FFFFFF';
+  const { t } = useLanguage();
 
   return (
     <div style={{ backgroundColor: BG }}>
@@ -104,7 +105,7 @@ export default function Home() {
               </p>
               <div className="flex items-center gap-5 mt-2">
                 <Link to="/shop" className="group flex items-center gap-3 text-[12px] font-bold uppercase tracking-[0.2em] bg-white text-black rounded-xl px-7 py-3.5 hover:bg-black hover:text-white transition-all shadow-lg active:scale-95">
-                  Explore Collection
+                  {t('home.explore')}
                   <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </Link>
               </div>
@@ -133,17 +134,17 @@ export default function Home() {
         <div className="flex items-center justify-between mb-8 pb-5 border-b" style={{ borderColor: 'rgba(0,0,0,0.07)' }}>
           <div className="flex flex-col gap-1">
             <p className="text-[10px] uppercase tracking-[0.4em] font-bold" style={{ color: ACCENT }}>
-              Current Season
+              {t('home.current')}
             </p>
             <h2 className="text-[22px] md:text-[28px] font-black tracking-[-0.03em] text-black leading-none">
-              The Collection
+              {t('shop.title')}
             </h2>
           </div>
           <Link
             to="/shop"
             className="hidden md:flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] font-bold text-black/30 hover:text-black transition-colors group"
           >
-            All Pieces <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+            {t('home.all_pieces')} <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
@@ -169,7 +170,7 @@ export default function Home() {
       <section className="relative overflow-hidden py-40 px-6 md:px-16 bg-white border-y" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
         <div className="max-w-[1400px] mx-auto relative z-10">
           <p className="text-[10px] uppercase tracking-[0.5em] font-bold mb-12" style={{ color: ACCENT }}>
-            Studio Notes
+            {t('home.studio_notes')}
           </p>
           <blockquote className="text-[clamp(1.75rem,4.5vw,4rem)] font-light text-black/55 leading-[1.3] tracking-[-0.02em] max-w-5xl italic">
             "We build garments the way architects build space — every seam has a reason, every proportion a purpose."

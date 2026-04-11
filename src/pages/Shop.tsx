@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
-import { fetchProducts } from '../lib/medusa-api';
+import { supabase } from '../lib/supabase';
 import type { Product } from '../data/products';
+import { PRODUCTS } from '../data/products';
 import { useSEO } from '../hooks/useSEO';
 
 export default function Shop() {
@@ -15,17 +16,38 @@ export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch products from Medusa (or seed data fallback)
+  // Fetch products from Supabase (fallback to seeded offline products if no connection)
   useEffect(() => {
     window.scrollTo(0, 0);
-    (async () => {
+    
+    const loadProducts = async () => {
       try {
-        const data = await fetchProducts();
-        setProducts(data);
+        const { data, error } = await supabase.from('products').select('*');
+        if (error || !data || data.length === 0) {
+          setProducts(PRODUCTS); // fallback to local mock data
+        } else {
+          // Map DB columns to our Product interface
+          const mapped = data.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            image: p.image_url,
+            images: p.images || [],
+            category: p.category,
+            sizes: p.sizes || ['One Size'],
+            description: p.description,
+            features: p.features || []
+          }));
+          setProducts(mapped);
+        }
+      } catch {
+         setProducts(PRODUCTS);
       } finally {
         setIsLoading(false);
       }
-    })();
+    };
+
+    loadProducts();
   }, []);
 
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];

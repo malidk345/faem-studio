@@ -1,38 +1,8 @@
-/**
- * CartContext.tsx
- * ─────────────────────────────────────────────────────────────────────────────
- * Manages shopping cart state.
- *
- * When VITE_MEDUSA_BACKEND_URL is set:
- *   • Cart is persistent via Medusa's cart API (cartId stored in localStorage)
- *   • addToCart() maps local data → Medusa variant ID and calls the API
- *   • removeFromCart() / updateQuantity() sync with Medusa line items
- *
- * When the backend is NOT configured:
- *   • Falls back to local in-memory cart (exactly the previous behaviour).
- *
- * NOTE: Mapping "size" → Medusa variant ID requires knowing the variant IDs
- * from the product data. When products are fetched from Medusa, the variant
- * IDs are available on each product. The local seed data uses placeholder
- * sizes, so addToCart() in offline mode bypasses the variant lookup.
- * ─────────────────────────────────────────────────────────────────────────────
- */
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import {
-  getOrCreateCart,
-  addCartItem,
-  removeCartItem,
-  updateCartItem,
-  type MedusaCart,
-  type MedusaCartItem,
-} from '../lib/medusa-api';
-
-// ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface CartItem {
-  id: string;         // line item ID (Medusa) or `${productId}-${size}` (local)
+  id: string;         // `${productId}-${size}` 
   productId: string | number;
-  variantId?: string; // Medusa variant ID — undefined in offline mode
   name: string;
   price: string;      // formatted: "$12.00"
   image: string;
@@ -44,7 +14,6 @@ interface CartContextType {
   cartItems: CartItem[];
   cartCount: number;
   cartTotal: string;
-  medusaCartId: string | null;
   isLoading: boolean;
   addToCart: (item: Omit<CartItem, 'id'>) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
@@ -52,40 +21,25 @@ interface CartContextType {
   clearCart: () => void;
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const IS_BACKEND_CONFIGURED = Boolean(
-  import.meta.env.VITE_MEDUSA_BACKEND_URL
-);
-
-function formatPrice(amount: number, currency = 'usd'): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency.toUpperCase(),
-  }).format(amount / 100);
-}
-
-function medusaCartToItems(cart: MedusaCart): CartItem[] {
-  return cart.items.map((item: MedusaCartItem) => ({
-    id: item.id,
-    productId: item.variant_id,
-    variantId: item.variant_id,
-    name: item.title,
-    price: formatPrice(item.unit_price, cart.currency_code),
-    image: item.thumbnail ?? '',
-    size: item.variant?.title ?? '—',
-    quantity: item.quantity,
-  }));
-}
-
-// ─── Context ─────────────────────────────────────────────────────────────────
+const LOCAL_KEY = 'faem_cart';
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [medusaCartId, setMedusaCartId] = useState<string | null>(null);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => {
+    try {
+      const stored = localStorage.getItem(LOCAL_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -97,124 +51,36 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return `$${total.toFixed(2)}`;
   })();
 
-  // On mount — initialise the Medusa cart if backend is configured
-  useEffect(() => {
-    if (!IS_BACKEND_CONFIGURED) return;
-
-    (async () => {
-      try {
-        const cart = await getOrCreateCart();
-        if (cart) {
-          setMedusaCartId(cart.id);
-          setCartItems(medusaCartToItems(cart));
-        }
-      } catch (err) {
-        console.error('[CartContext] Failed to init Medusa cart:', err);
+  const addToCart = useCallback(async (item: Omit<CartItem, 'id'>) => {
+    setCartItems((prev) => {
+      const localId = `${item.productId}-${item.size}`;
+      const existing = prev.find((i) => i.id === localId);
+      if (existing) {
+        return prev.map((i) =>
+          i.id === localId ? { ...i, quantity: i.quantity + item.quantity } : i
+        );
       }
-    })();
+      return [...prev, { ...item, id: localId }];
+    });
   }, []);
 
-  // ── addToCart ──────────────────────────────────────────────────────────────
+  const removeFromCart = useCallback(async (id: string) => {
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  }, []);
 
-  const addToCart = useCallback(
-    async (item: Omit<CartItem, 'id'>) => {
-      // ── OFFLINE MODE ──
-      if (!IS_BACKEND_CONFIGURED) {
-        setCartItems((prev) => {
-          const localId = `${item.productId}-${item.size}`;
-          const existing = prev.find((i) => i.id === localId);
-          if (existing) {
-            return prev.map((i) =>
-              i.id === localId ? { ...i, quantity: i.quantity + item.quantity } : i
-            );
-          }
-          return [...prev, { ...item, id: localId }];
-        });
-        return;
-      }
-
-      // ── MEDUSA MODE ──
-      if (!item.variantId) {
-        console.warn('[CartContext] addToCart: variantId is required in Medusa mode.');
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const cartId = medusaCartId ?? (await getOrCreateCart())?.id;
-        if (!cartId) throw new Error('No cart available');
-        if (!medusaCartId) setMedusaCartId(cartId);
-
-        const updatedCart = await addCartItem(cartId, item.variantId, item.quantity);
-        setCartItems(medusaCartToItems(updatedCart));
-      } catch (err) {
-        console.error('[CartContext] addToCart failed:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [medusaCartId]
-  );
-
-  // ── removeFromCart ─────────────────────────────────────────────────────────
-
-  const removeFromCart = useCallback(
-    async (id: string) => {
-      if (!IS_BACKEND_CONFIGURED) {
-        setCartItems((prev) => prev.filter((item) => item.id !== id));
-        return;
-      }
-
-      if (!medusaCartId) return;
-      setIsLoading(true);
-      try {
-        const updatedCart = await removeCartItem(medusaCartId, id);
-        setCartItems(medusaCartToItems(updatedCart));
-      } catch (err) {
-        console.error('[CartContext] removeFromCart failed:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [medusaCartId]
-  );
-
-  // ── updateQuantity ─────────────────────────────────────────────────────────
-
-  const updateQuantity = useCallback(
-    async (id: string, quantity: number) => {
-      if (quantity < 1) {
-        await removeFromCart(id);
-        return;
-      }
-
-      if (!IS_BACKEND_CONFIGURED) {
-        setCartItems((prev) =>
-          prev.map((item) => (item.id === id ? { ...item, quantity } : item))
-        );
-        return;
-      }
-
-      if (!medusaCartId) return;
-      setIsLoading(true);
-      try {
-        const updatedCart = await updateCartItem(medusaCartId, id, quantity);
-        setCartItems(medusaCartToItems(updatedCart));
-      } catch (err) {
-        console.error('[CartContext] updateQuantity failed:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [medusaCartId, removeFromCart]
-  );
-
-  // ── clearCart ──────────────────────────────────────────────────────────────
+  const updateQuantity = useCallback(async (id: string, quantity: number) => {
+    if (quantity < 1) {
+      await removeFromCart(id);
+      return;
+    }
+    setCartItems((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
+    );
+  }, [removeFromCart]);
 
   const clearCart = useCallback(() => {
     setCartItems([]);
-    setMedusaCartId(null);
-    localStorage.removeItem('faem_cart_id');
+    localStorage.removeItem(LOCAL_KEY);
   }, []);
 
   return (
@@ -223,7 +89,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         cartItems,
         cartCount,
         cartTotal,
-        medusaCartId,
         isLoading,
         addToCart,
         removeFromCart,
