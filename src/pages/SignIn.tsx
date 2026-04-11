@@ -163,8 +163,9 @@ export default function SignIn() {
               className="w-full bg-black text-white py-4 mt-2 rounded-xl text-[15px] font-bold hover:bg-zinc-800 transition-colors shadow-2xl shadow-black/20 disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {(isLoading) && <Loader2 size={16} className="animate-spin" />}
-              {useMagicLink ? 'Send Magic Link' : mode === 'signin' ? 'Sign In' : 'Create Account'}
+              {magicLinkSent ? 'Check Your Email' : useMagicLink ? 'Send Magic Link' : mode === 'signin' ? 'Sign In' : 'Create Account'}
             </button>
+            {magicLinkSent && <p className="text-center text-[11px] text-black/40 font-bold uppercase tracking-widest mt-2">Email dispatched. Please verify.</p>}
           </form>
 
           <div className="mt-10 pt-8 border-t border-black/5 text-center text-sm font-medium text-black/40">

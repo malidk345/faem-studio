@@ -26,19 +26,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   // Checks current session and gets the user's role from the 'profiles' table
-  const syncSession = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('name, role')
-        .eq('id', session.user.id)
-        .single();
+  const syncSession = async (session: any = null) => {
+    let currentSession = session;
+    if (!currentSession) {
+      const { data } = await supabase.auth.getSession();
+      currentSession = data.session;
+    }
+
+    if (currentSession?.user) {
+      // Retry logic for profile creation (in case trigger is slow)
+      let profile = null;
+      for (let i = 0; i < 3; i++) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('name, role')
+          .eq('id', currentSession.user.id)
+          .single();
+        if (data) {
+          profile = data;
+          break;
+        }
+        await new Promise(res => setTimeout(res, 500)); // wait 0.5s before retry
+      }
 
       setUser({
-        id: session.user.id,
-        email: session.user.email!,
-        name: profile?.name || session.user.email!.split('@')[0],
+        id: currentSession.user.id,
+        email: currentSession.user.email!,
+        name: profile?.name || currentSession.user.user_metadata?.full_name || currentSession.user.email!.split('@')[0],
         role: profile?.role || 'customer'
       });
     } else {
@@ -50,8 +64,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     syncSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      syncSession();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth event:', event);
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+        syncSession(session);
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setIsLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
