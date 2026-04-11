@@ -1,5 +1,10 @@
 import React from 'react';
-import { ShoppingBag, Search, Filter, ArrowUpRight, Clock, MapPin } from 'lucide-react';
+import { DataTable } from "../Theme/tasks/components/data-table";
+import { 
+  ShoppingBag, Search, Filter, ArrowUpRight, Clock, MapPin, MoreHorizontal 
+} from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface OrdersTabProps {
   orders: any[];
@@ -7,88 +12,121 @@ interface OrdersTabProps {
 }
 
 export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
+  // Business Columns for Sales Management
+  const columns = [
+    {
+      accessorKey: "id",
+      header: "Invoice",
+      cell: ({ row }: any) => (
+        <div className="flex flex-col">
+          <span className="font-bold text-zinc-900 leading-tight">#{row.getValue("id")?.slice(0, 8)}</span>
+          <span className="text-[10px] text-zinc-400 font-medium">Digital Receipt</span>
+        </div>
+      )
+    },
+    {
+      accessorKey: "user",
+      header: "Strategic Client",
+      cell: ({ row }: any) => (
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-zinc-100 flex items-center justify-center font-black text-[10px] border border-zinc-200 uppercase">
+            {row.original.user?.charAt(0)}
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-zinc-900 border-none">{row.original.user}</span>
+            <span className="text-[10px] text-zinc-400">Prime Customer</span>
+          </div>
+        </div>
+      )
+    },
+    {
+      accessorKey: "status",
+      header: "Fulfillment Status",
+      cell: ({ row }: any) => {
+        const status = row.getValue("status");
+        return (
+          <Badge 
+            variant="outline" 
+            className={`font-bold text-[9px] uppercase tracking-widest border-none px-3 py-1 ${
+              status === 'delivered' ? 'bg-emerald-50 text-emerald-600' : 
+              status === 'pending' || status === 'beklemede' ? 'bg-amber-50 text-amber-600' : 
+              'bg-blue-50 text-blue-600'
+            }`}
+          >
+            {status}
+          </Badge>
+        )
+      }
+    },
+    {
+      accessorKey: "total",
+      header: "Transaction Value",
+      cell: ({ row }: any) => <span className="font-black text-zinc-900">{row.getValue("total")}</span>
+    },
+    {
+      id: "actions",
+      header: "Audit",
+      cell: ({ row }: any) => (
+        <div className="flex items-center gap-2">
+           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+             <ArrowUpRight className="h-4 w-4" />
+           </Button>
+           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+             <MoreHorizontal className="h-4 w-4" />
+           </Button>
+        </div>
+      )
+    }
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-        <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">
-          <FilterButton label="Tümü" active />
-          <FilterButton label="Bekleyen" />
-          <FilterButton label="Hazırlanıyor" />
-          <FilterButton label="Tamamlanan" />
+      {/* Sales Header */}
+      <div className="flex items-center justify-between gap-4">
+        <div>
+           <h2 className="text-2xl font-black tracking-tighter text-zinc-900">Revenue Stream</h2>
+           <p className="text-zinc-400 text-xs font-medium">Monitor real-time sales performance and order lifecycle.</p>
         </div>
-        
-        <div className="relative group w-full md:w-80">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30 group-focus-within:text-black transition-colors" />
-          <input 
-              type="text" 
-              placeholder="Sipariş veya Müşteri No..." 
-              className="pl-11 pr-6 py-3 bg-black/[0.03] border border-transparent rounded-2xl text-xs font-bold focus:outline-none focus:bg-white focus:border-black/10 transition-all w-full"
-          />
+        <div className="flex gap-2">
+            <Button variant="outline" className="rounded-xl font-bold flex items-center gap-2">
+                <MapPin size={16} /> Regional Performance
+            </Button>
+            <Button className="bg-zinc-900 text-white hover:bg-zinc-800 rounded-xl font-bold flex items-center gap-2 shadow-lg">
+                <ShoppingBag size={16} /> New Sale Entry
+            </Button>
         </div>
       </div>
 
-      <div className="bg-white border border-black/5 rounded-[2.5rem] overflow-hidden shadow-sm">
-        <div className="overflow-x-auto hide-scrollbar">
-          <table className="w-full text-sm text-left min-w-[900px]">
-            <thead className="bg-black/[0.01] border-b border-black/5">
-              <tr>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-black/30">Sipariş Bilgisi</th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-black/30">Müşteri</th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-black/30 text-center">Ürünler</th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-black/30">Durum</th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-black/30 text-right">Tutar</th>
-                <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-black/30 text-right">İşlem</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-black/5">
-              {orders.map((o) => (
-                <tr key={o.id} className="hover:bg-black/[0.01] transition-colors group/row cursor-pointer">
-                  <td className="px-8 py-6">
-                    <div className="flex flex-col">
-                        <span className="font-black tracking-tighter text-base">#{o.id}</span>
-                        <div className="flex items-center gap-2 text-[10px] text-black/30 font-bold uppercase tracking-widest mt-1">
-                            <Clock size={10} />
-                            {o.date}
-                        </div>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-black/5 flex items-center justify-center font-black text-[10px]">{o.user.charAt(0)}</div>
-                        <span className="font-bold text-black/70">{o.user}</span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6 text-center">
-                    <span className="text-[10px] font-black bg-black/5 px-2.5 py-1 rounded-lg">{o.items} Adet</span>
-                  </td>
-                  <td className="px-8 py-6">
-                    <select 
-                      value={o.status} 
-                      onChange={(e) => onUpdateStatus(o.id, e.target.value)}
-                      className={`text-[9px] uppercase font-black tracking-[0.15em] px-3 py-1.5 rounded-full border bg-transparent cursor-pointer focus:outline-none focus:ring-1 focus:ring-black/20 ${
-                        o.status === 'delivered' ? 'bg-green-50 text-green-700 border-green-100' : 
-                        o.status === 'pending' || o.status === 'beklemede' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 
-                        'bg-blue-50 text-blue-700 border-blue-100'
-                      }`}
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="processing">Processing</option>
-                      <option value="shipped">Shipped</option>
-                      <option value="delivered">Delivered</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                  </td>
-                  <td className="px-8 py-6 font-black text-right tracking-tight text-base">{o.total}</td>
-                  <td className="px-8 py-6 text-right">
-                    <button className="p-2.5 rounded-xl bg-black/5 hover:bg-black hover:text-white transition-all opacity-0 group-hover/row:opacity-100">
-                        <ArrowUpRight size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      {/* The Enterprise DataTable for Orders */}
+      <div className="bg-white border rounded-2xl p-6 shadow-sm">
+         <DataTable 
+           columns={columns} 
+           data={orders} 
+         />
+      </div>
+
+      {/* Sales Performance Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-6 bg-zinc-900 text-white rounded-3xl flex flex-col gap-4">
+             <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Live Sales Velocity</span>
+                <Clock size={16} className="text-zinc-500" />
+             </div>
+             <div className="flex items-baseline gap-2">
+                <span className="text-4xl font-black">{orders.length}</span>
+                <span className="text-zinc-500 font-bold text-xs">Total Orders this Period</span>
+             </div>
+          </div>
+          <div className="p-6 bg-white border rounded-3xl flex flex-col gap-4">
+             <div className="flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Total Strategic Revenue</span>
+                <ArrowUpRight size={16} className="text-zinc-400" />
+             </div>
+             <div className="flex items-baseline gap-2 text-zinc-900">
+                <span className="text-4xl font-black">2.4M₺</span>
+                <span className="text-emerald-500 font-bold text-xs">+12.4% vs Previous</span>
+             </div>
+          </div>
       </div>
     </div>
   );
