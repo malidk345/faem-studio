@@ -40,26 +40,32 @@ export default function SignIn() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     try {
-      if (useMagicLink) {
-        const { error: mlError } = await supabase.auth.signInWithOtp({ email });
-        if (mlError) throw mlError;
-        setMagicLinkSent(true);
-        return;
-      }
-
       if (mode === 'signin') {
-        await login(email, password);
+        // Explicitly hit Supabase OTP for sign-in
+        const { error: mlError } = await supabase.auth.signInWithOtp({ 
+          email,
+          options: {
+            emailRedirectTo: window.location.origin,
+          }
+        });
+        if (mlError) {
+          setError(mlError.message);
+          return;
+        }
+        setMagicLinkSent(true);
       } else {
         await register(email, password, firstName, lastName);
       }
     } catch (err: any) {
-      // Error is already handled by AuthContext or thrown here
+      setError(err.message || 'An error occurred');
     }
   };
 
   const toggleMode = () => {
     clearError();
+    setMagicLinkSent(false);
     setMode(m => m === 'signin' ? 'register' : 'signin');
   };
 
@@ -81,12 +87,12 @@ export default function SignIn() {
           </h1>
           <p className="text-black/50 text-sm font-medium text-center mb-10 leading-relaxed px-4">
             {mode === 'signin'
-              ? 'Sign in to access your order history, manage saved items, and track shipments.'
+              ? 'Enter your email to receive a magic link for instant, secure access.'
               : 'Join Faem Studio to enjoy a seamless checkout experience and order tracking.'}
           </p>
 
           {/* Error message */}
-          {error && (
+          {(error || (mode === 'register' && error)) && (
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -100,24 +106,34 @@ export default function SignIn() {
             <div className="space-y-4">
 
               {mode === 'register' && (
-                <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="First name"
-                    value={firstName}
-                    onChange={e => setFirstName(e.target.value)}
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      placeholder="First name"
+                      value={firstName}
+                      onChange={e => setFirstName(e.target.value)}
+                      className="w-full px-5 py-4 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 text-[15px] font-medium"
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="Last name"
+                      value={lastName}
+                      onChange={e => setLastName(e.target.value)}
+                      className="w-full px-5 py-4 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 text-[15px] font-medium"
+                      required
+                    />
+                  </div>
+                   <input
+                    type="password"
+                    placeholder="Create Password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
                     className="w-full px-5 py-4 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 text-[15px] font-medium"
                     required
                   />
-                  <input
-                    type="text"
-                    placeholder="Last name"
-                    value={lastName}
-                    onChange={e => setLastName(e.target.value)}
-                    className="w-full px-5 py-4 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 text-[15px] font-medium"
-                    required
-                  />
-                </div>
+                </>
               )}
 
               <input
@@ -128,33 +144,13 @@ export default function SignIn() {
                 className="w-full px-5 py-4 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 text-[15px] font-medium"
                 required
               />
-              {!useMagicLink && (
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="w-full px-5 py-4 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 text-[15px] font-medium"
-                  required
-                />
-              )}
             </div>
 
             {magicLinkSent && (
-               <p className="text-center text-xs font-bold text-green-600 bg-green-50 p-4 rounded-xl">Magic link sent! Check your inbox to sign in instantly.</p>
-            )}
-
-            {mode === 'signin' && (
-              <div className="flex justify-between items-center text-xs font-semibold px-2">
-                <button 
-                  type="button" 
-                  onClick={() => setUseMagicLink(!useMagicLink)}
-                  className="text-black/60 hover:text-black transition-colors"
-                >
-                  {useMagicLink ? 'Use Password instead' : 'Sign in with Magic Link'}
-                </button>
-                <a href="#" className="text-black/40 hover:text-black transition-colors">Forgot Password?</a>
-              </div>
+               <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center p-6 bg-black text-white rounded-2xl">
+                  <p className="text-sm font-bold mb-1">Check your inbox!</p>
+                  <p className="text-[11px] opacity-60">We sent a secure link to {email}.</p>
+               </motion.div>
             )}
 
             <button
@@ -163,7 +159,7 @@ export default function SignIn() {
               className="w-full bg-black text-white py-4 mt-2 rounded-xl text-[15px] font-bold hover:bg-zinc-800 transition-colors shadow-2xl shadow-black/20 disabled:opacity-60 flex items-center justify-center gap-2"
             >
               {(isLoading) && <Loader2 size={16} className="animate-spin" />}
-              {magicLinkSent ? 'Check Your Email' : useMagicLink ? 'Send Magic Link' : mode === 'signin' ? 'Sign In' : 'Create Account'}
+              {magicLinkSent ? 'Waiting for link...' : mode === 'signin' ? 'Send Magic Link' : 'Create Account'}
             </button>
             {magicLinkSent && <p className="text-center text-[11px] text-black/40 font-bold uppercase tracking-widest mt-2">Email dispatched. Please verify.</p>}
           </form>
