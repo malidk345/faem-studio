@@ -104,6 +104,7 @@ export function ProductsTab({ products, onAdd, onEdit, onDelete }: ProductsTabPr
          <DataTable 
            columns={columns} 
            data={products} 
+           searchKey="name"
          />
       </div>
 

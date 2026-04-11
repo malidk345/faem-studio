@@ -102,6 +102,7 @@ export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
          <DataTable 
            columns={columns} 
            data={orders} 
+           searchKey="user"
          />
       </div>
 

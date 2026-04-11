@@ -117,23 +117,22 @@ export default function Admin() {
         </div>
       </SidebarInset>
 
-      {/* Legacy Modals Integration */}
-      {isAddProductModalOpen && (
-        <ProductModal 
-          onClose={() => { setAddProductModalOpen(false); setEditingProduct(null); }} 
-          categories={categories} 
-          initialData={editingProduct}
-          onPublish={(data) => {
-             if (editingProduct) {
-                updateProduct(editingProduct.id, data);
-             } else {
-                publishProduct(data);
-             }
-             setAddProductModalOpen(false);
-             setEditingProduct(null);
-          }} 
-        />
-      )}
+      {/* Enterprise Modals Integration */}
+      <ProductModal 
+        isOpen={isAddProductModalOpen}
+        onClose={() => { setAddProductModalOpen(false); setEditingProduct(null); }} 
+        categories={categories} 
+        editingProduct={editingProduct}
+        onSave={(data) => {
+           if (editingProduct) {
+              updateProduct(editingProduct.id, data);
+           } else {
+              publishProduct(data);
+           }
+           setAddProductModalOpen(false);
+           setEditingProduct(null);
+        }} 
+      />
     </SidebarProvider>
   );
 }

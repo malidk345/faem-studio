@@ -26,19 +26,18 @@ import {
 } from "@/components/ui/table"
 
 import { DataTablePagination } from "./data-table-pagination"
-import { DataTableToolbar } from "./data-table-toolbar"
-import type { Task } from "../data/schema"
+import { Input } from "@/components/ui/input"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  onAddTask?: (task: Task) => void
+  searchKey?: string
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
-  onAddTask,
+  searchKey,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -72,15 +71,26 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} onAddTask={onAddTask} />
-      <div className="rounded-md border">
+      {searchKey && (
+        <div className="flex items-center py-4">
+          <Input
+            placeholder={`Search ${searchKey}...`}
+            value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn(searchKey)?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm rounded-xl font-bold border-zinc-200"
+          />
+        </div>
+      )}
+      <div className="rounded-2xl border border-zinc-100 overflow-hidden shadow-sm">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-zinc-50/50">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="hover:bg-transparent border-zinc-100">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
+                    <TableHead key={header.id} colSpan={header.colSpan} className="text-[10px] font-black uppercase tracking-widest text-zinc-400 py-4 h-auto">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -99,9 +109,10 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-zinc-50/30 border-zinc-100 transition-colors"
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-4 font-medium text-zinc-900">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -114,9 +125,9 @@ export function DataTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center font-bold text-zinc-400 italic"
                 >
-                  No results.
+                  No assets discovered.
                 </TableCell>
               </TableRow>
             )}

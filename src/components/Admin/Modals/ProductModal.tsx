@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Dialog, DialogContent, DialogHeader, 
-  DialogTitle, DialogDescription, DialogFooter 
+import {
+  Dialog, DialogContent, DialogHeader,
+  DialogTitle, DialogDescription, DialogFooter
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Select, SelectContent, SelectItem, 
-  SelectTrigger, SelectValue 
+import {
+  Select, SelectContent, SelectItem,
+  SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { Package, Tag, DollarSign, Layers, Image as ImageIcon } from 'lucide-react';
 
@@ -70,12 +70,12 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
                   <Package size={26} />
                 </div>
                 <div>
-                   <DialogTitle className="text-3xl font-black tracking-tighter">
-                     {editingProduct ? 'Configure Asset' : 'New Asset Curation'}
-                   </DialogTitle>
-                   <DialogDescription className="text-zinc-400 font-bold text-[10px] uppercase tracking-widest mt-1">
-                     Enterprise Inventory Terminal v2.0
-                   </DialogDescription>
+                  <DialogTitle className="text-3xl font-black tracking-tighter">
+                    {editingProduct ? 'Configure Asset' : 'New Asset Curation'}
+                  </DialogTitle>
+                  <DialogDescription className="text-zinc-400 font-bold text-[10px] uppercase tracking-widest mt-1">
+                    Enterprise Inventory Terminal v2.0
+                  </DialogDescription>
                 </div>
               </div>
             </DialogHeader>
@@ -87,12 +87,12 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
                   <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Name</Label>
                   <div className="relative">
                     <Tag className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300" size={16} />
-                    <Input 
-                      id="name" 
+                    <Input
+                      id="name"
                       required
                       value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      placeholder="e.g. Chrome Obsidian Jacket" 
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g. Chrome Obsidian Jacket"
                       className="pl-12 h-14 bg-zinc-50 border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-black transition-all font-bold"
                     />
                   </div>
@@ -102,28 +102,28 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
                   <Label htmlFor="price" className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Market Valuation (₺)</Label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300 font-bold">₺</span>
-                    <Input 
-                      id="price" 
+                    <Input
+                      id="price"
                       required
                       value={formData.price}
-                      onChange={(e) => setFormData({...formData, price: e.target.value})}
-                      placeholder="8.500" 
+                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      placeholder="8.500"
                       className="pl-10 h-14 bg-zinc-50 border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-black transition-all font-black"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Categorization & Visuals */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Categorization & Inventory */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Strategic Sector</Label>
-                  <Select 
-                    value={formData.category} 
-                    onValueChange={(val) => setFormData({...formData, category: val})}
+                  <Select
+                    value={formData.category}
+                    onValueChange={(val) => setFormData({ ...formData, category: val })}
                   >
                     <SelectTrigger className="h-14 bg-zinc-50 border-transparent rounded-2xl font-bold">
-                      <SelectValue placeholder="Select Category" />
+                      <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
                       {categories.map((cat, idx) => (
@@ -134,17 +134,34 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="stock" className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Inventory Depth</Label>
+                  <Label htmlFor="stock" className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Warehouse Units</Label>
                   <div className="relative">
                     <Layers className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300" size={16} />
-                    <Input 
-                      id="stock" 
+                    <Input
+                      id="stock"
                       type="number"
                       value={formData.stock_count}
-                      onChange={(e) => setFormData({...formData, stock_count: parseInt(e.target.value)})}
+                      onChange={(e) => setFormData({ ...formData, stock_count: parseInt(e.target.value) })}
                       className="pl-12 h-14 bg-zinc-50 border-transparent rounded-2xl focus:bg-white font-black"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Class</Label>
+                  <Select
+                    value={formData.type}
+                    onValueChange={(val) => setFormData({ ...formData, type: val })}
+                  >
+                    <SelectTrigger className="h-14 bg-zinc-900 rounded-2xl flex items-center px-4 gap-2 text-white shadow-inner border-none">
+                      <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
+                        <SelectItem value="Standard" className="font-bold rounded-xl py-3">Standard</SelectItem>
+                        <SelectItem value="Limited" className="font-bold rounded-xl py-3 text-amber-500">Limited</SelectItem>
+                        <SelectItem value="Premium" className="font-bold rounded-xl py-3 text-emerald-500">Premium</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
@@ -152,12 +169,12 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
                 <Label htmlFor="image" className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Digital Asset URL</Label>
                 <div className="relative">
                   <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300" size={16} />
-                  <Input 
-                    id="image" 
+                  <Input
+                    id="image"
                     required
                     value={formData.image_url || formData.image}
-                    onChange={(e) => setFormData({...formData, image_url: e.target.value})}
-                    placeholder="https://faem.studio/assets/..." 
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    placeholder="https://faem.studio/assets/..."
                     className="pl-12 h-14 bg-zinc-50 border-transparent rounded-2xl focus:bg-white text-xs font-medium text-zinc-400"
                   />
                 </div>
@@ -165,10 +182,10 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
 
               <div className="space-y-3">
                 <Label htmlFor="desc" className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Creative Narrative</Label>
-                <Textarea 
+                <Textarea
                   id="desc"
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="Describe the material and visual philosophy..."
                   className="bg-zinc-50 border-transparent rounded-3xl p-6 min-h-[120px] focus:bg-white transition-all resize-none font-bold text-sm"
                 />
@@ -177,15 +194,15 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
           </div>
 
           <DialogFooter className="bg-zinc-50 p-10 flex items-center justify-between sm:justify-between border-t border-zinc-100">
-            <Button 
-              type="button" 
-              variant="ghost" 
+            <Button
+              type="button"
+              variant="ghost"
               onClick={onClose}
               className="text-[11px] font-black uppercase tracking-widest text-zinc-400 hover:text-black hover:bg-transparent"
             >
               Abort
             </Button>
-            <Button 
+            <Button
               type="submit"
               className="bg-zinc-950 text-white hover:bg-zinc-800 px-10 h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-black/30 transform transition-all active:scale-95"
             >
