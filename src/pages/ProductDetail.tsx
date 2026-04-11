@@ -190,6 +190,15 @@ export default function ProductDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // UUID Format Validation to prevent Supabase type errors (22P02)
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id || '');
+    
+    if (!isUUID) {
+      setLoading(false);
+      return;
+    }
+
     const fetchProduct = async () => {
       setLoading(true);
       try {
@@ -202,29 +211,40 @@ export default function ProductDetail() {
             image: data.image_url,
             images: data.images || [],
             category: data.category,
-            sizes: data.sizes || ['S', 'M', 'L'],
+            sizes: data.sizes && data.sizes.length > 0 ? data.sizes : ['S', 'M', 'L'],
             description: data.description,
             features: data.features || []
           };
           setProduct(mapped);
           setSelectedSize(mapped.sizes[0]);
+        } else {
+          setProduct(null);
         }
       } catch (e) {
-        console.error(e);
+        console.error("Fetch Product Error:", e);
+        setProduct(null);
       } finally {
         setLoading(false);
       }
     };
     
     const fetchWishlistStatus = async () => {
-      if (!user) return;
-      const { data } = await supabase.from('wishlist').select('id').eq('user_id', user.id).eq('product_id', id).single();
-      setIsWishlisted(!!data);
+      if (!user || !id) return;
+      try {
+        const { data } = await supabase.from('wishlist').select('id').eq('user_id', user.id).eq('product_id', id).maybeSingle();
+        setIsWishlisted(!!data);
+      } catch (e) {
+        console.error("Wishlist Check Error:", e);
+      }
     };
 
     const fetchReviews = async () => {
-      const { data } = await supabase.from('reviews').select('*').eq('product_id', id).order('created_at', { ascending: false });
-      if (data) setReviews(data);
+      try {
+        const { data } = await supabase.from('reviews').select('*').eq('product_id', id).order('created_at', { ascending: false });
+        if (data) setReviews(data);
+      } catch (e) {
+        console.error("Reviews Error:", e);
+      }
     };
 
     fetchProduct();
