@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { DataTableViewOptions } from "@/app/tasks/components/data-table-view-options"
+import { DataTableViewOptions } from "./data-table-view-options"
 import { AddTaskModal } from "./add-task-modal"
 
 import { categories, priorities, statuses } from "../data/data"
