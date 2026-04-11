@@ -55,8 +55,11 @@ function ImageGallery({ images, productName }: GalleryProps) {
   const handleScroll = () => {
     if (!scrollRef.current) return;
     const { scrollLeft, offsetWidth } = scrollRef.current;
+    if (offsetWidth <= 0) return; // Prevent division by zero
     const idx = Math.round(scrollLeft / offsetWidth);
-    setActiveIndex(idx);
+    if (!isNaN(idx)) {
+      setActiveIndex(idx);
+    }
   };
 
   // Programmatic scroll to index
@@ -296,22 +299,28 @@ export default function ProductDetail() {
   if (!product) return <div className="h-screen flex items-center justify-center font-bold">Product Not Found</div>;
 
   useSEO({
-    title: `${product.name} | Faem Studio`,
-    description: product.description
+    title: product?.name ? `${product.name} | Faem Studio` : 'Product Details',
+    description: product?.description || 'Faem Studio collection Item'
   });
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    addToCart({
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      size: selectedSize,
-      quantity,
-    });
-    setIsExpanded(false);
-    setQuantity(1);
+    try {
+      e.stopPropagation();
+      if (!product) return;
+      
+      addToCart({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        size: selectedSize,
+        quantity,
+      });
+      setIsExpanded(false);
+      setQuantity(1);
+    } catch (err) {
+      console.error("Add to Cart Error:", err);
+    }
   };
 
   // Gallery images: use product.images if available, fallback to thumbnail

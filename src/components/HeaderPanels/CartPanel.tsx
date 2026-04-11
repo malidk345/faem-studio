@@ -14,7 +14,8 @@ const CartPanel: React.FC<CartPanelProps> = ({ onClose }) => {
   const navigate = useNavigate();
   
   const cartTotal = cartItems.reduce((total, item) => {
-    const priceNum = parseFloat(item.price.replace('$', ''));
+    // Robust parsing: Remove any non-numeric characters EXCEPT decimals
+    const priceNum = parseFloat(item.price.replace(/[^\d.]/g, '')) || 0;
     return total + (priceNum * item.quantity);
   }, 0);
 

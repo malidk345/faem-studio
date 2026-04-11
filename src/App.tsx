@@ -13,28 +13,27 @@ import { LanguageProvider } from './context/LanguageContext';
 import MainLayout from './layouts/MainLayout';
 
 function AppRoutes() {
-  const location = useLocation();
-  const isAdminPath = location.pathname.startsWith('/fatihveemirinadminportali');
-
-  if (isAdminPath) {
-    return (
-      <Routes>
-        <Route path="/fatihveemirinadminportali" element={<Admin />} />
-      </Routes>
-    );
-  }
-
   return (
-    <MainLayout>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/shop" element={<Shop />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/account" element={<Account />} />
-      </Routes>
-    </MainLayout>
+    <Routes>
+      {/* Admin Route - Isolated from MainLayout */}
+      <Route path="/fatihveemirinadminportali" element={<Admin />} />
+      
+      {/* Storefront Routes - Wrapped in MainLayout */}
+      <Route path="*" element={
+        <MainLayout>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/shop" element={<Shop />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/account" element={<Account />} />
+            {/* Catch-all to Home if path not found */}
+            <Route path="*" element={<Home />} />
+          </Routes>
+        </MainLayout>
+      } />
+    </Routes>
   );
 }
 
