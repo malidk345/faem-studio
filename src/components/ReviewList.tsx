@@ -4,14 +4,16 @@ import { Star, Heart, MessageCircle, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Review } from '../data/products';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 
 const ACCENT = '#000000';
 
 interface ReviewListProps {
+  productId?: string;
   reviews: Review[];
 }
 
-const ReviewList: React.FC<ReviewListProps> = ({ reviews }) => {
+const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [localReviews, setLocalReviews] = useState<Review[]>(reviews);
@@ -22,7 +24,31 @@ const ReviewList: React.FC<ReviewListProps> = ({ reviews }) => {
   const [comment, setComment] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  React.useEffect(() => {
+    if (productId && import.meta.env.VITE_SUPABASE_URL) {
+      const fetchReviews = async () => {
+        const { data } = await supabase
+          .from('reviews')
+          .select('*, profiles(name)')
+          .eq('product_id', productId)
+          .order('created_at', { ascending: false });
+        
+        if (data) {
+          setLocalReviews(data.map((r: any) => ({
+            id: r.id,
+            user: r.profiles?.name || 'Müşteri',
+            rating: r.rating,
+            comment: r.comment,
+            date: new Date(r.created_at).toLocaleDateString(),
+            isVerified: r.is_verified_buyer
+          })));
+        }
+      };
+      fetchReviews();
+    }
+  }, [productId]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
       navigate('/signin');
@@ -33,15 +59,38 @@ const ReviewList: React.FC<ReviewListProps> = ({ reviews }) => {
       return;
     }
 
-    const newReview: Review = {
-      id: `rev_${Math.random().toString(36).substr(2, 9)}`,
-      user: user.name,
-      rating,
-      comment,
-      date: 'Just now'
-    };
+    if (productId && import.meta.env.VITE_SUPABASE_URL) {
+      const { data, error } = await supabase.from('reviews').insert([{
+        product_id: productId,
+        user_id: user.id,
+        rating,
+        comment
+      }]).select('*, profiles(name)').single();
+      
+      if (data) {
+        const newReview: Review = {
+          id: data.id,
+          user: data.profiles?.name || user.name,
+          rating: data.rating,
+          comment: data.comment,
+          date: 'Şimdi',
+          isVerified: data.is_verified_buyer
+        };
+        setLocalReviews([newReview, ...localReviews]);
+      }
+    } else {
+      // Local fallback
+      const newReview: Review = {
+        id: `rev_${Math.random().toString(36).substr(2, 9)}`,
+        user: user.name,
+        rating,
+        comment,
+        date: 'Şimdi',
+        isVerified: false
+      };
+      setLocalReviews([newReview, ...localReviews]);
+    }
 
-    setLocalReviews([newReview, ...localReviews]);
     setIsWriting(false);
     setComment('');
     setRating(5);
@@ -137,7 +186,12 @@ const ReviewList: React.FC<ReviewListProps> = ({ reviews }) => {
           >
             <div className="flex justify-between items-start">
               <div className="flex flex-col gap-2">
-                <span className="text-black text-[15px] font-bold tracking-tight">{review.user}</span>
+                <div className="flex items-center gap-2">
+                   <span className="text-black text-[15px] font-bold tracking-tight">{review.user}</span>
+                   {(review as any).isVerified && (
+                     <span className="bg-black/5 text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full font-bold text-black/50">Verified</span>
+                   )}
+                </div>
                 <div className="flex gap-0.5">
                   {Array.from({ length: 5 }).map((_, j) => (
                     <Star key={j} size={10} className={j < review.rating ? 'fill-black text-black' : 'text-black/10 fill-transparent'} />

@@ -282,7 +282,7 @@ export default function ProductDetail() {
 
       {/* ─── REVIEWS ─── */}
       <div className="max-w-[900px] mx-auto px-6 md:px-16 pb-24">
-        <ReviewList reviews={REVIEWS} />
+        <ReviewList productId={product.id} reviews={REVIEWS} />
       </div>
 
       {/* ─── RELATED ─── */}
