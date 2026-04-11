@@ -6,9 +6,13 @@ import { useCart } from '../context/CartContext';
 import ProductSelectionCard from '../components/ProductSelectionCard';
 import ProductInfoSections from '../components/ProductInfoSections';
 import ReviewList from '../components/ReviewList';
-import { REVIEWS, ProductImage } from '../data/products';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
+
+interface ProductImage {
+  id: string;
+  url: string;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // When Medusa is connected, swap PRODUCTS.find() with the API call:
@@ -199,13 +203,6 @@ export default function ProductDetail() {
           };
           setProduct(mapped);
           setSelectedSize(mapped.sizes[0]);
-        } else {
-          // Fallback to static if not found
-          const local = PRODUCTS.find(p => String(p.id) === String(id));
-          if (local) {
-            setProduct(local);
-            setSelectedSize(local.sizes[0]);
-          }
         }
       } catch (e) {
         console.error(e);
@@ -245,7 +242,7 @@ export default function ProductDetail() {
       ? product.images
       : [{ id: 'thumb', url: product.image }];
 
-  const related = PRODUCTS.filter(p => p.id !== product.id).slice(0, 3);
+  const related: any[] = []; // We'll handle related products via query later
 
   return (
     <div style={{ backgroundColor: BG }}>
@@ -318,7 +315,7 @@ export default function ProductDetail() {
 
       {/* ─── REVIEWS ─── */}
       <div className="max-w-[900px] mx-auto px-6 md:px-16 pb-24">
-        <ReviewList productId={product.id} reviews={REVIEWS} />
+        <ReviewList productId={product.id} reviews={[]} />
       </div>
 
       {/* ─── RELATED ─── */}
