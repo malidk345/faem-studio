@@ -50,6 +50,12 @@ CREATE TABLE IF NOT EXISTS public.reviews (
 -- 5. STORAGE (Bucket & Policy) - Fotoğraflar için
 INSERT INTO storage.buckets (id, name, public) VALUES ('product-images', 'product-images', true) ON CONFLICT DO NOTHING;
 
+-- Storage Politikaları (storage.objects tablosuna uygulanır)
+CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING ( bucket_id = 'product-images' );
+CREATE POLICY "Admin Upload" ON storage.objects FOR INSERT WITH CHECK ( bucket_id = 'product-images' AND (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')) );
+CREATE POLICY "Admin Update" ON storage.objects FOR UPDATE USING ( bucket_id = 'product-images' AND (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')) );
+CREATE POLICY "Admin Delete" ON storage.objects FOR DELETE USING ( bucket_id = 'product-images' AND (EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')) );
+
 -- RLS AKTİF ETME
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;

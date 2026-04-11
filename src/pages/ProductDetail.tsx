@@ -6,8 +6,9 @@ import { useCart } from '../context/CartContext';
 import ProductSelectionCard from '../components/ProductSelectionCard';
 import ProductInfoSections from '../components/ProductInfoSections';
 import ReviewList from '../components/ReviewList';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Loader2 } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
+import { useAuth } from '../context/AuthContext';
 
 interface ProductImage {
   id: string;
@@ -182,6 +183,10 @@ export default function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState('S');
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [reviews, setReviews] = useState<any[]>([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -210,8 +215,43 @@ export default function ProductDetail() {
         setLoading(false);
       }
     };
+    
+    const fetchWishlistStatus = async () => {
+      if (!user) return;
+      const { data } = await supabase.from('wishlist').select('id').eq('user_id', user.id).eq('product_id', id).single();
+      setIsWishlisted(!!data);
+    };
+
+    const fetchReviews = async () => {
+      const { data } = await supabase.from('reviews').select('*').eq('product_id', id).order('created_at', { ascending: false });
+      if (data) setReviews(data);
+    };
+
     fetchProduct();
-  }, [id]);
+    fetchWishlistStatus();
+    fetchReviews();
+  }, [id, user]);
+
+  const toggleWishlist = async () => {
+    if (!user) {
+      navigate('/signin');
+      return;
+    }
+    setWishlistLoading(true);
+    try {
+      if (isWishlisted) {
+        await supabase.from('wishlist').delete().eq('user_id', user.id).eq('product_id', id);
+        setIsWishlisted(false);
+      } else {
+        await supabase.from('wishlist').insert({ user_id: user.id, product_id: id });
+        setIsWishlisted(true);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
 
   if (loading) return <div className="h-screen flex items-center justify-center font-bold">Curating Detail...</div>;
   if (!product) return <div className="h-screen flex items-center justify-center font-bold">Product Not Found</div>;
@@ -249,6 +289,25 @@ export default function ProductDetail() {
 
       {/* ─── GALLERY + INFO LAYOUT ─── */}
       <div className="max-w-[1200px] mx-auto px-6 md:px-16 pt-32 md:pt-40 pb-16">
+        
+        {/* Wishlist Toggle (Floating Corner) */}
+        <div className="flex justify-start mb-8">
+            <button 
+              onClick={toggleWishlist}
+              disabled={wishlistLoading}
+              className="group flex items-center gap-3 px-6 py-3 rounded-2xl bg-black/[0.02] hover:bg-black hover:text-white transition-all duration-300 shadow-sm"
+            >
+              {wishlistLoading ? (
+                 <Loader2 size={18} className="animate-spin text-black/20 group-hover:text-white/20" />
+              ) : (
+                 <Heart size={18} className={isWishlisted ? 'fill-red-500 text-red-500 group-hover:fill-white group-hover:text-white' : 'text-black/30 group-hover:text-white'} />
+              )}
+              <span className="text-[10px] uppercase font-black tracking-widest leading-none">
+                {isWishlisted ? 'Saved to Collection' : 'Add to Selection'}
+              </span>
+            </button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
 
           {/* LEFT: Image Gallery */}
@@ -315,7 +374,7 @@ export default function ProductDetail() {
 
       {/* ─── REVIEWS ─── */}
       <div className="max-w-[900px] mx-auto px-6 md:px-16 pb-24">
-        <ReviewList productId={product.id} reviews={[]} />
+        <ReviewList productId={product.id} reviews={reviews} />
       </div>
 
       {/* ─── RELATED ─── */}
