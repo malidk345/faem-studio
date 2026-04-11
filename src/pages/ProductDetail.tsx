@@ -191,10 +191,10 @@ export default function ProductDetail() {
   useEffect(() => {
     window.scrollTo(0, 0);
     
-    // UUID Format Validation to prevent Supabase type errors (22P02)
-    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id || '');
+    // Flexible ID check to support both UUIDs and legacy string IDs
+    const currentId = id || '';
     
-    if (!isUUID) {
+    if (!currentId) {
       setLoading(false);
       return;
     }
@@ -202,14 +202,33 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+        console.log("🔍 Fetching product details for:", currentId);
+        const { data, error } = await supabase.from('products').select('*').eq('id', currentId).single();
+        
+        if (error) {
+          console.error("❌ Supabase Product Error:", error);
+          setProduct(null);
+          return;
+        }
+
         if (data) {
+          console.log("✅ Product data retrieved:", data.name);
+          
+          // Ensure images is always an array of objects for the gallery
+          let galleryImages: any[] = [];
+          if (Array.isArray(data.images)) {
+             galleryImages = data.images.map((img: any, idx: number) => {
+                if (typeof img === 'string') return { id: `img-${idx}`, url: img };
+                return img; // already an object
+             });
+          }
+
           const mapped = {
             id: data.id,
             name: data.name,
             price: data.price,
             image: data.image_url,
-            images: data.images || [],
+            images: galleryImages,
             category: data.category,
             sizes: data.sizes && data.sizes.length > 0 ? data.sizes : ['S', 'M', 'L'],
             description: data.description,
