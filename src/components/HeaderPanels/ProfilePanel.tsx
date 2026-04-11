@@ -62,7 +62,8 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ onClose }) => {
                  { label: 'My Orders', path: '/account' },
                  { label: 'Wishlist', path: '/account' },
                  { label: 'Studio Profile', path: '/account' },
-                 ...(user.role === 'admin' ? [{ label: 'Admin Portal', path: '/fatihveemirinadminportali' }] : [])
+                 // Force check: if role is admin OR if the email is in our master admin list
+                 ...(user.role === 'admin' || ['dursunkayamustafa@gmail.com', 'fatihduymus21@gmail.com'].includes(user.email) ? [{ label: 'Admin Portal', path: '/fatihveemirinadminportali' }] : [])
                ].map((item) => (
                 <button 
                   key={item.label} 
