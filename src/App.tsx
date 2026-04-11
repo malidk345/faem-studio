@@ -6,6 +6,7 @@ import Checkout from './pages/Checkout';
 import SignIn from './pages/SignIn';
 import Shop from './pages/Shop';
 import Admin from './pages/Admin';
+import Account from './pages/Account';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -31,6 +32,7 @@ function AppRoutes() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/account" element={<Account />} />
       </Routes>
     </MainLayout>
   );

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
 import { useSEO } from '../hooks/useSEO';
 import { ChevronLeft, Loader2 } from 'lucide-react';
 
@@ -13,6 +14,8 @@ export default function SignIn() {
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [useMagicLink, setUseMagicLink] = useState(false);
+  const [magicLinkSent, setMagicLinkSent] = useState(false);
   const { user, login, register, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
 
@@ -38,13 +41,20 @@ export default function SignIn() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (useMagicLink) {
+        const { error: mlError } = await supabase.auth.signInWithOtp({ email });
+        if (mlError) throw mlError;
+        setMagicLinkSent(true);
+        return;
+      }
+
       if (mode === 'signin') {
         await login(email, password);
       } else {
         await register(email, password, firstName, lastName);
       }
-    } catch {
-      // Error is already set in context; no action needed here
+    } catch (err: any) {
+      // Error is already handled by AuthContext or thrown here
     }
   };
 
@@ -118,32 +128,42 @@ export default function SignIn() {
                 className="w-full px-5 py-4 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 text-[15px] font-medium"
                 required
               />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                className="w-full px-5 py-4 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 text-[15px] font-medium"
-                required
-              />
+              {!useMagicLink && (
+                <input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  className="w-full px-5 py-4 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 text-[15px] font-medium"
+                  required
+                />
+              )}
             </div>
+
+            {magicLinkSent && (
+               <p className="text-center text-xs font-bold text-green-600 bg-green-50 p-4 rounded-xl">Magic link sent! Check your inbox to sign in instantly.</p>
+            )}
 
             {mode === 'signin' && (
               <div className="flex justify-between items-center text-xs font-semibold px-2">
-                <label className="flex items-center gap-2 cursor-pointer text-black/60 hover:text-black transition-colors">
-                  <input type="checkbox" className="accent-black w-3.5 h-3.5 rounded-sm" /> Remember me
-                </label>
+                <button 
+                  type="button" 
+                  onClick={() => setUseMagicLink(!useMagicLink)}
+                  className="text-black/60 hover:text-black transition-colors"
+                >
+                  {useMagicLink ? 'Use Password instead' : 'Sign in with Magic Link'}
+                </button>
                 <a href="#" className="text-black/40 hover:text-black transition-colors">Forgot Password?</a>
               </div>
             )}
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || magicLinkSent}
               className="w-full bg-black text-white py-4 mt-2 rounded-xl text-[15px] font-bold hover:bg-zinc-800 transition-colors shadow-2xl shadow-black/20 disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              {isLoading && <Loader2 size={16} className="animate-spin" />}
-              {mode === 'signin' ? 'Sign In' : 'Create Account'}
+              {(isLoading) && <Loader2 size={16} className="animate-spin" />}
+              {useMagicLink ? 'Send Magic Link' : mode === 'signin' ? 'Sign In' : 'Create Account'}
             </button>
           </form>
 

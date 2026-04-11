@@ -58,11 +58,19 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ onClose }) => {
             </div>
             
             <div className="flex flex-col gap-1">
-              {['My Orders', 'Wishlist', 'Address Book'].map((item) => (
-                <a key={item} href="#" className="flex items-center justify-between py-2.5 px-3 rounded-lg text-black/70 hover:text-black hover:bg-black/5 transition-all group">
-                  <span className="text-[14px] font-semibold">{item}</span>
+               {[
+                 { label: 'My Orders', tab: 'orders' },
+                 { label: 'Wishlist', tab: 'wishlist' },
+                 { label: 'Studio Profile', tab: 'profile' }
+               ].map((item) => (
+                <button 
+                  key={item.label} 
+                  onClick={() => { onClose?.(); navigate('/account'); }}
+                  className="flex items-center justify-between py-2.5 px-3 rounded-lg text-black/70 hover:text-black hover:bg-black/5 transition-all group"
+                >
+                  <span className="text-[14px] font-semibold">{item.label}</span>
                   <ArrowRight size={14} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-black/30" />
-                </a>
+                </button>
               ))}
             </div>
 
