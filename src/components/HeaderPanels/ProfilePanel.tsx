@@ -59,17 +59,18 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ onClose }) => {
             
             <div className="flex flex-col gap-1">
                {[
-                 { label: 'My Orders', tab: 'orders' },
-                 { label: 'Wishlist', tab: 'wishlist' },
-                 { label: 'Studio Profile', tab: 'profile' }
+                 { label: 'My Orders', path: '/account' },
+                 { label: 'Wishlist', path: '/account' },
+                 { label: 'Studio Profile', path: '/account' },
+                 ...(user.role === 'admin' ? [{ label: 'Admin Portal', path: '/fatihveemirinadminportali' }] : [])
                ].map((item) => (
                 <button 
                   key={item.label} 
-                  onClick={() => { onClose?.(); navigate('/account'); }}
-                  className="flex items-center justify-between py-2.5 px-3 rounded-lg text-black/70 hover:text-black hover:bg-black/5 transition-all group"
+                  onClick={() => { onClose?.(); navigate(item.path); }}
+                  className={`flex items-center justify-between py-2.5 px-3 rounded-lg transition-all group ${item.label === 'Admin Portal' ? 'bg-black text-white hover:bg-zinc-800 my-2' : 'text-black/70 hover:text-black hover:bg-black/5'}`}
                 >
                   <span className="text-[14px] font-semibold">{item.label}</span>
-                  <ArrowRight size={14} className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-black/30" />
+                  <ArrowRight size={14} className={`opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all ${item.label === 'Admin Portal' ? 'text-white' : 'text-black/30'}`} />
                 </button>
               ))}
             </div>
