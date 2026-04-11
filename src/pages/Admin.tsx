@@ -49,10 +49,15 @@ export default function Admin() {
   }, [user]);
 
   const fetchData = async () => {
-    const { data: pData } = await supabase.from('products').select('*');
-    if (pData && pData.length > 0) setProducts(pData);
+    const { data: pData } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+    if (pData) setProducts(pData);
 
-    const { data: oData } = await supabase.from('orders').select('*, profiles(name)');
+    const { data: cData } = await supabase.from('categories').select('*');
+    if (cData && cData.length > 0) {
+      setCategories(cData.map(c => c.name));
+    }
+
+    const { data: oData } = await supabase.from('orders').select('*, profiles(name)').order('created_at', { ascending: false });
     if (oData && oData.length > 0) {
       setOrders(oData.map(o => ({
          id: o.id.slice(0,8),
@@ -67,10 +72,26 @@ export default function Admin() {
 
   const handleProductPublish = async (newProduct: any) => {
     if (import.meta.env.VITE_SUPABASE_URL) {
-      await supabase.from('products').insert([newProduct]);
+      const { error } = await supabase.from('products').insert([newProduct]);
+      if (error) alert(error.message);
       fetchData();
     }
     setAddProductModalOpen(false);
+  }
+
+  const handleDeleteProduct = async (id: string) => {
+    if (window.confirm('Bu ürünü silmek istediğinize emin misiniz?')) {
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) alert(error.message);
+      else fetchData();
+    }
+  }
+
+  const handleAddCategory = async (name: string) => {
+    if (!name) return;
+    const { error } = await supabase.from('categories').insert([{ name }]);
+    if (error) alert(error.message);
+    else fetchData();
   }
 
   if (isAdmin === null) return <div className="h-screen flex items-center justify-center font-bold">Yüklanıyor...</div>;
@@ -163,8 +184,8 @@ export default function Admin() {
             transition={{ duration: 0.2 }}
           >
             {activeTab === 'dashboard' && <DashboardTab orders={orders} products={products} />}
-            {activeTab === 'products' && <ProductsTab products={products} onAdd={() => setAddProductModalOpen(true)} />}
-            {activeTab === 'categories' && <CategoriesTab categories={categories} />}
+            {activeTab === 'products' && <ProductsTab products={products} onAdd={() => setAddProductModalOpen(true)} onDelete={handleDeleteProduct} />}
+            {activeTab === 'categories' && <CategoriesTab categories={categories} onAdd={handleAddCategory} />}
             {activeTab === 'orders' && <OrdersTab orders={orders} />}
             {activeTab === 'customers' && <CustomersTab />}
             {activeTab === 'settings' && <SettingsTab />}
@@ -286,16 +307,14 @@ function DashboardTab({ orders, products }: any) {
   );
 }
 
-function ProductsTab({ products, onAdd }: any) {
+function ProductsTab({ products, onAdd, onDelete }: any) {
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         <div className="flex overflow-x-auto hide-scrollbar gap-2 pb-2 sm:pb-0">
           <FilterButton label="Tümü" active />
-          <FilterButton label="Yayında Olanlar" />
-          <FilterButton label="Taslaklar" />
         </div>
-        <button onClick={onAdd} className="bg-black text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all flex-shrink-0">
+        <button onClick={onAdd} className="bg-black text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all flex-shrink-0 font-display">
           <Plus size={16} /> Ürün Ekle
         </button>
       </div>
@@ -306,8 +325,7 @@ function ProductsTab({ products, onAdd }: any) {
             <tr>
               <th className="px-4 md:px-6 py-4 font-bold">Ürün</th>
               <th className="px-4 md:px-6 py-4 font-bold">Kategori</th>
-              <th className="px-4 md:px-6 py-4 font-bold">Stok Durumu</th>
-              <th className="px-4 md:px-6 py-4 font-bold">Fiyat</th>
+              <th className="px-4 md:px-6 py-4 font-bold text-right">Fiyat</th>
               <th className="px-4 md:px-6 py-4 font-bold text-right">İşlem</th>
             </tr>
           </thead>
@@ -315,15 +333,13 @@ function ProductsTab({ products, onAdd }: any) {
             {products.map((p:any) => (
               <tr key={p.id} className="border-b border-black/5 hover:bg-black/[0.01] transition-colors group">
                 <td className="px-4 md:px-6 py-4 flex items-center gap-3 md:gap-4">
-                  <img src={p.image} className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover flex-shrink-0" />
+                  <img src={p.image_url || p.image} className="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover flex-shrink-0 bg-black/5" />
                   <span className="font-bold truncate max-w-[120px] md:max-w-none">{p.name}</span>
                 </td>
                 <td className="px-4 md:px-6 py-4 text-black/60">{p.category}</td>
-                <td className="px-4 md:px-6 py-4"><span className="text-green-600 bg-green-50 px-2 py-1 rounded-md text-xs font-bold whitespace-nowrap">Stokta (45)</span></td>
-                <td className="px-4 md:px-6 py-4 font-bold whitespace-nowrap">{p.price}</td>
+                <td className="px-4 md:px-6 py-4 font-bold text-right whitespace-nowrap">{p.price}</td>
                 <td className="px-4 md:px-6 py-4 text-right whitespace-nowrap">
-                  <button className="text-black/30 hover:text-black transition-colors p-2"><Edit size={16} /></button>
-                  <button className="text-black/30 hover:text-red-500 transition-colors p-2"><Trash2 size={16} /></button>
+                  <button onClick={() => onDelete(p.id)} className="text-black/30 hover:text-red-500 transition-colors p-2"><Trash2 size={16} /></button>
                 </td>
               </tr>
             ))}
@@ -334,35 +350,42 @@ function ProductsTab({ products, onAdd }: any) {
   );
 }
 
-function CategoriesTab({ categories }: any) {
+function CategoriesTab({ categories, onAdd }: any) {
+  const [newCat, setNewCat] = useState('');
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
       <div className="lg:col-span-2 bg-white border border-black/5 rounded-[1.5rem] md:rounded-3xl p-6 md:p-8 overflow-x-auto hide-scrollbar">
         <table className="w-full text-sm text-left min-w-[400px]">
            <thead className="text-[10px] uppercase tracking-widest text-black/40 border-b border-black/5">
              <tr>
-               <th className="pb-4 border-b">Koleksiyon Adı</th>
-               <th className="pb-4 border-b">Durum</th>
-               <th className="pb-4 border-b text-right">Ürün Sayısı</th>
+               <th className="pb-4 border-b font-bold">Koleksiyon Adı</th>
              </tr>
            </thead>
            <tbody>
              {categories.map((c:any, i:number) => (
-               <tr key={i} className="border-b border-black/5 last:border-0 hover:bg-black/5">
+               <tr key={i} className="border-b border-black/5 last:border-0 hover:bg-black/[0.01]">
                  <td className="py-4 font-bold">{c}</td>
-                 <td className="py-4"><span className="px-2 py-1 bg-black/5 rounded text-xs font-semibold">Aktif</span></td>
-                 <td className="py-4 text-right text-black/60 whitespace-nowrap">12 Ürün</td>
                </tr>
              ))}
            </tbody>
         </table>
       </div>
       <div>
-        <div className="bg-black/5 rounded-[1.5rem] md:rounded-3xl p-6 md:p-8 border border-black/5">
+        <div className="bg-white rounded-[1.5rem] md:rounded-3xl p-6 md:p-8 border border-black/5 shadow-sm">
           <h3 className="font-black text-lg mb-4">Yeni Koleksiyon</h3>
-          <input type="text" placeholder="Koleksiyon Adı" className="w-full px-4 py-3 rounded-xl bg-white border border-black/5 mb-4 text-sm font-medium focus:outline-none focus:border-black/20" />
-          <textarea placeholder="Açıklama" className="w-full px-4 py-3 rounded-xl bg-white border border-black/5 mb-4 text-sm font-medium focus:outline-none focus:border-black/20 h-24 resize-none" />
-          <button className="w-full bg-black text-white font-bold py-3 rounded-xl text-sm transition-colors hover:bg-zinc-800">Kaydet</button>
+          <input 
+            type="text" 
+            value={newCat}
+            onChange={e=>setNewCat(e.target.value)}
+            placeholder="Koleksiyon Adı" 
+            className="w-full px-4 py-3 rounded-xl bg-black/[0.03] border border-transparent mb-4 text-sm font-medium focus:outline-none focus:border-black/20 focus:bg-white" 
+          />
+          <button 
+            onClick={() => { onAdd(newCat); setNewCat(''); }}
+            className="w-full bg-black text-white font-bold py-3 rounded-xl text-sm transition-colors hover:bg-zinc-800"
+          >
+            Ekle
+          </button>
         </div>
       </div>
     </div>
@@ -449,20 +472,54 @@ function ProductModal({ onClose, categories, onPublish }: { onClose: () => void,
   const [price, setPrice] = useState('');
   const [desc, setDesc] = useState('');
   const [cat, setCat] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file);
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+
+      setImageUrl(publicUrl);
+    } catch (error: any) {
+      alert('Resim yüklenirken hata oluştu: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const submit = () => {
+    if (!name || !price || !imageUrl) {
+      alert('Lütfen en azından ad, fiyat ve görsel ekleyin.');
+      return;
+    }
     onPublish({
       name,
-      price: price + ' ₺',
+      price: price.includes('₺') ? price : `${price} ₺`,
       category: cat || categories[0],
       description: desc,
-      image_url: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=800' // mockup
+      image_url: imageUrl
     });
   }
 
   return (
     <div className="fixed inset-0 z-[60] flex items-end md:items-center justify-center sm:p-6 overflow-hidden">
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} className="absolute inset-0 bg-black/30 backdrop-blur-sm" />
       <motion.div 
         initial={{ y: 200, opacity: 0 }} 
         animate={{ y: 0, opacity: 1 }} 
@@ -473,7 +530,7 @@ function ProductModal({ onClose, categories, onPublish }: { onClose: () => void,
         
         <div className="flex justify-between items-center p-5 md:p-6 border-b border-black/5 bg-white flex-shrink-0">
           <h2 className="text-lg md:text-xl font-black">Yeni Ürün Ekle</h2>
-          <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-colors bg-black/5 md:bg-transparent"><X size={18} /></button>
+          <button onClick={onClose} className="p-2 hover:bg-black/10 rounded-full transition-colors"><X size={18} /></button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-5 md:p-8 border-b border-black/5 hide-scrollbar">
@@ -511,9 +568,24 @@ function ProductModal({ onClose, categories, onPublish }: { onClose: () => void,
             <div className="space-y-6">
               <div>
                 <label className="text-[10px] uppercase font-bold text-black/40 mb-2 block">Ürün Görseli</label>
-                <div className="border border-dashed border-black/20 rounded-2xl h-32 md:h-40 flex flex-col items-center justify-center bg-black/[0.02] cursor-pointer hover:bg-black/5 transition-colors">
-                  <UploadCloud size={24} className="text-black/40 mb-2" />
-                  <span className="text-xs font-bold text-black/60">Görseli sürükle bırak</span>
+                <div className="relative group">
+                  <input 
+                    type="file" 
+                    onChange={handleFileUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" 
+                  />
+                  <div className="border border-dashed border-black/20 rounded-2xl h-32 md:h-40 flex flex-col items-center justify-center bg-black/[0.02] group-hover:bg-black/5 transition-colors overflow-hidden">
+                    {uploading ? (
+                      <Loader2 className="animate-spin text-black/40" />
+                    ) : imageUrl ? (
+                      <img src={imageUrl} className="w-full h-full object-cover" />
+                    ) : (
+                      <>
+                        <UploadCloud size={24} className="text-black/40 mb-2" />
+                        <span className="text-[10px] font-bold text-black/40 uppercase tracking-widest">Görsel Seç</span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -521,7 +593,7 @@ function ProductModal({ onClose, categories, onPublish }: { onClose: () => void,
                 <label className="text-[10px] uppercase font-bold text-black/40 mb-2 block">Koleksiyon</label>
                 <select value={cat} onChange={e=>setCat(e.target.value)} className="w-full px-4 py-3 bg-white border border-black/10 rounded-xl text-sm font-medium focus:outline-none focus:border-black/30 transition-colors appearance-none">
                   <option value="" disabled>Kategori Seç</option>
-                  {categories.map((c, i) => <option key={i} value={c}>{c}</option>)}
+                  {categories.map((c: string, i: number) => <option key={i} value={c}>{c}</option>)}
                 </select>
               </div>
 

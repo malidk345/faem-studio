@@ -171,22 +171,57 @@ function ImageGallery({ images, productName }: GalleryProps) {
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const product = PRODUCTS.find(p => String(p.id) === String(id)) || PRODUCTS[0];
+  const [product, setProduct] = useState<any>(null);
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0]);
+  const [selectedSize, setSelectedSize] = useState('S');
   const [isExpanded, setIsExpanded] = useState(false);
-
-  useSEO({
-    title: product ? `${product.name} | Faem Studio` : 'Product Not Found | Faem Studio',
-    description: product ? product.description : 'Product details page for Faem Studio.'
-  });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setSelectedSize(product.sizes[0]);
-    setQuantity(1);
     window.scrollTo(0, 0);
+    const fetchProduct = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
+        if (data) {
+          const mapped = {
+            id: data.id,
+            name: data.name,
+            price: data.price,
+            image: data.image_url,
+            images: data.images || [],
+            category: data.category,
+            sizes: data.sizes || ['S', 'M', 'L'],
+            description: data.description,
+            features: data.features || []
+          };
+          setProduct(mapped);
+          setSelectedSize(mapped.sizes[0]);
+        } else {
+          // Fallback to static if not found
+          const local = PRODUCTS.find(p => String(p.id) === String(id));
+          if (local) {
+            setProduct(local);
+            setSelectedSize(local.sizes[0]);
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
   }, [id]);
+
+  if (loading) return <div className="h-screen flex items-center justify-center font-bold">Curating Detail...</div>;
+  if (!product) return <div className="h-screen flex items-center justify-center font-bold">Product Not Found</div>;
+
+  useSEO({
+    title: `${product.name} | Faem Studio`,
+    description: product.description
+  });
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
