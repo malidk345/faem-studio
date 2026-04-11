@@ -43,6 +43,7 @@ export default function SignIn() {
     setError(null);
     try {
       if (mode === 'signin') {
+        console.log('Attempting magic link for:', email);
         // Explicitly hit Supabase OTP for sign-in
         const { error: mlError } = await supabase.auth.signInWithOtp({ 
           email,
@@ -50,10 +51,14 @@ export default function SignIn() {
             emailRedirectTo: window.location.origin,
           }
         });
+        
         if (mlError) {
+          console.error('Magic Link Error:', mlError);
+          alert('SUPABASE HATASI: ' + mlError.message);
           setError(mlError.message);
           return;
         }
+        alert('Mail başarıyla gönderildi! Lütfen kutunu kontrol et.');
         setMagicLinkSent(true);
       } else {
         await register(email, password, firstName, lastName);
