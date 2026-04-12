@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { User as UserIcon, ArrowRight, LogOut } from 'lucide-react';
 import { containerVariants, itemVariants } from '../../utils/animations';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 
 interface ProfilePanelProps {
