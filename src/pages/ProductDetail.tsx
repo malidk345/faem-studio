@@ -205,45 +205,41 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        console.log("🔍 Fetching product details for:", currentId);
         const { data, error } = await supabase.from('products').select('*').eq('id', currentId).single();
-        
-        if (error) {
-          console.error("❌ Supabase Product Error:", error);
+        if (error || !data) {
           setProduct(null);
           return;
         }
 
-        if (data) {
-          console.log("✅ Product data retrieved:", data.name);
-          
-          // Ensure images is always an array of objects for the gallery
-          let galleryImages: any[] = [];
-          if (Array.isArray(data.images)) {
-             galleryImages = data.images.map((img: any, idx: number) => {
-                if (typeof img === 'string') return { id: `img-${idx}`, url: img };
-                return img; // already an object
-             });
-          }
+        // Extremely safe image gallery mapping
+        let galleryImages: ProductImage[] = [];
+        const rawImages = Array.isArray(data.images) ? data.images : [];
+        galleryImages = rawImages.map((img: any, idx: number) => {
+          if (typeof img === 'string') return { id: `img-${idx}`, url: img };
+          if (img && typeof img === 'object' && img.url) return { id: img.id || `img-${idx}`, url: img.url };
+          return { id: `img-${idx}`, url: data.image_url || '' };
+        });
 
-          const mapped = {
-            id: data.id,
-            name: data.name,
-            price: data.price,
-            image: data.image_url,
-            images: galleryImages,
-            category: data.category,
-            sizes: data.sizes && data.sizes.length > 0 ? data.sizes : ['S', 'M', 'L'],
-            description: data.description,
-            features: data.features || []
-          };
-          setProduct(mapped);
-          setSelectedSize(mapped.sizes[0]);
-        } else {
-          setProduct(null);
+        if (galleryImages.length === 0 && data.image_url) {
+          galleryImages = [{ id: 'main', url: data.image_url }];
+        }
+
+        setProduct({
+          id: data.id,
+          name: data.name || 'Faem Studio Piece',
+          price: data.price || 'Price on request',
+          image: data.image_url || '',
+          images: galleryImages,
+          category: data.category || 'Archive',
+          sizes: Array.isArray(data.sizes) && data.sizes.length > 0 ? data.sizes : ['S', 'M', 'L'],
+          description: data.description || 'Minimalist design from Faem studio.',
+          features: Array.isArray(data.features) ? data.features : []
+        });
+
+        if (Array.isArray(data.sizes) && data.sizes.length > 0) {
+          setSelectedSize(data.sizes[0]);
         }
       } catch (e) {
-        console.error("Fetch Product Error:", e);
         setProduct(null);
       } finally {
         setLoading(false);
