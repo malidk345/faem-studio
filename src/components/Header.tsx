@@ -12,7 +12,7 @@ import { springTransition, contentTransition } from '../utils/animations';
 
 export default function Header({ isAbsolute = false }: { isAbsolute?: boolean }) {
   const { cartCount } = useCart();
-  const { language, toggleLanguage } = useLanguage();
+  const { language, toggleLanguage, t } = useLanguage();
   const [activePanel, setActivePanel] = useState<'search' | 'profile' | 'menu' | 'cart' | null>(null);
 
   const positionClass = isAbsolute ? 'absolute' : 'fixed';

@@ -2,73 +2,76 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Language = 'tr' | 'en';
 
-type Translations = Record<string, string>;
+interface LanguageContextType {
+  language: Language;
+  toggleLanguage: () => void;
+  t: (key: string) => string;
+}
 
-// Mixed aesthetic: TR uses some EN terms to sound premium/classy.
-const translations: Record<Language, Translations> = {
+const translations = {
   tr: {
-    'nav.collection': 'Collection',
+    'nav.collection': 'Koleksiyon',
     'nav.about': 'Hakkımızda',
-    'nav.account': 'Account',
+    'nav.account': 'Hesap',
     'hero.badge': 'YENİ SEZON',
     'hero.title': 'FAEM STUDIO\nARCHIVE 26',
     'hero.cta': 'Koleksiyonu Keşfet',
-    'shop.title': 'The Collection',
+    'shop.title': 'Koleksiyon',
     'shop.desc': 'Faem Studio kapsül koleksiyonundan seçkin parçalar.',
-    'cart.empty': 'Sepetiniz henüz boş.',
-    'cart.checkout': 'Ödemeye Geç',
+    'cart.empty': 'Sepetiniz boş.',
+    'cart.checkout': 'Ödeme Yap',
     'cart.total': 'Toplam',
     'product.add': 'Sepete Ekle',
     'product.details': 'Ürün Detayları',
     'product.shipping': 'Kargo & İade',
     'footer.rights': 'Tüm hakları saklıdır.',
     'auth.title': 'Giriş Yap',
-    'auth.desc': 'Stüdyo hesabınıza erişin veya yeni bir profil oluşturun.',
+    'auth.desc': 'Hesabınıza giriş yapın veya yeni bir hesap oluşturun.',
     'home.explore': 'Koleksiyonu Keşfet',
-    'home.current': 'Yeni Sezon',
+    'home.current': 'Güncel Sezon',
     'home.all_pieces': 'Tüm Parçalar',
     'home.studio_notes': 'Stüdyo Notları',
     'checkout.title': 'Ödeme',
-    'checkout.back': 'Vitrine Dön',
-    'checkout.empty_desc': 'Sepetinizde ürün bulunmamaktadır.',
+    'checkout.back': 'Mağazaya Dön',
+    'checkout.empty_desc': 'Sepetiniz şu an boş.',
     'checkout.shop_now': 'Alışverişe Başla',
-    'checkout.success_title': 'Siparişiniz Alındı!',
-    'checkout.success_desc': 'Tercihiniz için teşekkürler. Sipariş detayları e-posta adresinize iletilecektir.',
+    'checkout.success_title': 'Sipariş Alındı!',
+    'checkout.success_desc': "Siparişiniz için teşekkür ederiz. Onay e-postası kısa süre içinde gönderilecektir.",
     'checkout.back_to_store': 'Mağazaya Dön',
     'checkout.step_1': 'İletişim & Teslimat',
-    'checkout.step_2': 'Gönderim Yöntemi',
-    'checkout.step_3': 'İnceleme & Ödeme',
+    'checkout.step_2': 'Kargo Yöntemi',
+    'checkout.step_3': 'İncele & Öde',
     'checkout.email': 'E-posta Adresi',
     'checkout.first_name': 'Ad',
     'checkout.last_name': 'Soyad',
-    'checkout.address': 'Adres',
+    'checkout.address': 'Açık Adres',
     'checkout.city': 'Şehir',
     'checkout.postal': 'Posta Kodu',
-    'checkout.continue_shipping': 'Gönderim Seçeneklerine Geç',
-    'checkout.shipping_method': 'Teslimat Biçimi',
-    'checkout.review_order': 'Siparişi Gözden Geçir',
+    'checkout.continue_shipping': 'Kargoya Devam Et',
+    'checkout.shipping_method': 'Kargo Yöntemi',
+    'checkout.review_order': 'Siparişi İncele',
     'checkout.place_order': 'Siparişi Tamamla',
     'checkout.summary': 'Sipariş Özeti',
     'checkout.shipping_to': 'Teslimat Adresi',
     'checkout.free': 'Ücretsiz',
-    'checkout.standard': 'Standart Gönderim',
-    'checkout.express': 'Hızlı Teslimat',
+    'checkout.standard': 'Standart Kargo',
+    'checkout.express': 'Hızlı Kargo',
     'checkout.qty': 'adet',
     'account.title': 'Stüdyo Hesabım',
     'account.desc': 'Siparişlerinizi, favorilerinizi ve profil ayarlarınızı yönetin.',
     'account.member': 'Stüdyo Üyesi',
     'account.signout': 'Hesaptan Çıkış Yap',
-    'account.orders': 'Siparişlerim',
-    'account.wishlist': 'Favorilerim',
-    'account.profile': 'Profil Ayarları',
+    'account.orders': 'Siparişler',
+    'account.wishlist': 'Favoriler',
+    'account.profile': 'Profil',
     'account.history': 'Sipariş Geçmişi',
     'account.order_id': 'Sipariş No',
-    'account.no_orders': 'Henüz bir siparişiniz bulunmuyor.',
-    'account.empty_wishlist': 'Favori listeniz henüz boş.',
+    'account.no_orders': "Henüz bir siparişiniz bulunmuyor.",
+    'account.empty_wishlist': 'Favori listeniz şu an boş.',
     'account.full_name': 'Ad Soyad',
     'account.email': 'E-posta Adresi',
     'account.shipping_addr': 'Teslimat Adresi',
-    'account.no_addr': 'Kayıtlı adres bulunamadı. Ödeme sırasında ekleyebilirsiniz.',
+    'account.no_addr': "Kayıtlı adresiniz bulunmuyor. Ödeme sırasında ekleyebilirsiniz.",
     'account.loading': 'Geçmiş yükleniyor...',
     'account.status.delivered': 'Teslim Edildi',
     'account.status.pending': 'Beklemede',
@@ -93,6 +96,16 @@ const translations: Record<Language, Translations> = {
     'nav.accessories': 'Aksesuar',
     'nav.socials': 'Sosyal Medya',
     'nav.contact_us': 'İletişim',
+    'auth.studio_access': 'Stüdyo Erişimi',
+    'auth.studio_access_desc': 'Kişiliştirilmiş geçmişinize güvenle erişmek için giriş yapın.',
+    'account.my_orders': 'Siparişlerim',
+    'account.studio_profile': 'Stüdyo Profili',
+    'account.admin_portal': 'Yönetim Paneli',
+    'account.signout_short': 'Çıkış Yap',
+    'search.placeholder': 'Koleksiyonda ara...',
+    'search.results': 'Sonuçlar',
+    'search.no_results': 'Sonuç bulunamadı.',
+    'search.popular': 'Popüler Aramalar',
   },
   en: {
     'nav.collection': 'Collection',
@@ -181,33 +194,38 @@ const translations: Record<Language, Translations> = {
     'nav.accessories': 'Accessories',
     'nav.socials': 'Socials',
     'nav.contact_us': 'Contact US',
+    'auth.studio_access': 'Studio Access',
+    'auth.studio_access_desc': 'Sign in to securely access your personalized history.',
+    'account.my_orders': 'My Orders',
+    'account.studio_profile': 'Studio Profile',
+    'account.admin_portal': 'Admin Portal',
+    'account.signout_short': 'Sign Out',
+    'search.placeholder': 'Search collection...',
+    'search.results': 'Results',
+    'search.no_results': 'No results found.',
+    'search.popular': 'Popular Searches',
   }
 };
-
-interface LanguageContextType {
-  language: Language;
-  toggleLanguage: () => void;
-  t: (key: string) => string;
-}
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguage] = useState<Language>(() => {
-    const saved = localStorage.getItem('faem_lang');
-    return (saved as Language) || 'tr';
+    const saved = localStorage.getItem('language');
+    return (saved === 'tr' || saved === 'en') ? saved : 'tr';
   });
 
   useEffect(() => {
-    localStorage.setItem('faem_lang', language);
+    localStorage.setItem('language', language);
+    document.documentElement.lang = language;
   }, [language]);
 
   const toggleLanguage = () => {
     setLanguage(prev => prev === 'tr' ? 'en' : 'tr');
   };
 
-  const t = (key: string) => {
-    return translations[language][key] || key;
+  const t = (key: string): string => {
+    return translations[language][key as keyof typeof translations['en']] || key;
   };
 
   return (
@@ -219,6 +237,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
 export function useLanguage() {
   const context = useContext(LanguageContext);
-  if (!context) throw new Error('useLanguage must be used within LanguageProvider');
+  if (context === undefined) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
   return context;
 }
