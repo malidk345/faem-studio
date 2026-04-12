@@ -193,35 +193,35 @@ export default function ProductDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    // Flexible ID check to support both UUIDs and legacy string IDs
     const currentId = id || '';
+    console.log("🔍 [ProductDetail] Initializing with ID:", currentId);
     
     if (!currentId) {
+      console.warn("❌ [ProductDetail] No ID provided in URL.");
       setLoading(false);
       return;
     }
 
     const fetchProduct = async () => {
+      console.log("🛰️ [ProductDetail] Starting Supabase fetch...");
       setLoading(true);
       try {
         const { data, error: fetchError } = await supabase.from('products').select('*').eq('id', currentId).single();
         
         if (fetchError) {
-          console.error("📋 Supabase Error Details:", fetchError);
-          setProduct({ error: `Connection Error: ${fetchError.message}` });
+          console.error("📋 [ProductDetail] Supabase Error:", fetchError);
+          setProduct({ error: `Connection Error: ${fetchError.message} (${fetchError.details || 'No details'})` });
           return;
         }
 
         if (!data) {
-          console.warn("⚠️ Data is null for ID:", currentId);
-          setProduct({ error: "Product record not found in database." });
+          console.warn("⚠️ [ProductDetail] Product not found for ID:", currentId);
+          setProduct({ error: "Archive Asset not found in database." });
           return;
         }
 
-        console.log("✅ Product Fetched Successfully:", data.name);
+        console.log("✅ [ProductDetail] Data retrieved:", data.name);
 
-        // Extremely safe image gallery mapping
         let galleryImages: ProductImage[] = [];
         const rawImages = Array.isArray(data.images) ? data.images : [];
         galleryImages = rawImages.map((img: any, idx: number) => {
@@ -236,7 +236,7 @@ export default function ProductDetail() {
 
         setProduct({
           id: data.id,
-          name: data.name || 'Faem Studio Piece',
+          name: data.name || 'Faem Piece',
           price: data.price || 'Price on request',
           image: data.image_url || '',
           images: galleryImages,
@@ -249,8 +249,9 @@ export default function ProductDetail() {
         if (Array.isArray(data.sizes) && data.sizes.length > 0) {
           setSelectedSize(data.sizes[0]);
         }
-      } catch (e) {
-        setProduct(null);
+      } catch (e: any) {
+        console.error("🔥 [ProductDetail] Critical Component Crash:", e);
+        setProduct({ error: `System Crash: ${e.message || 'Unknown Error'}` });
       } finally {
         setLoading(false);
       }
@@ -262,7 +263,7 @@ export default function ProductDetail() {
         const { data } = await supabase.from('wishlist').select('id').eq('user_id', user.id).eq('product_id', id).maybeSingle();
         setIsWishlisted(!!data);
       } catch (e) {
-        console.error("Wishlist Check Error:", e);
+        console.error("📋 [ProductDetail] Wishlist Check Error:", e);
       }
     };
 
@@ -271,7 +272,7 @@ export default function ProductDetail() {
         const { data } = await supabase.from('reviews').select('*').eq('product_id', id).order('created_at', { ascending: false });
         if (data) setReviews(data);
       } catch (e) {
-        console.error("Reviews Error:", e);
+        console.error("📋 [ProductDetail] Reviews Error:", e);
       }
     };
 
@@ -301,17 +302,38 @@ export default function ProductDetail() {
     }
   };
 
-  if (loading) return <div className="h-screen flex items-center justify-center font-bold">Curating Detail...</div>;
+  if (loading) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-4 bg-white">
+        <Loader2 className="animate-spin text-zinc-200" size={32} />
+        <div className="flex flex-col items-center gap-1">
+          <p className="font-black text-[10px] uppercase tracking-[0.4em]">Establishing Link</p>
+          <span className="text-[9px] text-zinc-400 font-mono">ID: {id}</span>
+        </div>
+      </div>
+    );
+  }
+
   if (!product || product.error) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center gap-4 p-8 text-center">
-        <h2 className="text-2xl font-black">Archive Access Restricted</h2>
-        <p className="text-zinc-500 max-w-md text-sm leading-relaxed">
-          {product?.error || "The requested item could not be retrieved from the studio vault."}
-        </p>
-        <button onClick={() => navigate('/')} className="bg-black text-white px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest mt-4">
-          Return to Gallery
-        </button>
+      <div className="h-screen flex flex-col items-center justify-center gap-6 p-8 text-center bg-white">
+        <div className="w-16 h-16 bg-zinc-50 rounded-3xl flex items-center justify-center text-rose-500 border border-zinc-100 shadow-sm">
+           <span className="text-xl font-black">!</span>
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-black tracking-tight">Access Restricted</h2>
+          <p className="text-zinc-500 max-w-sm text-[13px] leading-relaxed font-medium">
+             {product?.error || "The requested item could not be retrieved from the studio vault."}
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 w-full max-w-[240px]">
+          <button onClick={() => window.location.reload()} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all">
+            Retry Connection
+          </button>
+          <button onClick={() => navigate('/')} className="text-zinc-400 px-8 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:text-black transition-all">
+            Back to Gallery
+          </button>
+        </div>
       </div>
     );
   }
