@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
 import { supabase } from '../lib/supabase';
-import { Skeleton } from '../components/ui/Skeleton';
+import { Loader2 } from 'lucide-react';
+
 interface Product {
   id: string;
   name: string;
@@ -29,7 +30,6 @@ export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch products from Supabase (fallback to seeded offline products if no connection)
   useEffect(() => {
     window.scrollTo(0, 0);
     
@@ -39,7 +39,6 @@ export default function Shop() {
         if (error || !data || data.length === 0) {
           setProducts([]);
         } else {
-          // Map DB columns to our Product interface
           const mapped = data.map(p => ({
             id: p.id,
             name: p.name,
@@ -68,6 +67,14 @@ export default function Shop() {
   const filteredProducts = activeCategory === 'All'
     ? products
     : products.filter(p => p.category === activeCategory);
+
+  if (isLoading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Loader2 className="animate-spin text-zinc-200" size={32} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto">
@@ -100,54 +107,36 @@ export default function Shop() {
         </div>
       </div>
 
-      {/* Loading skeleton */}
-      {isLoading && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-6 md:gap-y-16">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-4">
-              <Skeleton className="aspect-[3/4] rounded-2xl" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-3/4 rounded-lg" />
-                <Skeleton className="h-3 w-1/3 rounded-lg" />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
       {/* Grid */}
-      {!isLoading && (
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            layout
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-6 md:gap-y-16"
-          >
-            {filteredProducts.map((product, i) => (
-              <motion.div
-                key={product.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.4, delay: i * 0.05 }}
-              >
-                <ProductCard product={product} />
-              </motion.div>
-            ))}
+      <AnimatePresence mode="popLayout">
+        <motion.div
+          layout
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-6 md:gap-y-16"
+        >
+          {filteredProducts.map((product, i) => (
+            <motion.div
+              key={product.id}
+              layout
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.4, delay: i * 0.05 }}
+            >
+              <ProductCard product={product} />
+            </motion.div>
+          ))}
 
-            {filteredProducts.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="col-span-full py-20 text-center text-black/40 text-sm font-medium"
-              >
-                {t('shop.no_items')}
-              </motion.div>
-            )}
-          </motion.div>
-        </AnimatePresence>
-      )}
-
+          {filteredProducts.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="col-span-full py-20 text-center text-black/40 text-sm font-medium"
+            >
+              {t('shop.no_items')}
+            </motion.div>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

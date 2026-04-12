@@ -149,8 +149,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
             margin: 0,
             lineHeight: 1.4,
             color: '#1A1A1A',
-            fontWeight: 600,
-            fontSize: '1rem',
+            fontWeight: 500,
+            fontSize: '0.85rem',
           }}
         >
           {product.name}
