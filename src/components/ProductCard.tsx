@@ -1,21 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Star } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import useEmblaCarousel from 'embla-carousel-react';
+
 interface Product {
   id: string;
   name: string;
   price: string;
   image: string;
   category: string;
+  images?: any[];
 }
 
 interface ProductCardProps {
   product: Product;
-  /**
-   * Optional video URL for hover preview.
-   * Medusa: map from product.media[] or a custom metadata field.
-   * If omitted, only the image is shown.
-   */
   videoUrl?: string;
   reviewCount?: number;
   rating?: number;
@@ -24,146 +22,111 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({
   product,
   videoUrl,
-  reviewCount = 0,
+  reviewCount = 12,
   rating = 4.8,
 }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, dragFree: false });
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    if (videoRef.current && isLoaded) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play();
-    }
-  };
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
 
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    if (videoRef.current) {
-      videoRef.current.pause();
-    }
-  };
+  useEffect(() => {
+    if (!emblaApi) return;
+    onSelect();
+    setScrollSnaps(emblaApi.scrollSnapList());
+    emblaApi.on('select', onSelect);
+  }, [emblaApi, onSelect]);
 
-  const showVideo = isHovered && isLoaded && !!videoUrl;
+  // Gallery sources: start with main image, then add others
+  const galleryImages = [
+    { id: 'master', url: product.image },
+    ...(Array.isArray(product.images) ? product.images : [])
+  ];
 
   return (
-    <Link
-      to={`/product/${product.id}`}
-      className="block"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      style={{ display: 'grid', padding: '0.5rem' }}
+    <div 
+      className="group relative flex flex-col gap-3"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* ── Media ── */}
-      <div className="relative w-full" style={{ aspectRatio: '1 / 1' }}>
+      {/* ── Media Carousel ── */}
+      <div className="relative aspect-[1/1] overflow-hidden rounded-[4px] bg-zinc-50 border border-zinc-100">
+        <div className="embla h-full" ref={emblaRef}>
+          <div className="embla__container h-full flex">
+            {galleryImages.map((img, idx) => (
+              <div key={img.id || idx} className="embla__slide flex-[0_0_100%] min-w-0 relative h-full">
+                <Link to={`/product/${product.id}`} className="block h-full w-full">
+                  <img
+                    src={img.url}
+                    alt={`${product.name} - View ${idx + 1}`}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        {/* Video — lazy loaded, plays on hover */}
-        {videoUrl && (
-          <video
-            ref={videoRef}
-            src={videoUrl}
-            muted
-            loop
-            playsInline
-            preload="none"
-            onLoadedData={() => setIsLoaded(true)}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              borderRadius: 6,
-              filter: 'brightness(1.25)',
-              display: showVideo ? 'block' : 'none',
-            }}
-          />
+        {/* Price Tag */}
+        <div className="absolute bottom-2 left-2 z-10 bg-white px-2 py-1 rounded-[4px] shadow-sm">
+           <span className="text-[11px] font-black tracking-tight text-black">{product.price}</span>
+        </div>
+
+        {/* Status Indicators (Dots) */}
+        {galleryImages.length > 1 && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+            {scrollSnaps.map((_, idx) => (
+              <div 
+                key={idx}
+                className={`w-1 h-1 rounded-full transition-all duration-300 ${idx === selectedIndex ? 'bg-black w-3' : 'bg-black/20'}`}
+              />
+            ))}
+          </div>
         )}
 
-        {/* Image — fades out when video plays */}
-        <img
-          src={product.image}
-          alt={product.name}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            borderRadius: 6,
-            filter: 'brightness(1.15)',
-            transition: 'opacity 0.5s',
-            opacity: showVideo ? 0 : 1,
-            mixBlendMode: showVideo ? 'lighten' : 'normal',
-          }}
-        />
-
-        {/* Price badge — bottom left */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '0.25rem',
-            left: '0.25rem',
-            zIndex: 2,
-            backgroundColor: '#FFFFFF',
-            padding: '0.25rem 0.5rem',
-            borderRadius: 6,
-            fontSize: 13,
-            fontWeight: 500,
-            color: '#1A1A1A',
-            lineHeight: 1,
-          }}
-        >
-          {product.price}
+        {/* Floating Quick Action (Desktop) */}
+        <div className="absolute inset-x-2 bottom-10 flex justify-between opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          <button 
+            onClick={(e) => { e.preventDefault(); emblaApi?.scrollPrev(); }}
+            className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg pointer-events-auto active:scale-90 transition-all border border-zinc-100"
+          >
+             <ChevronLeft size={14} />
+          </button>
+          <button 
+            onClick={(e) => { e.preventDefault(); emblaApi?.scrollNext(); }}
+            className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg pointer-events-auto active:scale-90 transition-all border border-zinc-100"
+          >
+             <ChevronRight size={14} />
+          </button>
         </div>
       </div>
 
-      {/* ── Info ── */}
-      <div
-        style={{
-          fontFamily: 'monospace',
-          fontWeight: 300,
-          display: 'grid',
-          gap: '0.25rem',
-          lineHeight: 1,
-          color: 'color-mix(in lch, #1A1A1A, transparent 45%)',
-          marginTop: '0.5rem',
-        }}
-      >
-        {/* Rating row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          <Star
-            size={16}
-            style={{ color: 'hsl(30 80% 50%)', fill: 'hsl(30 80% 50%)', flexShrink: 0 }}
-          />
-          <span style={{ fontSize: 12 }}>
-            {rating} | {reviewCount > 0 ? `${reviewCount.toLocaleString()} Reviews` : 'New Arrival'}
+      {/* ── Product Info ── */}
+      <Link to={`/product/${product.id}`} className="flex flex-col gap-1.5 px-1 py-1">
+        <div className="flex items-center gap-1">
+          <Star size={10} className="fill-black text-black" />
+          <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400">
+            {rating} <span className="mx-1">/</span> {reviewCount} Reviews
           </span>
         </div>
 
-        {/* Product name */}
-        <h3
-          style={{
-            margin: 0,
-            lineHeight: 1.2,
-            color: '#1A1A1A',
-            fontWeight: 700,
-            fontSize: '0.85rem',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-            letterSpacing: '-0.02em',
-          }}
-        >
+        <h3 className="text-[14px] font-black tracking-tight text-black leading-tight -mt-0.5">
           {product.name}
         </h3>
 
-        {/* Category */}
-        <p style={{ margin: 0, fontSize: 12 }}>
-          {product.category}
-        </p>
-      </div>
-    </Link>
+        <div className="flex items-center gap-2">
+           <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider">{product.category}</span>
+           <div className="w-1 h-1 rounded-full bg-zinc-200" />
+           <span className="text-[9px] font-black text-emerald-500 uppercase tracking-widest italic">In Stock</span>
+        </div>
+      </Link>
+    </div>
   );
 };
 
