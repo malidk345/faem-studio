@@ -1,28 +1,31 @@
 import React from 'react';
 import { Truck, RefreshCw, ShieldCheck } from 'lucide-react';
-
-const INFO_ITEMS = [
-  {
-    icon: <Truck size={22} />,
-    title: 'Free Express Delivery',
-    desc: 'Worldwide complimentary shipping on all orders above $200. 2–4 business days.',
-    dark: true,
-  },
-  {
-    icon: <RefreshCw size={22} />,
-    title: 'Perfect Fit Returns',
-    desc: 'Return or exchange within 30 days. Our concierge handles collection at your convenience.',
-    dark: false,
-  },
-  {
-    icon: <ShieldCheck size={22} />,
-    title: 'Quality Guarantee',
-    desc: 'Every piece inspected twice. Covered by a two-year sustainability warranty.',
-    dark: false,
-  },
-];
+import { useLanguage } from '../context/LanguageContext';
 
 const ProductInfoSections: React.FC = () => {
+  const { t } = useLanguage();
+
+  const INFO_ITEMS = [
+    {
+      icon: <Truck size={22} />,
+      title: t('info.shipping_title'),
+      desc: t('info.shipping_desc'),
+      dark: true,
+    },
+    {
+      icon: <RefreshCw size={22} />,
+      title: t('info.returns_title'),
+      desc: t('info.returns_desc'),
+      dark: false,
+    },
+    {
+      icon: <ShieldCheck size={22} />,
+      title: t('info.quality_title'),
+      desc: t('info.quality_desc'),
+      dark: false,
+    },
+  ];
+
   return (
     <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {INFO_ITEMS.map((item, i) => (

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
 import { supabase } from '../lib/supabase';
+import { Skeleton } from '../components/ui/Skeleton';
 interface Product {
   id: string;
   name: string;
@@ -14,11 +15,14 @@ interface Product {
   features?: string[];
 }
 import { useSEO } from '../hooks/useSEO';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Shop() {
+  const { t } = useLanguage();
+
   useSEO({
-    title: 'Shop All | Faem Studio',
-    description: 'Browse the complete collection of minimalist, structured aesthetic clothing by Faem Studio.'
+    title: `${t('shop.title')} | Faem Studio`,
+    description: t('shop.desc')
   });
 
   const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -72,10 +76,10 @@ export default function Shop() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 border-b border-black/5 pb-8">
         <div className="flex flex-col gap-2">
           <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-black/50">
-            Archive &amp; Current
+            {t('shop.archive_current')}
           </p>
           <h1 className="text-[40px] md:text-[56px] font-black tracking-tighter leading-none text-black">
-            The Collection
+            {t('shop.title')}
           </h1>
         </div>
 
@@ -90,7 +94,7 @@ export default function Shop() {
                   : 'bg-black/5 text-black hover:bg-black/10'
               }`}
             >
-              {cat}
+              {cat === 'All' ? t('shop.all_categories') : cat}
             </button>
           ))}
         </div>
@@ -100,10 +104,12 @@ export default function Shop() {
       {isLoading && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-6 md:gap-y-16">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-4 animate-pulse">
-              <div className="aspect-[3/4] rounded-2xl bg-black/5" />
-              <div className="h-4 w-3/4 bg-black/5 rounded-lg" />
-              <div className="h-3 w-1/3 bg-black/5 rounded-lg" />
+            <div key={i} className="flex flex-col gap-4">
+              <Skeleton className="aspect-[3/4] rounded-2xl" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-3/4 rounded-lg" />
+                <Skeleton className="h-3 w-1/3 rounded-lg" />
+              </div>
             </div>
           ))}
         </div>
@@ -135,7 +141,7 @@ export default function Shop() {
                 animate={{ opacity: 1 }}
                 className="col-span-full py-20 text-center text-black/40 text-sm font-medium"
               >
-                No items available in this category.
+                {t('shop.no_items')}
               </motion.div>
             )}
           </motion.div>

@@ -41,16 +41,42 @@ const MARQUEE_ITEMS = [
 const ACCENT = '#000000';
 
 export default function Home() {
+  const { t } = useLanguage();
+
   useSEO({
-    title: 'Faem Studio | Modern & Minimalist Aesthetic Clothing',
-    description: 'Explore current season collections from Faem Studio. Discover pure white high-end, structured apparel blending minimalist design with luxurious comfort.'
+    title: `Faem Studio | ${t('nav.collection')}`,
+    description: t('shop.desc')
   });
 
   const [activeSlide, setActiveSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
+  const HERO_SLIDES = [
+    {
+      id: 1,
+      tag: 'Collection 001',
+      headline: t('home.hero_1_title').split('\n'),
+      sub: t('home.hero_1_sub'),
+      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600&auto=format&fit=crop',
+    },
+    {
+      id: 2,
+      tag: 'Collection 002',
+      headline: t('home.hero_2_title').split('\n'),
+      sub: t('home.hero_2_sub'),
+      image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1600&auto=format&fit=crop',
+    },
+    {
+      id: 3,
+      tag: 'Collection 003',
+      headline: t('home.hero_3_title').split('\n'),
+      sub: t('home.hero_3_sub'),
+      image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1600&auto=format&fit=crop',
+    },
+  ];
+
   const slide = HERO_SLIDES[activeSlide];
   const BG = '#FFFFFF';
-  const { t } = useLanguage();
+  const ACCENT = '#000000';
 
   React.useEffect(() => {
     const fetchFeatured = async () => {
@@ -165,11 +191,6 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* 
-          Grid: 2 cols on mobile, 4 cols on desktop
-          gap-x: horizontal spacing between cards
-          gap-y: vertical spacing between rows
-        */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-10 md:gap-x-5 md:gap-y-14">
           {products.map((product) => (
             <ProductCard
@@ -190,7 +211,7 @@ export default function Home() {
             {t('home.studio_notes')}
           </p>
           <blockquote className="text-[clamp(1.75rem,4.5vw,4rem)] font-light text-black/55 leading-[1.3] tracking-[-0.02em] max-w-5xl italic">
-            "We build garments the way architects build space — every seam has a reason, every proportion a purpose."
+            {t('home.quote')}
           </blockquote>
           <p className="text-black/20 text-[12px] tracking-[0.3em] uppercase font-bold mt-10">
             — Faem Studio, 2026
@@ -204,30 +225,38 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-20 mb-24">
           <div className="flex flex-col gap-8">
             <div>
-              <h2 className="text-3xl md:text-4xl font-black tracking-[-0.04em] text-black">Inner Circle</h2>
+              <h2 className="text-3xl md:text-4xl font-black tracking-[-0.04em] text-black">{t('footer.newsletter_title')}</h2>
               <p className="text-black/40 text-[15px] mt-3 font-light max-w-sm leading-relaxed">
-                Early access, studio dispatches, and unreleased work.
+                {t('footer.newsletter_desc')}
               </p>
             </div>
             <div className="flex gap-3 max-w-sm">
               <input
                 type="email"
-                placeholder="your@email.com"
+                placeholder={t('footer.newsletter_placeholder')}
                 className="flex-1 bg-white border px-5 py-4 rounded-xl text-black text-sm placeholder:text-black/25 focus:outline-none transition-all font-light"
                 style={{ borderColor: 'rgba(0,0,0,0.10)' }}
-                onFocus={e => (e.target.style.borderColor = 'rgba(140,123,102,0.6)')}
-                onBlur={e => (e.target.style.borderColor = 'rgba(0,0,0,0.10)')}
               />
               <button className="px-6 py-4 rounded-xl text-[13px] font-bold tracking-wide transition-all active:scale-95 text-white bg-black hover:bg-zinc-800">
-                Join
+                {t('footer.newsletter_button')}
               </button>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-12 md:pt-4">
             {[
-              { label: 'Studio', links: ['Our Story', 'Process', 'Sustainability', 'Locations'] },
-              { label: 'Support', links: ['Shipping', 'Returns', 'Care Guide', 'Contact'] },
+              { label: t('footer.studio'), links: [
+                { label: t('footer.story'), path: '#' },
+                { label: t('footer.process'), path: '#' },
+                { label: t('footer.sustainability'), path: '#' },
+                { label: t('footer.locations'), path: '#' }
+              ]},
+              { label: t('footer.support'), links: [
+                { label: t('footer.shipping_info'), path: '#' },
+                { label: t('footer.returns_info'), path: '#' },
+                { label: t('footer.care'), path: '#' },
+                { label: t('nav.contact_us'), path: '#' }
+              ]},
             ].map(col => (
               <div key={col.label} className="flex flex-col gap-5">
                 <span className="text-[10px] uppercase tracking-[0.4em] font-bold" style={{ color: 'rgba(0,0,0,0.25)' }}>
@@ -235,7 +264,7 @@ export default function Home() {
                 </span>
                 <nav className="flex flex-col gap-3">
                   {col.links.map(link => (
-                    <a key={link} href="#" className="text-[14px] text-black/40 hover:text-black transition-colors font-light">{link}</a>
+                    <a key={link.label} href={link.path} className="text-[14px] text-black/40 hover:text-black transition-colors font-light">{link.label}</a>
                   ))}
                 </nav>
               </div>
@@ -246,9 +275,9 @@ export default function Home() {
         <div className="pt-8 border-t flex justify-between items-center" style={{ borderColor: 'rgba(0,0,0,0.06)' }}>
           <span className="text-[11px] text-black/20 uppercase tracking-[0.3em] font-bold">© 2026 Faem Studio</span>
           <div className="flex gap-8">
-            {['Instagram', 'Terms', 'Privacy'].map(link => (
-              <a key={link} href="#" className="text-[11px] text-black/20 hover:text-black/60 uppercase tracking-[0.25em] font-bold transition-colors">{link}</a>
-            ))}
+            <a href="#" className="text-[11px] text-black/20 hover:text-black/60 uppercase tracking-[0.25em] font-bold transition-colors">Instagram</a>
+            <a href="#" className="text-[11px] text-black/20 hover:text-black/60 uppercase tracking-[0.25em] font-bold transition-colors">{t('footer.terms')}</a>
+            <a href="#" className="text-[11px] text-black/20 hover:text-black/60 uppercase tracking-[0.25em] font-bold transition-colors">{t('footer.privacy')}</a>
           </div>
         </div>
       </footer>

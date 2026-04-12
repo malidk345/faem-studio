@@ -9,6 +9,7 @@ import ReviewList from '../components/ReviewList';
 import { ChevronLeft, ChevronRight, Heart, Loader2 } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ProductImage {
   id: string;
@@ -181,10 +182,11 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState<any>(null);
+  const { t } = useLanguage();
   
   useSEO({
-    title: product?.name ? `${product.name} | Faem Studio` : 'Product Details',
-    description: product?.description || 'Faem Studio collection Item'
+    title: product?.name ? `${product.name} | Faem Studio` : t('product.details'),
+    description: product?.description || t('shop.desc')
   });
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
@@ -312,7 +314,7 @@ export default function ProductDetail() {
       <div className="h-screen flex flex-col items-center justify-center gap-4 bg-white">
         <Loader2 className="animate-spin text-zinc-200" size={32} />
         <div className="flex flex-col items-center gap-1">
-          <p className="font-black text-[10px] uppercase tracking-[0.4em]">Establishing Link</p>
+          <p className="font-black text-[10px] uppercase tracking-[0.4em]">{t('product.loading_status')}</p>
           <span className="text-[9px] text-zinc-400 font-mono">ID: {id}</span>
         </div>
       </div>
@@ -326,17 +328,17 @@ export default function ProductDetail() {
            <span className="text-xl font-black">!</span>
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl font-black tracking-tight">Access Restricted</h2>
+          <h2 className="text-2xl font-black tracking-tight">{t('product.access_restricted')}</h2>
           <p className="text-zinc-500 max-w-sm text-[13px] leading-relaxed font-medium">
-             {product?.error || "The requested item could not be retrieved from the studio vault."}
+             {product?.error || t('product.error_desc')}
           </p>
         </div>
         <div className="flex flex-col gap-3 w-full max-w-[240px]">
           <button onClick={() => window.location.reload()} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all">
-            Retry Connection
+            {t('product.retry')}
           </button>
-          <button onClick={() => navigate('/')} className="text-zinc-400 px-8 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:text-black transition-all">
-            Back to Gallery
+          <button onClick={() => navigate('/shop')} className="text-zinc-400 px-8 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:text-black transition-all">
+            {t('product.back_to_gallery')}
           </button>
         </div>
       </div>
@@ -392,7 +394,7 @@ export default function ProductDetail() {
                  <Heart size={18} className={isWishlisted ? 'fill-red-500 text-red-500 group-hover:fill-white group-hover:text-white' : 'text-black/30 group-hover:text-white'} />
               )}
               <span className="text-[10px] uppercase font-black tracking-widest leading-none">
-                {isWishlisted ? 'Saved to Collection' : 'Add to Selection'}
+                {isWishlisted ? t('product.saved') : t('product.add_to_selection')}
               </span>
             </button>
         </div>
@@ -473,7 +475,7 @@ export default function ProductDetail() {
       >
         <div className="max-w-[1200px] mx-auto flex flex-col gap-10">
           <p className="text-[10px] uppercase tracking-[0.4em] font-bold" style={{ color: ACCENT }}>
-            You May Also Like
+            {t('product.also_like')}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
             {related.map(p => (

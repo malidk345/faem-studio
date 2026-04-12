@@ -12,45 +12,38 @@ export function SidebarNotification() {
   if (!isVisible) return null
 
   return (
-    <Card className="mb-3 py-0 border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800">
-      <CardContent className="p-4 relative">
+    <Card className="mb-3 py-0 border-zinc-100 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 overflow-hidden">
+      <CardContent className="p-5 relative">
         <Button
           variant="ghost"
           size="sm"
-          className="absolute top-2 right-2 h-6 w-6 p-0 hover:bg-neutral-200 dark:hover:bg-neutral-700"
+          className="absolute top-2 right-2 h-7 w-7 p-0 hover:bg-zinc-200 dark:hover:bg-zinc-800 rounded-lg"
           onClick={() => setIsVisible(false)}
         >
-          <X className="h-3 w-3" />
+          <X className="h-4 w-4" />
           <span className="sr-only">Close notification</span>
         </Button>
         
-        <div className="pr-6">
-          <h3 className="flex items-center gap-3 font-semibold text-neutral-900 dark:text-neutral-100 mb-2 mt-1">
-            <Logo size={42} className="-mt-1" />
-            <div>
-              Welcome to{" "}
-              <a 
-                href="https://shadcnstore.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                ShadcnStore
-              </a>
-            </div>
-          </h3>
-          <p className="text-sm text-muted-foreground dark:text-neutral-400 leading-relaxed">
-            Explore our premium Shadcn UI{" "}
-            <a 
-              href="https://shadcnstore.com/blocks" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-primary underline"
-            >
-              blocks
-            </a>{" "}
-            to build your next project faster.
+        <div className="pr-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-4 bg-black rounded-full" />
+            <h3 className="font-black text-[11px] uppercase tracking-[0.2em] text-zinc-900 dark:text-zinc-100">
+               Studio Intelligence
+            </h3>
+          </div>
+          <p className="text-[12px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
+            Your collection architecture is live. Track curation performance and manage assets with pure precision.
           </p>
+          <div className="flex items-center gap-4 pt-1">
+             <div className="flex flex-col">
+                <span className="text-[10px] font-black uppercase text-zinc-400 leading-none">Status</span>
+                <span className="text-[12px] font-bold text-emerald-500">Live</span>
+             </div>
+             <div className="flex flex-col">
+                <span className="text-[10px] font-black uppercase text-zinc-400 leading-none">Node</span>
+                <span className="text-[12px] font-bold text-zinc-900">Main-Core</span>
+             </div>
+          </div>
         </div>
       </CardContent>
     </Card>

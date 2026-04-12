@@ -11,6 +11,8 @@ import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import MainLayout from './layouts/MainLayout';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { GlobalPageLoader } from './components/GlobalPageLoader';
 
 function AppRoutes() {
   return (
@@ -33,15 +35,28 @@ function AppRoutes() {
 }
 
 export default function App() {
+  const [appLoading, setAppLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    // Initial mount loading simulation for smooth entrance
+    const timer = setTimeout(() => setAppLoading(false), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <CartProvider>
-          <Router>
-            <AppRoutes />
-          </Router>
-        </CartProvider>
-      </AuthProvider>
-    </LanguageProvider>
+    <ErrorBoundary>
+      <LanguageProvider>
+        <AuthProvider>
+          <CartProvider>
+            <GlobalPageLoader isLoading={appLoading} />
+            {!appLoading && (
+              <Router>
+                <AppRoutes />
+              </Router>
+            )}
+          </CartProvider>
+        </AuthProvider>
+      </LanguageProvider>
+    </ErrorBoundary>
   );
 }

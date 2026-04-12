@@ -1,13 +1,24 @@
-import { cn } from "@/lib/utils"
+import React from 'react';
+import { motion } from 'motion/react';
 
-function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="skeleton"
-      className={cn("bg-accent animate-pulse rounded-md", className)}
-      {...props}
-    />
-  )
+interface SkeletonProps {
+  className?: string;
 }
 
-export { Skeleton }
+export const Skeleton: React.FC<SkeletonProps> = ({ className }) => {
+  return (
+    <div className={`relative overflow-hidden bg-zinc-50 ${className}`}>
+      <motion.div
+        animate={{
+          x: ['-100%', '100%']
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 1.5,
+          ease: 'linear'
+        }}
+        className="absolute inset-0 bg-gradient-to-r from-transparent via-zinc-100/50 to-transparent"
+      />
+    </div>
+  );
+};
