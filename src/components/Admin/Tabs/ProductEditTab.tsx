@@ -8,9 +8,10 @@ import {
   SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { 
-  Plus, X, ChevronLeft, Save, Trash2, Upload, Loader2 
+  Plus, X, ChevronLeft, Save, Trash2, Upload, Loader2, Image as ImageIcon, CheckCircle2
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface ProductEditTabProps {
   product: any;
@@ -30,10 +31,9 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
     features: [],
     stock_count: 24,
     description: '',
-    type: 'Standard'
   });
 
-  const [uploading, setUploading] = useState(false);
+  const [uploading, setUploading] = useState<string | null>(null); // 'primary' | 'gallery' | null
   const [newFeature, setNewFeature] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
@@ -41,10 +41,14 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
   useEffect(() => {
     if (product) {
       setFormData({
-        ...product,
-        price: product.price?.replace(' ₺', '') || '',
+        name: product.name || '',
+        price: product.price?.toString().replace(/[^\d]/g, '') || '', // Keep only numbers for raw state
+        category: product.category || '',
+        image_url: product.image_url || product.image || '',
         images: Array.isArray(product.images) ? product.images : [],
-        features: Array.isArray(product.features) ? product.features : []
+        features: Array.isArray(product.features) ? product.features : [],
+        stock_count: product.stock_count || 24,
+        description: product.description || '',
       });
     }
   }, [product]);
@@ -53,13 +57,13 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
     const file = event.target.files?.[0];
     if (!file) return;
 
-    setUploading(true);
+    setUploading(isGallery ? 'gallery' : 'primary');
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('product-images')
         .upload(filePath, file);
 
@@ -70,137 +74,279 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
         .getPublicUrl(filePath);
 
       if (isGallery) {
-        setFormData({ ...formData, images: [...formData.images, { id: Date.now().toString(), url: publicUrl }] });
+        setFormData((prev: any) => ({ 
+          ...prev, 
+          images: [...prev.images, { id: crypto.randomUUID(), url: publicUrl }] 
+        }));
       } else {
-        setFormData({ ...formData, image_url: publicUrl });
+        setFormData((prev: any) => ({ ...prev, image_url: publicUrl }));
       }
     } catch (error) {
-      alert('Upload failed!');
+      console.error("Upload failed:", error);
     } finally {
-      setUploading(false);
+      setUploading(null);
     }
   };
 
   const addFeature = () => {
     if (!newFeature.trim()) return;
-    setFormData({ ...formData, features: [...formData.features, newFeature.trim()] });
+    setFormData((prev: any) => ({ 
+      ...prev, 
+      features: [...prev.features, newFeature.trim()] 
+    }));
     setNewFeature('');
-  };
-
-  const removeFeature = (idx: number) => {
-    setFormData({ ...formData, features: formData.features.filter((_: any, i: number) => i !== idx) });
-  };
-
-  const removeImage = (id: string) => {
-    setFormData({ ...formData, images: formData.images.filter((img: any) => img.id !== id) });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      ...formData,
-      price: formData.price.toString().includes('₺') ? formData.price : `${formData.price} ₺`
-    });
+    if (!formData.name || !formData.price) return;
+
+    // Sanitize data specifically for Supabase table schema
+    const submissionData = {
+      name: formData.name,
+      price: formData.price.toString().includes('₺') ? formData.price : `${formData.price} ₺`,
+      category: formData.category,
+      image_url: formData.image_url,
+      images: formData.images,
+      features: formData.features,
+      stock_count: parseInt(formData.stock_count) || 0,
+      description: formData.description,
+    };
+
+    onSave(submissionData);
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-20">
-      {/* Ultra-Compact Sticky Header */}
-      <div className="flex items-center justify-between sticky top-0 z-30 bg-white/90 backdrop-blur-sm py-2 border-b -mx-4 px-4 sm:mx-0 sm:px-0">
-        <button onClick={onCancel} className="p-2 -ml-2"><ChevronLeft size={20} /></button>
-        <div className="flex gap-2">
+    <div className="max-w-4xl mx-auto pb-32">
+      {/* ─── COMPACT STICKY ORCHESTRATOR ─── */}
+      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-zinc-100 -mx-4 px-4 py-3 sm:mx-0 sm:px-0 sm:rounded-t-2xl mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <button onClick={onCancel} className="p-2 hover:bg-zinc-100 rounded-xl transition-colors">
+              <ChevronLeft size={20} />
+            </button>
+            <div className="flex flex-col">
+              <h2 className="text-sm font-black tracking-tight">{product ? 'Edit Asset' : 'New Curation'}</h2>
+              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest leading-none">Catalog Management</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
             {product?.id && onDelete && (
-                <Button variant="ghost" size="sm" onClick={() => onDelete(product.id)} className="text-rose-500 h-9 w-9 p-0">
-                    <Trash2 size={16} />
-                </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => onDelete(product.id)}
+                className="text-rose-500 hover:bg-rose-50 rounded-xl"
+              >
+                <Trash2 size={18} />
+              </Button>
             )}
-            <Button onClick={handleSubmit} className="bg-black text-white h-9 px-4 rounded-lg font-bold text-[11px] uppercase tracking-wider">
-                <Save size={14} className="mr-1.5" /> Save
+            <Button 
+              onClick={handleSubmit} 
+              className="bg-black text-white hover:bg-zinc-800 h-10 px-6 rounded-xl font-black text-[11px] uppercase tracking-widest shadow-lg shadow-black/10 active:scale-95 transition-all"
+            >
+              <Save size={14} className="mr-2" /> Finish Curation
             </Button>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4">
-        {/* Main Photo Upload */}
-        <div className="aspect-[4/5] bg-zinc-50 rounded-2xl border border-dashed border-zinc-200 flex flex-col items-center justify-center relative overflow-hidden group">
-            {formData.image_url ? (
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 px-2 sm:px-0">
+        
+        {/* LEFT: MEDIA ASSETS (STICKY ON DESKTOP) */}
+        <div className="lg:col-span-5 space-y-6">
+          <section className="space-y-3">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Primary Asset (4:5)</Label>
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              className="aspect-[4/5] bg-zinc-50 rounded-3xl border-2 border-dashed border-zinc-100 flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer hover:border-zinc-300 transition-all"
+            >
+              {formData.image_url ? (
                 <>
-                    <img src={formData.image_url} className="w-full h-full object-cover" alt="primary" />
-                    <button onClick={() => fileInputRef.current?.click()} className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity font-bold text-xs">Change Asset</button>
+                  <img src={formData.image_url} className="w-full h-full object-cover" alt="Primary" />
+                  <div className="absolute inset-x-0 bottom-0 bg-black/60 backdrop-blur-sm p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-center gap-2 text-white">
+                    <ImageIcon size={14} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Update Primary Source</span>
+                  </div>
                 </>
-            ) : (
-                <button onClick={() => fileInputRef.current?.click()} className="flex flex-col items-center gap-2">
-                    {uploading ? <Loader2 className="animate-spin text-zinc-400" /> : <Upload className="text-zinc-300" />}
-                    <span className="text-[10px] font-black uppercase text-zinc-400">Primary Core Asset</span>
-                </button>
-            )}
-            <input type="file" hidden ref={fileInputRef} accept="image/*" onChange={(e) => handleFileUpload(e, false)} />
+              ) : (
+                <div className="flex flex-col items-center gap-4 text-center p-8">
+                  <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-zinc-300 group-hover:text-black transition-colors">
+                    {uploading === 'primary' ? <Loader2 className="animate-spin" /> : <Upload size={20} />}
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[11px] font-black uppercase tracking-wider">Upload Master View</p>
+                    <p className="text-[9px] text-zinc-400 font-medium">Recommended: High Resolution PNG/JPG</p>
+                  </div>
+                </div>
+              )}
+              <input type="file" hidden ref={fileInputRef} accept="image/*" onChange={(e) => handleFileUpload(e, false)} />
+            </div>
+          </section>
+
+          <section className="space-y-3">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Secondary Views</Label>
+            <div className="grid grid-cols-4 gap-2">
+              <AnimatePresence>
+                {formData.images.map((img: any) => (
+                  <motion.div 
+                    key={img.id}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.8, opacity: 0 }}
+                    className="relative aspect-square rounded-2xl overflow-hidden border border-zinc-100 group"
+                  >
+                    <img src={img.url} className="w-full h-full object-cover" alt="Gallery" />
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFormData((prev: any) => ({
+                          ...prev,
+                          images: prev.images.filter((i: any) => i.id !== img.id)
+                        }));
+                      }}
+                      className="absolute top-1 right-1 w-6 h-6 bg-rose-500 text-white rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X size={12} />
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              <button 
+                onClick={() => galleryInputRef.current?.click()}
+                className="aspect-square rounded-2xl border-2 border-dashed border-zinc-100 bg-zinc-50 flex items-center justify-center text-zinc-300 hover:bg-zinc-100 hover:border-zinc-300 transition-all"
+              >
+                {uploading === 'gallery' ? <Loader2 size={18} className="animate-spin" /> : <Plus size={20} />}
+              </button>
+              <input type="file" hidden ref={galleryInputRef} accept="image/*" onChange={(e) => handleFileUpload(e, true)} />
+            </div>
+          </section>
         </div>
 
-        <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                    <Label className="text-[9px] font-bold uppercase text-zinc-400 ml-1">Title</Label>
-                    <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="h-10 bg-zinc-50 border-none rounded-xl font-bold text-xs" />
+        {/* RIGHT: CURATION DETAILS */}
+        <div className="lg:col-span-7 space-y-8">
+          <div className="bg-white lg:border border-zinc-100 lg:rounded-3xl lg:p-8 space-y-8">
+            
+            {/* Core Identification */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Official Name</Label>
+                <Input 
+                  placeholder="e.g., ARCHIVE TEE v1"
+                  value={formData.name} 
+                  onChange={(e) => setFormData((prev: any) => ({ ...prev, name: e.target.value }))}
+                  className="h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-bold text-sm transition-all" 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Valuation (₺)</Label>
+                <div className="relative">
+                  <Input 
+                    type="number"
+                    placeholder="0.00"
+                    value={formData.price} 
+                    onChange={(e) => setFormData((prev: any) => ({ ...prev, price: e.target.value }))}
+                    className="h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-black text-sm pl-10 transition-all" 
+                  />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-zinc-400 text-sm italic">₺</span>
                 </div>
-                <div className="space-y-1">
-                    <Label className="text-[9px] font-bold uppercase text-zinc-400 ml-1">Valuation (₺)</Label>
-                    <Input value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="h-10 bg-zinc-50 border-none rounded-xl font-black text-xs" />
-                </div>
+              </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                   <Label className="text-[9px] font-bold uppercase text-zinc-400 ml-1">Sector</Label>
-                   <Select value={formData.category} onValueChange={(val) => setFormData({ ...formData, category: val })}>
-                        <SelectTrigger className="h-10 bg-zinc-50 border-none rounded-xl text-xs font-bold"><SelectValue /></SelectTrigger>
-                        <SelectContent className="rounded-xl border-none shadow-xl">
-                            {categories.map((cat, i) => <SelectItem key={i} value={cat.name || cat} className="text-xs font-bold">{cat.name || cat}</SelectItem>)}
-                        </SelectContent>
-                   </Select>
-                </div>
-                <div className="space-y-1">
-                    <Label className="text-[9px] font-bold uppercase text-zinc-400 ml-1">Inventory</Label>
-                    <Input type="number" value={formData.stock_count} onChange={(e) => setFormData({ ...formData, stock_count: parseInt(e.target.value) })} className="h-10 bg-zinc-50 border-none rounded-xl font-black text-xs" />
-                </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Sector</Label>
+                <Select value={formData.category} onValueChange={(val) => setFormData((prev: any) => ({ ...prev, category: val }))}>
+                  <SelectTrigger className="h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl text-xs font-black uppercase tracking-wider">
+                    <SelectValue placeholder="SELECT CATEGORY" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
+                    {categories.map((cat, i) => (
+                      <SelectItem key={i} value={cat.name || cat} className="rounded-xl font-bold py-3">
+                        {cat.name || cat}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Inventory Level</Label>
+                <Input 
+                  type="number" 
+                  value={formData.stock_count} 
+                  onChange={(e) => setFormData((prev: any) => ({ ...prev, stock_count: parseInt(e.target.value) }))}
+                  className="h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-black text-sm transition-all" 
+                />
+              </div>
             </div>
 
+            <div className="space-y-2">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Narrative Description</Label>
+              <Textarea 
+                placeholder="Describe the essence of this piece..."
+                value={formData.description} 
+                onChange={(e) => setFormData((prev: any) => ({ ...prev, description: e.target.value }))}
+                className="bg-zinc-50/50 border-zinc-100 focus:border-black rounded-2xl p-4 min-h-[140px] text-sm font-medium leading-relaxed transition-all resize-none" 
+              />
+            </div>
+
+            {/* Peculiarities (Features) */}
+            <div className="space-y-4 pt-4 border-t border-zinc-50">
+              <div className="flex items-center justify-between">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Peculiarities</Label>
+                <span className="text-[9px] font-bold text-zinc-300 italic">{formData.features.length}/8 Max</span>
+              </div>
+              <div className="flex gap-2 p-1.5 bg-zinc-50 rounded-2xl border border-zinc-100 focus-within:border-black transition-colors">
+                <Input 
+                  placeholder="e.g., Premium Heavyweight Cotton"
+                  value={newFeature} 
+                  onChange={(e) => setNewFeature(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
+                  className="border-none bg-transparent h-10 shadow-none focus-visible:ring-0 font-bold text-xs" 
+                />
+                <Button 
+                  onClick={addFeature} 
+                  className="bg-black text-white w-10 h-10 p-0 rounded-xl shadow-lg shadow-black/10 active:scale-90 transition-all"
+                >
+                  <Plus size={18} />
+                </Button>
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                <AnimatePresence>
+                  {formData.features.map((f: string, i: number) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="group flex items-center gap-2 bg-zinc-50 hover:bg-zinc-900 hover:text-white border border-zinc-100 px-3 py-2 rounded-xl transition-all duration-300"
+                    >
+                      <CheckCircle2 size={12} className="text-zinc-300 group-hover:text-white transition-colors" />
+                      <span className="text-[10px] font-black uppercase tracking-wide">{f}</span>
+                      <button 
+                        onClick={() => setFormData((prev: any) => ({ ...prev, features: prev.features.filter((_: any, idx: number) => idx !== i) }))}
+                        className="ml-1 opacity-40 hover:opacity-100 transition-opacity"
+                      >
+                        <X size={12} />
+                      </button>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Guidance */}
+          <div className="bg-zinc-50 border border-zinc-100 rounded-3xl p-6 flex items-start gap-4">
+            <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-zinc-900 border border-zinc-100 shadow-sm shrink-0">
+               <span className="text-xs font-black">?</span>
+            </div>
             <div className="space-y-1">
-                <Label className="text-[9px] font-bold uppercase text-zinc-400 ml-1">Narration</Label>
-                <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="bg-zinc-50 border-none rounded-xl p-3 min-h-[80px] text-xs font-bold resize-none" />
+              <h4 className="text-[11px] font-black uppercase tracking-wider">Curation Tip</h4>
+              <p className="text-[10px] text-zinc-500 leading-relaxed font-medium"> Ensure that the narration accurately reflects the high-craftsmanship of FAEM Studio pieces. Visual assets at 4:5 aspect ratio perform best across all interfaces. </p>
             </div>
-
-            {/* Gallery Upload */}
-            <div className="space-y-3">
-                <Label className="text-[9px] font-bold uppercase text-zinc-400 ml-1">Gallery Support</Label>
-                <div className="flex flex-wrap gap-2">
-                    {formData.images.map((img: any) => (
-                        <div key={img.id} className="relative w-16 h-16 rounded-xl overflow-hidden border">
-                            <img src={img.url} className="w-full h-full object-cover" alt="gallery" />
-                            <button onClick={() => removeImage(img.id)} className="absolute top-0 right-0 bg-rose-500 text-white p-1 rounded-bl-lg"><X size={10} /></button>
-                        </div>
-                    ))}
-                    <button onClick={() => galleryInputRef.current?.click()} className="w-16 h-16 rounded-xl border border-dashed border-zinc-200 flex items-center justify-center bg-zinc-50 text-zinc-300">
-                        {uploading ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
-                    </button>
-                    <input type="file" hidden ref={galleryInputRef} accept="image/*" onChange={(e) => handleFileUpload(e, true)} />
-                </div>
-            </div>
-
-            <div className="space-y-3">
-                <Label className="text-[9px] font-bold uppercase text-zinc-400 ml-1">Peculiarities</Label>
-                <div className="flex gap-2">
-                    <Input value={newFeature} onChange={(e) => setNewFeature(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())} placeholder="New feature..." className="h-10 bg-zinc-50 border-none rounded-xl text-[10px] font-bold" />
-                    <Button onClick={addFeature} className="h-10 w-10 p-0 bg-zinc-900 text-white rounded-xl"><Plus size={18} /></Button>
-                </div>
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                    {formData.features.map((f: string, i: number) => (
-                        <div key={i} className="flex items-center gap-1.5 bg-zinc-100 px-2 py-1 rounded-lg text-[10px] font-extrabold text-zinc-600">
-                            {f} <X size={10} className="cursor-pointer hover:text-rose-500" onClick={() => removeFeature(i)} />
-                        </div>
-                    ))}
-                </div>
-            </div>
+          </div>
         </div>
       </div>
     </div>
