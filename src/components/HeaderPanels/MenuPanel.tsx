@@ -13,7 +13,7 @@ const MenuPanel: React.FC<MenuPanelProps> = ({ onClose }) => {
   return (
     <motion.div variants={containerVariants} className="menu-content h-full p-1 pb-4">
       <div className="menu-heading pb-2">
-        <a href="#" className="menu-pill">Spring / Summer</a>
+        {/* Seasonal label removed for a cleaner look */}
       </div>
       <motion.div variants={itemVariants} className="w-full h-[1px] bg-black/10 my-2" />
       

@@ -184,45 +184,47 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         {localReviews.map((review, i) => (
           <div
             key={review.id}
-            className="flex flex-col gap-5 p-7 rounded-2xl anim-fade-up"
-            style={{ backgroundColor: '#FFFFFF', border: '1px solid rgba(0,0,0,0.05)', animationDelay: `${i * 0.05}s` }}
+            className="flex flex-col gap-4 p-5 rounded-[8px] anim-fade-up relative overflow-hidden"
+            style={{ 
+              backgroundColor: 'rgba(0,0,0,0.03)', 
+              border: '1px solid rgba(0,0,0,0.06)', 
+              animationDelay: `${i * 0.05}s`,
+              backdropFilter: 'blur(5px)'
+            }}
           >
             <div className="flex justify-between items-start">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1.5">
                 <div className="flex items-center gap-2">
-                   <span className="text-black text-[15px] font-bold tracking-tight">{review.user}</span>
+                   <span className="text-black text-[13px] font-black tracking-tight uppercase">{review.user}</span>
                    {(review as any).isVerified && (
-                     <span className="bg-black/5 text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full font-bold text-black/50">Verified</span>
+                     <span className="text-[8px] uppercase tracking-[0.2em] font-bold text-emerald-600">Verified Dispatch</span>
                    )}
                 </div>
                 <div className="flex gap-0.5">
                   {Array.from({ length: 5 }).map((_, j) => (
-                    <Star key={j} size={10} className={j < review.rating ? 'fill-black text-black' : 'text-black/10 fill-transparent'} />
+                    <Star key={j} size={8} className={j < review.rating ? 'fill-black text-black' : 'text-black/10 fill-transparent'} />
                   ))}
                 </div>
               </div>
-              <span className="text-[11px] font-medium" style={{ color: 'rgba(0,0,0,0.25)' }}>{review.date}</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-black/20">{review.date}</span>
             </div>
 
-            <p className="text-[14px] leading-relaxed font-light italic" style={{ color: 'rgba(0,0,0,0.5)' }}>
+            <p className="text-[13px] leading-relaxed font-medium text-black/60 italic">
               "{review.comment}"
             </p>
 
-            <div className="flex gap-6 pt-4 border-t" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
+            <div className="flex gap-6 pt-3 border-t border-black/[0.04]">
               {[
-                { icon: <Heart size={12} />, label: 'Helpful' },
-                { icon: <MessageCircle size={12} />, label: 'Reply' },
+                { icon: <Heart size={10} />, label: 'Respect' },
+                { icon: <MessageCircle size={10} />, label: 'Reply' },
               ].map(btn => (
                 <button
                   key={btn.label}
-                  className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.2em] font-bold transition-colors"
-                  style={{ color: 'rgba(0,0,0,0.25)' }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = ACCENT)}
-                  onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = 'rgba(0,0,0,0.25)')}
+                  className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.2em] font-bold transition-colors text-black/30 hover:text-black"
                 >
                   {btn.icon} {btn.label}
                 </button>

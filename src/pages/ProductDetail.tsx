@@ -386,14 +386,27 @@ export default function ProductDetail() {
             <button 
               onClick={toggleWishlist}
               disabled={wishlistLoading}
-              className="group flex items-center gap-3 px-6 py-3 rounded-2xl bg-black/[0.02] hover:bg-black hover:text-white transition-all duration-300 shadow-sm"
+              className="group flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300"
+              style={{ 
+                border: '1px solid rgba(0,0,0,0.08)',
+                backgroundColor: 'rgba(0,0,0,0.04)',
+                backdropFilter: 'blur(10px)'
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = '#000000';
+                e.currentTarget.style.color = '#FFFFFF';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.04)';
+                e.currentTarget.style.color = 'inherit';
+              }}
             >
               {wishlistLoading ? (
-                 <Loader2 size={18} className="animate-spin text-black/20 group-hover:text-white/20" />
+                 <Loader2 size={14} className="animate-spin opacity-20" />
               ) : (
-                 <Heart size={18} className={isWishlisted ? 'fill-red-500 text-red-500 group-hover:fill-white group-hover:text-white' : 'text-black/30 group-hover:text-white'} />
+                 <Heart size={14} className={isWishlisted ? 'fill-red-500 text-red-500' : 'text-black/30'} />
               )}
-              <span className="text-[10px] uppercase font-black tracking-widest leading-none">
+              <span className="text-[10px] uppercase font-bold tracking-[0.2em] leading-none">
                 {isWishlisted ? t('product.saved') : t('product.add_to_selection')}
               </span>
             </button>
