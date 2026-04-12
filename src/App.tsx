@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
@@ -17,18 +17,13 @@ import { GlobalPageLoader } from './components/GlobalPageLoader';
 function AppRoutes() {
   return (
     <Routes>
-      {/* Admin Route - Strictly isolated */}
       <Route path="/fatihveemirinadminportali" element={<Admin />} />
-
-      {/* Storefront Routes - Consistently wrapped through MainLayout or individual elements */}
       <Route path="/" element={<MainLayout><Home /></MainLayout>} />
       <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
       <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
       <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
       <Route path="/signin" element={<MainLayout><SignIn /></MainLayout>} />
       <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
-      
-      {/* Catch-all redirect to Home */}
       <Route path="*" element={<MainLayout><Home /></MainLayout>} />
     </Routes>
   );
@@ -38,7 +33,7 @@ export default function App() {
   const [appLoading, setAppLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Initial mount loading simulation for smooth entrance
+    // Elegant splash loader timing
     const timer = setTimeout(() => setAppLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
@@ -49,14 +44,16 @@ export default function App() {
         <AuthProvider>
           <CartProvider>
             <GlobalPageLoader isLoading={appLoading} />
-            {!appLoading && (
-              <Router>
-                <AppRoutes />
-              </Router>
-            )}
+            <Router>
+               <AnimatePresence mode="wait">
+                 {!appLoading && <AppRoutes />}
+               </AnimatePresence>
+            </Router>
           </CartProvider>
         </AuthProvider>
       </LanguageProvider>
     </ErrorBoundary>
   );
 }
+
+import { AnimatePresence } from 'motion/react';

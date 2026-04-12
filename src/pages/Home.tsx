@@ -92,7 +92,14 @@ export default function Home() {
       }
     };
     fetchFeatured();
-  }, []);
+
+    // Auto-slide logic: next slide every 5 seconds
+    const interval = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [HERO_SLIDES.length]);
 
   return (
     <div style={{ backgroundColor: BG }}>
