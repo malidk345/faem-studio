@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Star, Heart, MessageCircle, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '../lib/supabase';
+
 interface Review {
   id: string;
   user: string;
@@ -10,8 +14,6 @@ interface Review {
   date: string;
   isVerified?: boolean;
 }
-import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabase';
 
 const ACCENT = '#000000';
 
@@ -22,9 +24,10 @@ interface ReviewListProps {
 
 const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [localReviews, setLocalReviews] = useState<Review[]>(reviews);
-  
+
   // Form State
   const [isWriting, setIsWriting] = useState(false);
   const [rating, setRating] = useState(5);
@@ -39,7 +42,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
           .select('*, profiles(name)')
           .eq('product_id', productId)
           .order('created_at', { ascending: false });
-        
+
         if (data) {
           setLocalReviews(data.map((r: any) => ({
             id: r.id,
@@ -67,13 +70,13 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
     }
 
     if (productId && import.meta.env.VITE_SUPABASE_URL) {
-      const { data, error } = await supabase.from('reviews').insert([{
+      const { data } = await supabase.from('reviews').insert([{
         product_id: productId,
         user_id: user.id,
         rating,
         comment
       }]).select('*, profiles(name)').single();
-      
+
       if (data) {
         const newReview: Review = {
           id: data.id,
@@ -108,7 +111,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
     <section className="flex flex-col gap-10">
       <div className="flex items-end justify-between pb-6 border-b" style={{ borderColor: 'rgba(0,0,0,0.06)' }}>
         <div className="flex flex-col gap-2">
-          <p className="text-[10px] uppercase tracking-[0.4em] font-bold" style={{ color: ACCENT }}>Verified Reviews</p>
+          <p className="text-[10px] uppercase tracking-[0.4em] font-bold" style={{ color: ACCENT }}>{t('review.verified')}</p>
           <div className="flex items-center gap-3">
             <div className="flex gap-0.5">
               {[1, 2, 3, 4, 5].map(i => <Star key={i} size={12} className="fill-black text-black" />)}
@@ -120,16 +123,16 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
         <button
           onClick={() => {
             if (!user) {
-               navigate('/signin');
+              navigate('/signin');
             } else {
-               setIsWriting(!isWriting);
-               setErrorMsg('');
+              setIsWriting(!isWriting);
+              setErrorMsg('');
             }
           }}
           className="text-[11px] font-bold uppercase tracking-[0.2em] px-5 py-2.5 rounded-xl transition-all"
           style={{ border: '1px solid rgba(0,0,0,0.10)', color: 'rgba(0,0,0,0.4)', backgroundColor: isWriting ? '#1A1A1A' : 'transparent' }}
         >
-          <span style={{ color: isWriting ? '#FFFFFF' : 'inherit' }}>{isWriting ? 'Cancel' : 'Write Review'}</span>
+          <span style={{ color: isWriting ? '#FFFFFF' : 'inherit' }}>{isWriting ? 'Cancel' : t('review.write')}</span>
         </button>
       </div>
 
@@ -139,7 +142,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
             initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mb-4"
+            className="mb-8"
           >
             <div className="bg-[#FAFAFA] p-6 rounded-2xl border border-black/5 flex flex-col gap-5">
               {!user ? (
@@ -149,11 +152,11 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
               ) : (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-black/40 mb-3">Your Rating</p>
+                    <p className="text-[11px] uppercase tracking-[0.2em] font-bold text-black/40 mb-3">{t('review.rating_label')}</p>
                     <div className="flex gap-1.5">
                       {[1, 2, 3, 4, 5].map(i => (
-                        <button 
-                          key={i} 
+                        <button
+                          key={i}
                           type="button"
                           onClick={() => setRating(i)}
                           className="hover:scale-110 transition-transform active:scale-95"
@@ -163,10 +166,10 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                       ))}
                     </div>
                   </div>
-                  
+
                   <div>
-                    <textarea 
-                      placeholder="Share your thoughts on the fit, quality, or feel..."
+                    <textarea
+                      placeholder={t('review.placeholder')}
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
                       className="w-full bg-white border border-black/10 rounded-xl p-4 text-[14px] leading-relaxed resize-none h-28 focus:outline-none focus:border-black/30 transition-colors"
@@ -175,7 +178,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                   </div>
 
                   <button type="submit" className="self-end bg-black text-white px-7 py-3 rounded-xl text-[13px] font-bold hover:bg-zinc-800 transition-colors">
-                    Submit Dispatch
+                    {t('review.submit')}
                   </button>
                 </form>
               )}
@@ -185,13 +188,20 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
       </AnimatePresence>
 
       <div className="flex flex-col gap-3">
+        {/* Count Header */}
+        <div className="px-1 mb-2">
+           <span className="text-[11px] font-black uppercase tracking-widest text-black/30">
+             {localReviews.length} {t('search.results')}
+           </span>
+        </div>
+
         {localReviews.map((review, i) => (
           <div
             key={review.id}
             className="flex flex-col gap-4 p-5 rounded-[8px] anim-fade-up relative overflow-hidden"
-            style={{ 
-              backgroundColor: 'rgba(0,0,0,0.03)', 
-              border: '1px solid rgba(0,0,0,0.06)', 
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.03)',
+              border: '1px solid rgba(0,0,0,0.06)',
               animationDelay: `${i * 0.05}s`,
               backdropFilter: 'blur(5px)'
             }}
@@ -201,7 +211,9 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                 <div className="flex items-center gap-2">
                    <span className="text-black text-[13px] font-black tracking-tight uppercase">{review.user}</span>
                    {(review as any).isVerified && (
-                     <span className="text-[8px] uppercase tracking-[0.2em] font-bold text-emerald-600">Verified Dispatch</span>
+                     <span className="text-[8px] uppercase tracking-[0.2em] font-bold text-emerald-600 italic">
+                       {t('review.verified')}
+                     </span>
                    )}
                 </div>
                 <div className="flex gap-0.5">
@@ -218,17 +230,12 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
             </p>
 
             <div className="flex gap-6 pt-3 border-t border-black/[0.04]">
-              {[
-                { icon: <Heart size={10} />, label: 'Respect' },
-                { icon: <MessageCircle size={10} />, label: 'Reply' },
-              ].map(btn => (
-                <button
-                  key={btn.label}
-                  className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.2em] font-bold transition-colors text-black/30 hover:text-black"
-                >
-                  {btn.icon} {btn.label}
-                </button>
-              ))}
+              <button className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.2em] font-bold transition-colors text-black/30 hover:text-black">
+                <Heart size={10} /> {t('review.respect')}
+              </button>
+              <button className="flex items-center gap-1.5 text-[9px] uppercase tracking-[0.2em] font-bold transition-colors text-black/30 hover:text-black" onClick={() => setIsWriting(true)}>
+                <MessageCircle size={10} /> {t('review.reply')}
+              </button>
             </div>
           </div>
         ))}

@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
@@ -11,19 +11,32 @@ import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import MainLayout from './layouts/MainLayout';
+import { GlobalPageLoader } from './components/GlobalPageLoader';
 
 function AppRoutes() {
+  const [loading, setLoading] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    // Only show loader if we feel a delay is coming - for now, we'll keep it disabled for instant routes 
+    // and only use it for initial mount or specific slow actions if needed.
+    // REMOVED FORCED TIMER PER USER REQUEST
+  }, [location.pathname]);
+
   return (
-    <Routes>
-      <Route path="/fatihveemirinadminportali" element={<Admin />} />
-      <Route path="/" element={<MainLayout><Home /></MainLayout>} />
-      <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
-      <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
-      <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
-      <Route path="/signin" element={<MainLayout><SignIn /></MainLayout>} />
-      <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
-      <Route path="*" element={<MainLayout><Home /></MainLayout>} />
-    </Routes>
+    <>
+      <GlobalPageLoader isLoading={loading} />
+      <Routes>
+        <Route path="/fatihveemirinadminportali" element={<Admin />} />
+        <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+        <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
+        <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
+        <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
+        <Route path="/signin" element={<MainLayout><SignIn /></MainLayout>} />
+        <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
+        <Route path="*" element={<MainLayout><Home /></MainLayout>} />
+      </Routes>
+    </>
   );
 }
 

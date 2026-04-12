@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
 import { supabase } from '../lib/supabase';
 import { Loader2 } from 'lucide-react';
+import { GlobalPageLoader } from '../components/GlobalPageLoader';
 
 interface Product {
   id: string;
@@ -68,13 +69,7 @@ export default function Shop() {
     ? products
     : products.filter(p => p.category === activeCategory);
 
-  if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <Loader2 className="animate-spin text-zinc-200" size={32} />
-      </div>
-    );
-  }
+  if (isLoading) return <GlobalPageLoader isLoading={true} />;
 
   return (
     <div className="min-h-screen bg-white pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto">

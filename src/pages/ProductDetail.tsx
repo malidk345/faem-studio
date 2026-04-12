@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase';
 import { useCart } from '../context/CartContext';
 import ProductSelectionCard from '../components/ProductSelectionCard';
 import ProductInfoSections from '../components/ProductInfoSections';
+import { GlobalPageLoader } from '../components/GlobalPageLoader';
 import ReviewList from '../components/ReviewList';
 import { ChevronLeft, ChevronRight, Heart, Loader2 } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
@@ -95,8 +96,7 @@ function ImageGallery({ images, productName }: GalleryProps) {
               key={img.id}
               className="flex-shrink-0 w-full snap-center"
             >
-              {/* Padding-bottom trick: reliable cross-browser aspect ratio 3:4 */}
-              <div className="w-full relative" style={{ paddingBottom: '133.33%', backgroundColor: '#E8E5E0' }}>
+              <div className="w-full relative rounded-[4px] overflow-hidden" style={{ paddingBottom: '133.33%', backgroundColor: '#E8E5E0' }}>
                 <img
                   src={img.url}
                   alt={`${productName} — view ${i + 1}`}
@@ -143,32 +143,34 @@ function ImageGallery({ images, productName }: GalleryProps) {
       {images.length > 1 && (
         <div
           ref={thumbsRef}
-          className="flex gap-2 overflow-x-auto hide-scrollbar pb-1"
+          className="flex items-center justify-center gap-4 overflow-x-auto hide-scrollbar py-3 px-4"
         >
           {images.map((img, i) => (
             <button
               key={img.id}
               onClick={() => scrollTo(i)}
-              className="flex-shrink-0 transition-all duration-200"
+              className="flex-shrink-0 transition-all duration-300 relative"
               style={{
-                width: 64,
+                width: 54,
                 aspectRatio: '3/4',
-                borderRadius: 10,
-                overflow: 'hidden',
-                outline: i === activeIndex
-                  ? `2px solid ${ACCENT}`
-                  : '2px solid transparent',
-                outlineOffset: 2,
-                opacity: i === activeIndex ? 1 : 0.45,
+                borderRadius: 4,
+                boxShadow: i === activeIndex
+                  ? `0 0 0 1px white, 0 0 0 3px ${ACCENT}`
+                  : 'none',
+                opacity: i === activeIndex ? 1 : 0.35,
+                transform: i === activeIndex ? 'scale(1.08)' : 'scale(1)',
+                zIndex: i === activeIndex ? 10 : 1
               }}
               aria-label={`View image ${i + 1}`}
             >
-              <img
-                src={img.url}
-                alt={`${productName} thumbnail ${i + 1}`}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
+              <div className="w-full h-full rounded-[4px] overflow-hidden">
+                <img
+                  src={img.url}
+                  alt={`${productName} thumbnail ${i + 1}`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
             </button>
           ))}
         </div>
@@ -309,17 +311,7 @@ export default function ProductDetail() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="h-screen flex flex-col items-center justify-center gap-4 bg-white">
-        <Loader2 className="animate-spin text-zinc-200" size={32} />
-        <div className="flex flex-col items-center gap-1">
-          <p className="font-black text-[10px] uppercase tracking-[0.4em]">{t('product.loading_status')}</p>
-          <span className="text-[9px] text-zinc-400 font-mono">ID: {id}</span>
-        </div>
-      </div>
-    );
-  }
+  if (loading) return <GlobalPageLoader isLoading={true} />;
 
   if (!product || product.error) {
     return (
@@ -441,44 +433,57 @@ export default function ProductDetail() {
               </p>
 
               {/* Name + Price */}
-              <div className="flex flex-col gap-3">
-                <h1 className="text-[clamp(1.8rem,4vw,3rem)] font-black tracking-[-0.03em] text-black leading-[1.05]">
+              <div className="flex flex-col gap-2">
+                <h1 className="text-[clamp(1.5rem,5vw,2.5rem)] font-black tracking-[-0.05em] text-black leading-[0.95]">
                   {product.name}
                 </h1>
-                <p className="text-[22px] font-black tracking-tight" style={{ color: ACCENT }}>
+                <p className="text-[18px] font-black tracking-tighter" style={{ color: ACCENT }}>
                   {product.price}
                 </p>
               </div>
 
-              {/* Description */}
-              <p className="text-[14px] leading-[1.8] font-light" style={{ color: 'rgba(0,0,0,0.5)' }}>
-                {product.description}
-              </p>
-
-              {/* Features */}
-              {product.features && (
-                <div className="grid grid-cols-1 gap-2">
-                  {product.features.map((f, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="w-1 h-1 rounded-full flex-shrink-0" style={{ backgroundColor: ACCENT }} />
-                      <span className="text-[13px]" style={{ color: 'rgba(0,0,0,0.45)' }}>{f}</span>
-                    </div>
-                  ))}
+              {/* Description & Technical Specs - Refined Compact Version */}
+              <div className="flex flex-col gap-3 mt-6">
+                {/* Description Box */}
+                <div className="p-4 rounded-[6px] border border-black/[0.08] bg-black/[0.04] relative overflow-hidden" style={{ backdropFilter: 'blur(10px)' }}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="px-2 py-0.5 rounded-[4px] bg-black text-white text-[9px] font-black uppercase tracking-widest">Açıklama</span>
+                  </div>
+                  <p className="text-[13px] leading-relaxed font-medium text-black/60">
+                    {product.description}
+                  </p>
                 </div>
-              )}
+
+                {/* Features Box */}
+                {product.features && product.features.length > 0 && (
+                  <div className="p-4 rounded-[6px] border border-black/[0.08] bg-black/[0.04] relative overflow-hidden" style={{ backdropFilter: 'blur(10px)' }}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="px-2 py-0.5 rounded-[4px] bg-black text-white text-[9px] font-black uppercase tracking-widest">Özellikler</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+                      {product.features.map((f, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                          <div className="w-1 h-1 rounded-full bg-black/20" />
+                          <span className="text-[12px] font-bold text-black/50 tracking-tight">{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* ─── INFO SECTIONS ─── */}
-      <div className="max-w-[1200px] mx-auto px-6 md:px-16 pb-16">
-        <ProductInfoSections />
+      {/* ─── REVIEWS ─── */}
+      <div className="max-w-[900px] mx-auto px-6 md:px-16 pb-20">
+        <ReviewList productId={product.id} reviews={reviews} />
       </div>
 
-      {/* ─── REVIEWS ─── */}
-      <div className="max-w-[900px] mx-auto px-6 md:px-16 pb-24">
-        <ReviewList productId={product.id} reviews={reviews} />
+      {/* ─── INFO SECTIONS ─── */}
+      <div className="max-w-[1200px] mx-auto px-6 md:px-16 pb-24">
+        <ProductInfoSections />
       </div>
 
       {/* ─── RELATED ─── */}

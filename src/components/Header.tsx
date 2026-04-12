@@ -18,7 +18,21 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
   const positionClass = isAbsolute ? 'absolute' : 'fixed';
 
   return (
-    <header className={`${positionClass} top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-6 flex justify-center z-50 pointer-events-none`}>
+    <>
+      {/* Click Outside Overlay */}
+      <AnimatePresence>
+        {activePanel && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActivePanel(null)}
+            className="fixed inset-0 z-40 bg-black/[0.02] backdrop-blur-[1px]"
+          />
+        )}
+      </AnimatePresence>
+
+      <header className={`${positionClass} top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-6 flex justify-center z-50 pointer-events-none`}>
       {/* Expandable Full-Width Pill with light glassmorphism */}
       <motion.div
         layout
@@ -112,7 +126,7 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
               className="flex flex-col w-full"
             >
               <motion.div layout="position" className="w-full h-[1px] bg-black/5 mb-2"></motion.div>
-              {activePanel === 'search' && <SearchPanel />}
+              {activePanel === 'search' && <SearchPanel onClose={() => setActivePanel(null)} />}
               {activePanel === 'menu' && <MenuPanel onClose={() => setActivePanel(null)} />}
               {activePanel === 'profile' && <ProfilePanel onClose={() => setActivePanel(null)} />}
               {activePanel === 'cart' && <CartPanel onClose={() => setActivePanel(null)} />}
@@ -120,6 +134,7 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
           )}
         </AnimatePresence>
       </motion.div>
-    </header>
+      </header>
+    </>
   );
 }

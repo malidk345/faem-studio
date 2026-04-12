@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronUp, Minus, Plus } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+
 interface Product {
   id: string;
   name: string;
@@ -26,6 +28,7 @@ const ProductSelectionCard: React.FC<ProductSelectionCardProps> = ({
   handleDecrease, handleIncrease, handleAddToCart,
 }) => {
   const [isAdding, setIsAdding] = useState(false);
+  const { t } = useLanguage();
 
   const performAddAnimation = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -60,9 +63,9 @@ const ProductSelectionCard: React.FC<ProductSelectionCardProps> = ({
       {/* Top row */}
       <div className="flex items-center justify-between px-6 pb-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="flex flex-col gap-1">
-          <h2 className="text-black text-[22px] font-black tracking-[-0.03em] leading-none">{product.name}</h2>
+          <h2 className="text-black text-[18px] font-black tracking-[-0.04em] leading-none">{product.name}</h2>
           <p className="text-[13px] font-light" style={{ color: 'rgba(0,0,0,0.4)' }}>
-            Price <span className="font-bold ml-1" style={{ color: '#000000' }}>{product.price}</span>
+            {t('product.price_label')} <span className="font-bold ml-1" style={{ color: '#000000' }}>{product.price}</span>
           </p>
         </div>
         <motion.button
@@ -88,7 +91,7 @@ const ProductSelectionCard: React.FC<ProductSelectionCardProps> = ({
             {/* Size + Qty */}
             <div className="px-6 py-5 flex items-center justify-between">
               <div className="flex flex-col gap-2">
-                <p className="text-[9px] uppercase tracking-[0.3em] font-bold" style={{ color: 'rgba(0,0,0,0.3)' }}>Size</p>
+                <p className="text-[9px] uppercase tracking-[0.3em] font-bold" style={{ color: 'rgba(0,0,0,0.3)' }}>{t('cart.size')}</p>
                 <div className="flex gap-5">
                   {product.sizes.map(size => (
                     <button
@@ -107,7 +110,7 @@ const ProductSelectionCard: React.FC<ProductSelectionCardProps> = ({
               </div>
 
               <div className="flex flex-col items-end gap-2">
-                <p className="text-[9px] uppercase tracking-[0.3em] font-bold" style={{ color: 'rgba(0,0,0,0.3)' }}>Qty</p>
+                <p className="text-[9px] uppercase tracking-[0.3em] font-bold" style={{ color: 'rgba(0,0,0,0.3)' }}>{t('cart.qty')}</p>
                 <div className="flex items-center gap-3 px-3 py-1.5 rounded-xl"
                   style={{ backgroundColor: 'rgba(0,0,0,0.04)', border: '1px solid rgba(0,0,0,0.06)' }}>
                   <button onClick={e => { e.stopPropagation(); handleDecrease(); }}
@@ -130,7 +133,7 @@ const ProductSelectionCard: React.FC<ProductSelectionCardProps> = ({
             {/* CTA */}
             <div className="px-6 pt-5 pb-6 flex flex-col gap-3">
               <p className="text-center text-[10px] font-medium" style={{ color: 'rgba(0,0,0,0.25)' }}>
-                Free shipping over $200 · 30-day returns
+                {t('product.short_promise')}
               </p>
               
               <button
@@ -146,7 +149,7 @@ const ProductSelectionCard: React.FC<ProductSelectionCardProps> = ({
                       <path stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" d="M14.608 12.563v5m2.5-2.5h-5"></path>
                     </svg>
                   </span>
-                  <span>Add to Cart · {product.price}</span>
+                  <span>{t('product.add')} · {product.price}</span>
                 </span>
                 
                 <span className="added-state">
