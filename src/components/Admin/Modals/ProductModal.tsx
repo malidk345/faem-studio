@@ -11,7 +11,10 @@ import {
   Select, SelectContent, SelectItem,
   SelectTrigger, SelectValue
 } from "@/components/ui/select";
-import { Package, Tag, DollarSign, Layers, Image as ImageIcon } from 'lucide-react';
+import { 
+  Package, Tag, Layers, Image as ImageIcon, 
+  Plus, X, Sparkles 
+} from 'lucide-react';
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -27,16 +30,23 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
     price: '',
     category: '',
     image_url: '',
-    stock_count: 0,
+    images: [],
+    features: [],
+    stock_count: 24,
     description: '',
     type: 'Standard'
   });
+
+  const [newFeature, setNewFeature] = useState('');
+  const [newImage, setNewImage] = useState('');
 
   useEffect(() => {
     if (editingProduct) {
       setFormData({
         ...editingProduct,
-        price: editingProduct.price?.replace(' ₺', '') || ''
+        price: editingProduct.price?.replace(' ₺', '') || '',
+        images: Array.isArray(editingProduct.images) ? editingProduct.images : [],
+        features: Array.isArray(editingProduct.features) ? editingProduct.features : []
       });
     } else {
       setFormData({
@@ -44,12 +54,35 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
         price: '',
         category: categories[0]?.name || categories[0] || '',
         image_url: '',
+        images: [],
+        features: [],
         stock_count: 24,
         description: '',
         type: 'Standard'
       });
     }
   }, [editingProduct, categories, isOpen]);
+
+  const addFeature = () => {
+    if (!newFeature.trim()) return;
+    setFormData({ ...formData, features: [...formData.features, newFeature.trim()] });
+    setNewFeature('');
+  };
+
+  const removeFeature = (idx: number) => {
+    setFormData({ ...formData, features: formData.features.filter((_: any, i: number) => i !== idx) });
+  };
+
+  const addImage = () => {
+    if (!newImage.trim()) return;
+    const imgObj = { id: `img-${Date.now()}`, url: newImage.trim() };
+    setFormData({ ...formData, images: [...formData.images, imgObj] });
+    setNewImage('');
+  };
+
+  const removeImage = (id: string) => {
+    setFormData({ ...formData, images: formData.images.filter((img: any) => img.id !== id) });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,26 +94,26 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-white rounded-[2.5rem] border-none shadow-2xl p-0 overflow-hidden">
+      <DialogContent className="w-[95vw] md:max-w-[750px] max-h-[90vh] overflow-y-auto bg-white rounded-[1.5rem] md:rounded-[2.5rem] border-none shadow-2xl p-0">
         <form onSubmit={handleSubmit}>
-          <div className="p-10 space-y-10">
+          <div className="p-6 md:p-10 space-y-8 md:space-y-10">
             <DialogHeader className="space-y-3">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-3xl bg-zinc-950 flex items-center justify-center text-white shadow-2xl">
-                  <Package size={26} />
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl md:rounded-3xl bg-zinc-950 flex items-center justify-center text-white shadow-2xl">
+                  <Package size={24} />
                 </div>
                 <div>
-                  <DialogTitle className="text-3xl font-black tracking-tighter">
+                  <DialogTitle className="text-2xl md:text-3xl font-black tracking-tighter">
                     {editingProduct ? 'Configure Asset' : 'New Asset Curation'}
                   </DialogTitle>
-                  <DialogDescription className="text-zinc-400 font-bold text-[10px] uppercase tracking-widest mt-1">
-                    Enterprise Inventory Terminal v2.0
+                  <DialogDescription className="text-zinc-400 font-bold text-[9px] md:text-[10px] uppercase tracking-widest mt-1">
+                    Enterprise Inventory Terminal v3.0 • Mobile Optimized
                   </DialogDescription>
                 </div>
               </div>
             </DialogHeader>
 
-            <div className="grid gap-8 py-4">
+            <div className="grid gap-6 md:gap-8 py-4">
               {/* Basic Identity */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
@@ -114,7 +147,63 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
                 </div>
               </div>
 
-              {/* Categorization & Inventory */}
+              {/* Multi-Image Management */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Media Gallery</Label>
+                  <span className="text-[9px] font-bold text-zinc-300 uppercase italic">Primary + Gallery Assets</span>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <p className="text-[9px] font-bold text-zinc-400 uppercase">Primary Display</p>
+                    <div className="relative">
+                      <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300" size={16} />
+                      <Input
+                        required
+                        value={formData.image_url}
+                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                        placeholder="Primary image URL..."
+                        className="pl-12 h-14 bg-zinc-50 border-transparent rounded-2xl focus:bg-white text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <p className="text-[9px] font-bold text-zinc-400 uppercase">Add Gallery Image</p>
+                    <div className="flex gap-2">
+                      <Input
+                        value={newImage}
+                        onChange={(e) => setNewImage(e.target.value)}
+                        placeholder="Gallery URL..."
+                        className="h-14 bg-zinc-50 border-transparent rounded-2xl focus:bg-white text-xs"
+                      />
+                      <Button type="button" onClick={addImage} className="h-14 w-14 rounded-2xl bg-zinc-100 hover:bg-zinc-200 text-zinc-900 border-none shrink-0 shadow-sm">
+                        <Plus size={20} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {formData.images.length > 0 && (
+                  <div className="flex flex-wrap gap-3 p-4 bg-zinc-50/50 rounded-3xl border border-dashed border-zinc-200">
+                    {formData.images.map((img: any) => (
+                      <div key={img.id} className="group relative w-20 h-20 rounded-xl overflow-hidden border bg-white shadow-sm transition-transform active:scale-95">
+                        <img src={img.url} className="w-full h-full object-cover" alt="gallery" />
+                        <button 
+                          type="button"
+                          onClick={() => removeImage(img.id)}
+                          className="absolute inset-0 bg-rose-500/80 text-white opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                        >
+                          <X size={20} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Categorization & Strategic Params */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Strategic Sector</Label>
@@ -153,7 +242,7 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
                     value={formData.type}
                     onValueChange={(val) => setFormData({ ...formData, type: val })}
                   >
-                    <SelectTrigger className="h-14 bg-zinc-900 rounded-2xl flex items-center px-4 gap-2 text-white shadow-inner border-none">
+                    <SelectTrigger className="h-14 bg-zinc-950 rounded-2xl flex items-center px-4 gap-2 text-white shadow-inner border-none">
                       <SelectValue placeholder="Type" />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
@@ -165,18 +254,38 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <Label htmlFor="image" className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Digital Asset URL</Label>
-                <div className="relative">
-                  <ImageIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300" size={16} />
-                  <Input
-                    id="image"
-                    required
-                    value={formData.image_url || formData.image}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="https://faem.studio/assets/..."
-                    className="pl-12 h-14 bg-zinc-50 border-transparent rounded-2xl focus:bg-white text-xs font-medium text-zinc-400"
-                  />
+              {/* Dynamic Features Management */}
+              <div className="space-y-4">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Peculiarities</Label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-300" size={16} />
+                    <Input
+                      value={newFeature}
+                      onChange={(e) => setNewFeature(e.target.value)}
+                      placeholder="e.g. 100% Recycled Obsidian Fibers..."
+                      onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
+                      className="pl-12 h-14 bg-zinc-50 border-transparent rounded-2xl focus:bg-white font-medium"
+                    />
+                  </div>
+                  <Button type="button" onClick={addFeature} className="h-14 bg-zinc-900 text-white rounded-2xl px-6 font-bold flex items-center gap-2">
+                    <Plus size={18} />
+                    <span className="hidden md:inline">Add Detail</span>
+                  </Button>
+                </div>
+                
+                <div className="flex flex-wrap gap-2">
+                  {formData.features.map((feature: string, idx: number) => (
+                    <div key={idx} className="flex items-center gap-2 bg-zinc-50 border border-zinc-100 px-4 py-2 rounded-xl group transition-all hover:bg-zinc-100">
+                      <span className="text-[11px] font-bold text-zinc-700">{feature}</span>
+                      <button type="button" onClick={() => removeFeature(idx)} className="text-zinc-300 hover:text-rose-500 transition-colors">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                  {formData.features.length === 0 && (
+                    <p className="text-[10px] text-zinc-300 italic font-medium py-2 ml-1">No specific features deployed.</p>
+                  )}
                 </div>
               </div>
 
@@ -193,7 +302,7 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
             </div>
           </div>
 
-          <DialogFooter className="bg-zinc-50 p-10 flex items-center justify-between sm:justify-between border-t border-zinc-100">
+          <DialogFooter className="bg-zinc-50 p-6 md:p-10 flex items-center justify-between sm:justify-between border-t border-zinc-100">
             <Button
               type="button"
               variant="ghost"
@@ -204,7 +313,7 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
             </Button>
             <Button
               type="submit"
-              className="bg-zinc-950 text-white hover:bg-zinc-800 px-10 h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-black/30 transform transition-all active:scale-95"
+              className="bg-zinc-950 text-white hover:bg-zinc-800 px-8 md:px-12 h-14 rounded-2xl font-black uppercase tracking-widest text-xs shadow-2xl shadow-black/30 transform transition-all active:scale-95"
             >
               {editingProduct ? 'Update Asset' : 'Initialize Asset'}
             </Button>

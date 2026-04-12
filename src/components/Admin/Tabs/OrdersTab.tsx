@@ -82,16 +82,16 @@ export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
   return (
     <div className="space-y-6">
       {/* Sales Header */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-           <h2 className="text-2xl font-black tracking-tighter text-zinc-900">Revenue Stream</h2>
+           <h2 className="text-2xl md:text-3xl font-black tracking-tighter text-zinc-900">Revenue Stream</h2>
            <p className="text-zinc-400 text-xs font-medium">Monitor real-time sales performance and order lifecycle.</p>
         </div>
-        <div className="flex gap-2">
-            <Button variant="outline" className="rounded-xl font-bold flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row gap-3">
+            <Button variant="outline" className="w-full sm:w-auto rounded-xl font-bold flex items-center justify-center gap-2 py-6">
                 <MapPin size={16} /> Regional Performance
             </Button>
-            <Button className="bg-zinc-900 text-white hover:bg-zinc-800 rounded-xl font-bold flex items-center gap-2 shadow-lg">
+            <Button className="w-full sm:w-auto bg-zinc-900 text-white hover:bg-zinc-800 rounded-xl font-bold flex items-center justify-center gap-2 py-6 shadow-lg">
                 <ShoppingBag size={16} /> New Sale Entry
             </Button>
         </div>

@@ -85,14 +85,14 @@ export function ProductsTab({ products, onAdd, onEdit, onDelete }: ProductsTabPr
   return (
     <div className="space-y-6">
       {/* Strategic Header */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-           <h2 className="text-2xl font-black tracking-tighter">Asset Management</h2>
+           <h2 className="text-2xl md:text-3xl font-black tracking-tighter">Asset Management</h2>
            <p className="text-zinc-400 text-xs font-medium italic">Storefront inventory and digital assets.</p>
         </div>
         <Button 
           onClick={onAdd}
-          className="bg-black text-white hover:bg-zinc-800 rounded-xl px-5 py-6 font-bold flex items-center gap-2 shadow-xl shadow-black/10 transition-all active:scale-95"
+          className="w-full sm:w-auto bg-black text-white hover:bg-zinc-800 rounded-xl px-5 py-6 font-bold flex items-center justify-center gap-2 shadow-xl shadow-black/10 transition-all active:scale-95"
         >
           <Plus size={18} />
           Deploy New Asset
