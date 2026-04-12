@@ -71,18 +71,6 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      {searchKey && (
-        <div className="flex items-center py-4">
-          <Input
-            placeholder={`Search ${searchKey}...`}
-            value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn(searchKey)?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm rounded-xl font-bold border-zinc-200"
-          />
-        </div>
-      )}
       <div className="rounded-2xl border border-zinc-100 shadow-sm bg-white overflow-hidden">
         <div className="overflow-x-auto">
           <Table>

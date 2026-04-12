@@ -33,8 +33,9 @@ export function SiteHeader() {
             orientation="vertical"
             className="mx-2 data-[orientation=vertical]:h-4"
           />
-          <div className="flex-1 max-w-sm">
-            <SearchTrigger onClick={() => setSearchOpen(true)} />
+          <div className="flex flex-1 items-center gap-4">
+            <div className="w-full flex-1 md:w-auto md:flex-none">
+            </div>
           </div>
           <div className="ml-auto flex items-center gap-4">
             <UserNav />
