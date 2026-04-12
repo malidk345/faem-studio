@@ -99,8 +99,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Logo size={24} className="text-current" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">ShadcnStore</span>
-                  <span className="truncate text-xs">Admin Dashboard</span>
+                  <span className="truncate font-black tracking-tight">FAEM Manager</span>
+                  <span className="truncate text-[10px] uppercase font-bold text-zinc-400">Studio Command</span>
                 </div>
               </Link>
             </SidebarMenuButton>
