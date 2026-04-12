@@ -37,8 +37,6 @@ export function SiteHeader() {
             <SearchTrigger onClick={() => setSearchOpen(true)} />
           </div>
           <div className="ml-auto flex items-center gap-4">
-            <ModeToggle />
-            <div className="h-4 w-px bg-zinc-200 mx-1" />
             <UserNav />
           </div>
         </div>

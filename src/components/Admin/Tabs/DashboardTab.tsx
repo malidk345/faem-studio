@@ -14,39 +14,24 @@ interface DashboardTabProps {
 
 export function DashboardTab({ orders, products }: DashboardTabProps) {
   return (
-    <div className="flex-1 space-y-6 px-1 lg:px-6 pt-0">
-      {/* Enhanced Header - Birebir Business Dashboard Style */}
-      <div className="flex md:flex-row flex-col md:items-center justify-between gap-4 md:gap-6 mb-8">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-3xl font-black tracking-tighter">Business Intelligence</h1>
-          <p className="text-muted-foreground text-sm font-medium">
-            Strategic performance overview and key retail metrics.
-          </p>
-        </div>
-        <QuickActions />
+    <div className="flex-1 space-y-10 px-0 lg:px-4 pt-0">
+      {/* Hyper-Compact Header */}
+      <div className="flex flex-col gap-2">
+        <h1 className="text-4xl font-black tracking-tighter leading-none">Studio Pulse</h1>
+        <p className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.3em]">Operational Essence</p>
       </div>
 
-      {/* Main Dashboard Grid - High-End Business Standards */}
-      <div className="@container/main space-y-6">
-        
-        {/* Top Row - Key Metrics (Real-time) */}
+      <div className="space-y-10">
+        {/* Real-time Metrics System */}
         <MetricsOverview />
 
-        {/* Second Row - Charts (Business Visualization) */}
-        <div className="grid gap-6 grid-cols-1 xl:grid-cols-2">
-          <SalesChart />
-          <RevenueBreakdown />
-        </div>
-
-        {/* Third Row - Activity & Performance */}
-        <div className="grid gap-6 grid-cols-1 xl:grid-cols-2">
-          <RecentTransactions />
-          <TopProducts />
-        </div>
-
-        {/* Fourth Row - Strategic Insights */}
-        <div className="bg-zinc-900 text-white rounded-3xl p-1 overflow-hidden shadow-2xl">
-           <CustomerInsights />
+        {/* Essential Activity Feed */}
+        <div className="bg-white border border-zinc-100 rounded-[2.5rem] p-4 md:p-10 shadow-sm overflow-hidden">
+           <h3 className="text-xl font-bold mb-8 flex items-center gap-3">
+              <span className="w-1.5 h-6 bg-black rounded-full" />
+              Recent Dispatch Flow
+           </h3>
+           <RecentTransactions />
         </div>
       </div>
     </div>
