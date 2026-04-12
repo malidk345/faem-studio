@@ -181,6 +181,11 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState<any>(null);
+  
+  useSEO({
+    title: product?.name ? `${product.name} | Faem Studio` : 'Product Details',
+    description: product?.description || 'Faem Studio collection Item'
+  });
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('S');
@@ -338,10 +343,6 @@ export default function ProductDetail() {
     );
   }
 
-  useSEO({
-    title: product?.name ? `${product.name} | Faem Studio` : 'Product Details',
-    description: product?.description || 'Faem Studio collection Item'
-  });
 
   const handleAddToCart = (e: React.MouseEvent) => {
     try {
