@@ -205,11 +205,21 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       setLoading(true);
       try {
-        const { data, error } = await supabase.from('products').select('*').eq('id', currentId).single();
-        if (error || !data) {
-          setProduct(null);
+        const { data, error: fetchError } = await supabase.from('products').select('*').eq('id', currentId).single();
+        
+        if (fetchError) {
+          console.error("📋 Supabase Error Details:", fetchError);
+          setProduct({ error: `Connection Error: ${fetchError.message}` });
           return;
         }
+
+        if (!data) {
+          console.warn("⚠️ Data is null for ID:", currentId);
+          setProduct({ error: "Product record not found in database." });
+          return;
+        }
+
+        console.log("✅ Product Fetched Successfully:", data.name);
 
         // Extremely safe image gallery mapping
         let galleryImages: ProductImage[] = [];
@@ -292,7 +302,19 @@ export default function ProductDetail() {
   };
 
   if (loading) return <div className="h-screen flex items-center justify-center font-bold">Curating Detail...</div>;
-  if (!product) return <div className="h-screen flex items-center justify-center font-bold">Product Not Found</div>;
+  if (!product || product.error) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-4 p-8 text-center">
+        <h2 className="text-2xl font-black">Archive Access Restricted</h2>
+        <p className="text-zinc-500 max-w-md text-sm leading-relaxed">
+          {product?.error || "The requested item could not be retrieved from the studio vault."}
+        </p>
+        <button onClick={() => navigate('/')} className="bg-black text-white px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest mt-4">
+          Return to Gallery
+        </button>
+      </div>
+    );
+  }
 
   useSEO({
     title: product?.name ? `${product.name} | Faem Studio` : 'Product Details',
