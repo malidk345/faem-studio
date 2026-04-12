@@ -147,10 +147,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <h3
           style={{
             margin: 0,
-            lineHeight: 1.4,
+            lineHeight: 1.2,
             color: '#1A1A1A',
-            fontWeight: 500,
+            fontWeight: 700,
             fontSize: '0.85rem',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+            letterSpacing: '-0.02em',
           }}
         >
           {product.name}
