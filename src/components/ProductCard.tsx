@@ -37,10 +37,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
     emblaApi.on('select', onSelect);
   }, [emblaApi, onSelect]);
 
+  // Gallery sources: support both string arrays and object arrays from Supabase
   const galleryImages = [
-    { id: 'master', url: product.image },
+    product.image,
     ...(Array.isArray(product.images) ? product.images : [])
-  ];
+  ].filter(Boolean);
 
   return (
     <div className="block group">
@@ -49,11 +50,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="embla h-full" ref={emblaRef}>
           <div className="embla__container h-full flex">
             {galleryImages.map((img, idx) => (
-              <div key={img.id || idx} className="embla__slide flex-[0_0_100%] min-w-0 h-full relative">
+              <div key={idx} className="embla__slide flex-[0_0_100%] min-w-0 h-full relative">
                 <Link to={`/product/${product.id}`} className="block h-full w-full">
                   <img
-                    src={img.url}
-                    alt={product.name}
+                    src={typeof img === 'string' ? img : (img as any).url}
+                    alt={`${product.name} - ${idx}`}
                     className="w-full h-full object-cover transition-opacity duration-300"
                     style={{ filter: 'brightness(1.15)' }}
                   />

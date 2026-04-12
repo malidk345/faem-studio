@@ -87,6 +87,7 @@ export default function Home() {
           name: p.name,
           price: p.price,
           image: p.image_url,
+          images: p.images || [],
           category: p.category
         })));
       }
