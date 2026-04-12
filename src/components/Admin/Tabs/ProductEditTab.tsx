@@ -31,6 +31,7 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
     features: [],
     stock_count: 24,
     description: '',
+    discount_price: '',
   });
 
   const [uploading, setUploading] = useState<string | null>(null); // 'primary' | 'gallery' | null
@@ -49,6 +50,7 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
         features: Array.isArray(product.features) ? product.features : [],
         stock_count: product.stock_count || 24,
         description: product.description || '',
+        discount_price: product.discount_price?.toString().replace(/[^\d]/g, '') || '',
       });
     }
   }, [product]);
@@ -117,6 +119,7 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
       features: formData.features,
       stock_count: parseInt(formData.stock_count) || 0,
       description: formData.description,
+      discount_price: formData.discount_price ? (formData.discount_price.toString().includes('₺') ? formData.discount_price : `${formData.discount_price} ₺`) : null,
     };
 
     onSave(submissionData);
@@ -274,6 +277,19 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
                     className="h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-black text-sm pl-10 transition-all" 
                   />
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-zinc-400 text-sm italic">₺</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-rose-400 ml-1">Strategic Discount (₺)</Label>
+                <div className="relative">
+                  <Input 
+                    type="number"
+                    placeholder="Optional"
+                    value={formData.discount_price} 
+                    onChange={(e) => setFormData((prev: any) => ({ ...prev, discount_price: e.target.value }))}
+                    className="h-12 bg-rose-50/20 border-zinc-100 focus:border-rose-500 rounded-xl font-black text-sm pl-10 transition-all text-rose-600" 
+                  />
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-rose-400/50 text-sm italic">₺</span>
                 </div>
               </div>
             </div>

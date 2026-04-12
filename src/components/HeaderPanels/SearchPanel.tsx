@@ -11,6 +11,7 @@ interface ProductResult {
   name: string;
   price: string;
   image_url: string;
+  discount_price?: string;
 }
 
 interface SearchPanelProps {
@@ -31,7 +32,7 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onClose }) => {
         try {
           const { data } = await supabase
             .from('products')
-            .select('id, name, price, image_url')
+            .select('id, name, price, image_url, discount_price')
             .ilike('name', `%${query}%`)
             .limit(4);
           
@@ -122,7 +123,14 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onClose }) => {
                     </div>
                     <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
                       <h4 className="text-[14px] font-bold text-black leading-tight">{product.name}</h4>
-                      <p className="text-[12px] font-medium text-black/40">{product.price}</p>
+                      {product.discount_price ? (
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] font-medium text-black/20 line-through">{product.price}</span>
+                          <span className="text-[12px] font-bold text-rose-600">{product.discount_price}</span>
+                        </div>
+                      ) : (
+                        <p className="text-[12px] font-medium text-black/40">{product.price}</p>
+                      )}
                     </div>
                     <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0 text-black/20" />
                   </button>

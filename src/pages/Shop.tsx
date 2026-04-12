@@ -15,6 +15,7 @@ interface Product {
   images?: string[];
   sizes?: string[];
   features?: string[];
+  discount_price?: string;
 }
 import { useSEO } from '../hooks/useSEO';
 import { useLanguage } from '../context/LanguageContext';
@@ -49,7 +50,8 @@ export default function Shop() {
             category: p.category,
             sizes: p.sizes || ['One Size'],
             description: p.description,
-            features: p.features || []
+            features: p.features || [],
+            discount_price: p.discount_price
           }));
           setProducts(mapped);
         }

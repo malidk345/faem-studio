@@ -88,7 +88,8 @@ export default function Home() {
           price: p.price,
           image: p.image_url,
           images: p.images || [],
-          category: p.category
+          category: p.category,
+          discount_price: p.discount_price
         })));
       }
     };

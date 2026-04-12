@@ -34,7 +34,8 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
     features: [],
     stock_count: 24,
     description: '',
-    type: 'Standard'
+    type: 'Standard',
+    discount_price: ''
   });
 
   const [newFeature, setNewFeature] = useState('');
@@ -45,6 +46,7 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
       setFormData({
         ...editingProduct,
         price: editingProduct.price?.replace(' ₺', '') || '',
+        discount_price: editingProduct.discount_price?.replace(' ₺', '') || '',
         images: Array.isArray(editingProduct.images) ? editingProduct.images : [],
         features: Array.isArray(editingProduct.features) ? editingProduct.features : []
       });
@@ -58,7 +60,8 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
         features: [],
         stock_count: 24,
         description: '',
-        type: 'Standard'
+        type: 'Standard',
+        discount_price: ''
       });
     }
   }, [editingProduct, categories, isOpen]);
@@ -88,7 +91,8 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
     e.preventDefault();
     onSave({
       ...formData,
-      price: formData.price.includes('₺') ? formData.price : `${formData.price} ₺`
+      price: formData.price.toString().includes('₺') || !formData.price ? formData.price : `${formData.price} ₺`,
+      discount_price: (formData.discount_price && !formData.discount_price.toString().includes('₺')) ? `${formData.discount_price} ₺` : (formData.discount_price || null)
     });
   };
 
@@ -142,6 +146,20 @@ export function ProductModal({ isOpen, onClose, onSave, editingProduct, categori
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                       placeholder="8.500"
                       className="pl-10 h-14 bg-zinc-50 border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-black transition-all font-black"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <Label htmlFor="discount_price" className="text-[10px] font-black uppercase tracking-widest text-rose-400 ml-1">Strategic Discount (₺)</Label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-rose-300 font-bold">₺</span>
+                    <Input
+                      id="discount_price"
+                      value={formData.discount_price}
+                      onChange={(e) => setFormData({ ...formData, discount_price: e.target.value })}
+                      placeholder="Optional"
+                      className="pl-10 h-14 bg-rose-50/30 border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-rose-500 transition-all font-black text-rose-600"
                     />
                   </div>
                 </div>

@@ -8,6 +8,7 @@ interface Product {
   name: string;
   price: string;
   sizes: string[];
+  discount_price?: string;
 }
 
 interface ProductSelectionCardProps {
@@ -65,7 +66,15 @@ const ProductSelectionCard: React.FC<ProductSelectionCardProps> = ({
         <div className="flex flex-col gap-1">
           <h2 className="text-black text-[18px] font-black tracking-[-0.04em] leading-none">{product.name}</h2>
           <p className="text-[13px] font-light" style={{ color: 'rgba(0,0,0,0.4)' }}>
-            {t('product.price_label')} <span className="font-bold ml-1" style={{ color: '#000000' }}>{product.price}</span>
+            {t('product.price_label')} 
+            {product.discount_price ? (
+              <>
+                <span className="font-bold ml-1 line-through opacity-40">{product.price}</span>
+                <span className="font-bold ml-2 text-rose-600">{product.discount_price}</span>
+              </>
+            ) : (
+              <span className="font-bold ml-1" style={{ color: '#000000' }}>{product.price}</span>
+            )}
           </p>
         </div>
         <motion.button
@@ -149,7 +158,7 @@ const ProductSelectionCard: React.FC<ProductSelectionCardProps> = ({
                       <path stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" d="M14.608 12.563v5m2.5-2.5h-5"></path>
                     </svg>
                   </span>
-                  <span>{t('product.add')} · {product.price}</span>
+                  <span>{t('product.add')} · {product.discount_price || product.price}</span>
                 </span>
                 
                 <span className="added-state">

@@ -87,3 +87,5 @@ CREATE INDEX IF NOT EXISTS idx_orders_user_id ON public.orders(user_id);
 CREATE INDEX IF NOT EXISTS idx_reviews_product_id ON public.reviews(product_id);
 CREATE INDEX IF NOT EXISTS idx_wishlist_user_id ON public.wishlist(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_addresses_user_id ON public.user_addresses(user_id);
+-- Fix: Ensure discount_price can store formatted strings (e.g. '500 ₺')
+ALTER TABLE products ALTER COLUMN discount_price TYPE TEXT;

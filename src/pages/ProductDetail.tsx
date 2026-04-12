@@ -252,7 +252,8 @@ export default function ProductDetail() {
           category: data.category || 'Archive',
           sizes: Array.isArray(data.sizes) && data.sizes.length > 0 ? data.sizes : ['S', 'M', 'L'],
           description: data.description || 'Minimalist design from Faem studio.',
-          features: Array.isArray(data.features) ? data.features : []
+          features: Array.isArray(data.features) ? data.features : [],
+          discount_price: data.discount_price || null
         });
 
         if (Array.isArray(data.sizes) && data.sizes.length > 0) {
@@ -437,9 +438,22 @@ export default function ProductDetail() {
                 <h1 className="text-[clamp(1.5rem,5vw,2.5rem)] font-black tracking-[-0.05em] text-black leading-[0.95]">
                   {product.name}
                 </h1>
-                <p className="text-[18px] font-black tracking-tighter" style={{ color: ACCENT }}>
-                  {product.price}
-                </p>
+                <div className="flex items-center gap-3">
+                  {product.discount_price ? (
+                    <>
+                      <p className="text-[18px] font-bold tracking-tighter line-through text-black/20">
+                        {product.price}
+                      </p>
+                      <p className="text-[24px] font-black tracking-tighter text-rose-600">
+                        {product.discount_price}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-[18px] font-black tracking-tighter" style={{ color: ACCENT }}>
+                      {product.price}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Description & Technical Specs - Refined Compact Version */}

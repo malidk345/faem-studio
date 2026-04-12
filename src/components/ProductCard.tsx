@@ -10,6 +10,7 @@ interface Product {
   image: string;
   category: string;
   images?: any[];
+  discount_price?: string;
 }
 
 interface ProductCardProps {
@@ -84,16 +85,61 @@ const ProductCard: React.FC<ProductCardProps> = ({
             left: '0.25rem',
             zIndex: 10,
             backgroundColor: '#FFFFFF',
-            padding: '0.25rem 0.5rem',
+            padding: product.discount_price ? '0.4rem 0.75rem' : '0.25rem 0.5rem',
             borderRadius: 6,
-            fontSize: 13,
-            fontWeight: 500,
+            fontSize: product.discount_price ? 14 : 13,
+            fontWeight: product.discount_price ? 700 : 500,
             color: '#1A1A1A',
             lineHeight: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
           }}
         >
-          {product.price}
+          {product.discount_price ? (
+            <>
+              <span style={{ textDecoration: 'line-through', color: 'color-mix(in lch, #1A1A1A, transparent 60%)', fontSize: 11, fontWeight: 500 }}>
+                {product.price}
+              </span>
+              <span style={{ color: '#E11D48' }}>
+                {product.discount_price}
+              </span>
+            </>
+          ) : (
+            product.price
+          )}
         </div>
+
+        {/* Top-right Sale Badge (Circular) */}
+        {product.discount_price && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '0.5rem',
+              right: '0.5rem',
+              zIndex: 10,
+              backgroundColor: '#E11D48',
+              width: '3.5rem',
+              height: '3.5rem',
+              borderRadius: '50%',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              boxShadow: '0 4px 12px rgba(225, 29, 72, 0.3)',
+              border: '2px solid rgba(255, 255, 255, 0.2)',
+              pointerEvents: 'none'
+            }}
+          >
+            <span style={{ fontSize: 9, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1 }}>
+              Sale
+            </span>
+            <span style={{ fontSize: 10, fontWeight: 700, lineHeight: 1, marginTop: 1 }}>
+              İndirim
+            </span>
+          </div>
+        )}
       </div>
 
       {/* ── Info (Restored original style & typography) ── */}
