@@ -7,6 +7,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { CommandSearch, SearchTrigger } from "@/components/command-search"
 import { ModeToggle } from "@/components/mode-toggle"
 import { getAppUrl } from "@/lib/utils"
+import { UserNav } from "@/components/user-nav"
 
 export function SiteHeader() {
   const [searchOpen, setSearchOpen] = React.useState(false)
@@ -35,38 +36,10 @@ export function SiteHeader() {
           <div className="flex-1 max-w-sm">
             <SearchTrigger onClick={() => setSearchOpen(true)} />
           </div>
-          <div className="ml-auto flex items-center gap-2">
-            <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-              <a
-                href="https://shadcnstore.com/blocks"
-                rel="noopener noreferrer"
-                target="_blank"
-                className="dark:text-foreground"
-              >
-                Blocks
-              </a>
-            </Button>
-            <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-              <a
-                href={getAppUrl("/landing")}
-                rel="noopener noreferrer"
-                target="_blank"
-                className="dark:text-foreground"
-              >
-                Landing Page
-              </a>
-            </Button>
-            <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-              <a
-                href="https://github.com/silicondeck/shadcn-dashboard-landing-template"
-                rel="noopener noreferrer"
-                target="_blank"
-                className="dark:text-foreground"
-              >
-                GitHub
-              </a>
-            </Button>
+          <div className="ml-auto flex items-center gap-4">
             <ModeToggle />
+            <div className="h-4 w-px bg-zinc-200 mx-1" />
+            <UserNav />
           </div>
         </div>
       </header>

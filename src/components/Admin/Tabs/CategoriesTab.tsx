@@ -34,24 +34,32 @@ export function CategoriesTab({ categories, onAdd }: CategoriesTabProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {categories.map((c, i) => (
-            <Card key={i} className="group hover:border-zinc-900 transition-all duration-300 shadow-none border-zinc-100 cursor-pointer overflow-hidden">
-               <CardContent className="p-6 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-zinc-900 group-hover:text-white transition-colors">
-                      <Hash size={20} className="opacity-40" />
+          {categories.length > 0 ? (
+            categories.map((c, i) => (
+              <Card key={i} className="group hover:border-zinc-900 transition-all duration-300 shadow-none border-zinc-100 cursor-pointer overflow-hidden">
+                <CardContent className="p-6 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center border border-zinc-100 group-hover:bg-zinc-900 group-hover:text-white transition-colors">
+                        <Hash size={20} className="opacity-40" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-black tracking-tight text-zinc-900 text-lg leading-none">{c.name || c}</span>
+                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Operational Sector</span>
+                      </div>
                     </div>
-                    <div className="flex flex-col">
-                       <span className="font-black tracking-tight text-zinc-900 text-lg leading-none">{c.name || c}</span>
-                       <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Operational Sector</span>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ArrowUpRight className="h-4 w-4" />
-                  </Button>
-               </CardContent>
-            </Card>
-          ))}
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <ArrowUpRight className="h-4 w-4" />
+                    </Button>
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <div className="col-span-full py-20 bg-zinc-50 rounded-3xl border-2 border-dashed border-zinc-100 flex flex-col items-center justify-center text-center px-6">
+               <Layers className="text-zinc-200 mb-4" size={48} />
+               <h3 className="text-sm font-black text-zinc-400 uppercase tracking-widest">No Sectors Deployed</h3>
+               <p className="text-xs text-zinc-400/60 mt-2 max-w-xs leading-relaxed">Your enterprise core is currently empty. Initialize your first strategic sector to begin inventory curation.</p>
+            </div>
+          )}
         </div>
       </div>
 
