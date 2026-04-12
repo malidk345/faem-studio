@@ -11,11 +11,9 @@ interface MenuPanelProps {
 const MenuPanel: React.FC<MenuPanelProps> = ({ onClose }) => {
   const { t } = useLanguage();
   return (
-    <motion.div variants={containerVariants} className="menu-content h-full p-1 pb-4">
-      <div className="menu-heading pb-2">
-        {/* Seasonal label removed for a cleaner look */}
-      </div>
-      <motion.div variants={itemVariants} className="w-full h-[1px] bg-black/10 my-2" />
+    <motion.div variants={containerVariants} className="menu-content h-full p-1 pt-2 pb-4">
+      {/* Header removed, starting directly with the separator or categories */}
+      <motion.div variants={itemVariants} className="w-full h-[1px] bg-black/5 mb-4" />
       
       <div className="relative flex-1">
         <nav className="py-2">
