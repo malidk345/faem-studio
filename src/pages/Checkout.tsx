@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { ChevronLeft, Loader2, CheckCircle2 } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
+import { useLanguage } from '../context/LanguageContext';
 
 type Step = 'details' | 'shipping' | 'confirm' | 'success';
 
@@ -18,6 +19,7 @@ interface ShippingOption {
 export default function Checkout() {
   const { cartItems, cartTotal, clearCart } = useCart();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [step, setStep] = useState<Step>('details');
   const [isLoading, setIsLoading] = useState(false);
@@ -34,8 +36,8 @@ export default function Checkout() {
   const [country, setCountry] = useState('TR');
 
   useSEO({
-    title: 'Checkout | Faem Studio',
-    description: 'Complete your purchase securely. Enter shipping address and details to finalize your Faem Studio order.'
+    title: `${t('checkout.title')} | Faem Studio`,
+    description: t('checkout.success_desc')
   });
 
   useEffect(() => {
@@ -67,11 +69,6 @@ export default function Checkout() {
     setIsLoading(true);
 
     try {
-      // Create the order in Supabase
-      // If user is not logged in, we save the order anonymously (allowed if RLS is loose, 
-      // but in our schema, users only insert their own. To support guests, we would need guest orders policy.
-      // For now, let's gracefully attempt to insert, fallback to just clearing cart on error if no auth).
-      
       const session = await supabase.auth.getSession();
       const userId = session.data.session?.user?.id;
 
@@ -95,8 +92,6 @@ export default function Checkout() {
         
         if (dbError) throw dbError;
       } else {
-        // Here we simulate an order being placed for guest users.
-        // In a strict RLS environment, you'd have an edge function or a separate table for guest checkout.
         console.warn('Guest checkout: order not saved to database due to RLS. Order complete in UI only.');
       }
 
@@ -118,12 +113,12 @@ export default function Checkout() {
         className="min-h-screen bg-white pt-[120px] pb-24 px-6 md:px-12 max-w-5xl mx-auto"
       >
         <Link to="/" className="inline-flex items-center gap-2 text-black/40 hover:text-black transition-colors mb-12 text-sm font-medium">
-          <ChevronLeft size={16} /> back to storefront
+          <ChevronLeft size={16} /> {t('checkout.back')}
         </Link>
-        <h1 className="text-[32px] md:text-[40px] font-black tracking-tighter leading-none mb-6">checkout</h1>
-        <p className="text-black/50 text-sm font-medium">Your cart is empty. Return to store to add products.</p>
+        <h1 className="text-[32px] md:text-[40px] font-black tracking-tighter leading-none mb-6">{t('checkout.title').toLowerCase()}</h1>
+        <p className="text-black/50 text-sm font-medium">{t('checkout.empty_desc')}</p>
         <Link to="/shop" className="mt-6 inline-block bg-black text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-zinc-800 transition-colors">
-          Shop Now
+          {t('checkout.shop_now')}
         </Link>
       </motion.div>
     );
@@ -144,23 +139,22 @@ export default function Checkout() {
         >
           <CheckCircle2 size={56} className="text-black mb-6 mx-auto" strokeWidth={1.5} />
         </motion.div>
-        <h1 className="text-[32px] font-black tracking-tighter mb-4">Order Placed!</h1>
+        <h1 className="text-[32px] font-black tracking-tighter mb-4">{t('checkout.success_title')}</h1>
         <p className="text-black/50 text-sm font-medium max-w-sm mx-auto mb-10 leading-relaxed">
-          Thank you for your order. You'll receive a confirmation email shortly.
+          {t('checkout.success_desc')}
         </p>
         <Link to="/" className="bg-black text-white px-10 py-4 rounded-xl text-sm font-bold hover:bg-zinc-800 transition-colors">
-          Back to Store
+          {t('checkout.back_to_store')}
         </Link>
       </motion.div>
     );
   }
 
   // ── Checkout form ──────────────────────────────────────────────────────────
-  const stepLabel: Record<Step, string> = {
-    details: '01 / Contact & Shipping',
-    shipping: '02 / Delivery Method',
-    confirm: '03 / Review & Pay',
-    success: '',
+  const stepLabel: Record<Exclude<Step, 'success'>, string> = {
+    details: `01 / ${t('checkout.step_1')}`,
+    shipping: `02 / ${t('checkout.step_2')}`,
+    confirm: `03 / ${t('checkout.step_3')}`,
   };
 
   return (
@@ -171,15 +165,15 @@ export default function Checkout() {
       className="min-h-screen bg-white pt-[120px] pb-24 px-6 md:px-12 max-w-5xl mx-auto"
     >
       <Link to="/" className="inline-flex items-center gap-2 text-black/40 hover:text-black transition-colors mb-12 text-sm font-medium">
-        <ChevronLeft size={16} /> back to storefront
+        <ChevronLeft size={16} /> {t('checkout.back')}
       </Link>
 
       <div className="grid md:grid-cols-2 gap-16">
 
         {/* ── Left — Steps ── */}
         <div>
-          <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-black/40 mb-2">{stepLabel[step]}</p>
-          <h1 className="text-[32px] md:text-[40px] font-black tracking-tighter leading-none mb-8">checkout</h1>
+          <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-black/40 mb-2">{(stepLabel as any)[step]}</p>
+          <h1 className="text-[32px] md:text-[40px] font-black tracking-tighter leading-none mb-8">{t('checkout.title').toLowerCase()}</h1>
 
           {error && (
             <motion.div
@@ -196,20 +190,20 @@ export default function Checkout() {
             <form onSubmit={handleDetailsSubmit} className="space-y-4">
               <input
                 type="email"
-                placeholder="Email address"
+                placeholder={t('checkout.email')}
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
                 className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm"
               />
               <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder="First name" value={firstName} onChange={e => setFirstName(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
-                <input type="text" placeholder="Last name" value={lastName} onChange={e => setLastName(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
+                <input type="text" placeholder={t('checkout.first_name')} value={firstName} onChange={e => setFirstName(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
+                <input type="text" placeholder={t('checkout.last_name')} value={lastName} onChange={e => setLastName(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
               </div>
-              <input type="text" placeholder="Street address" value={address} onChange={e => setAddress(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
+              <input type="text" placeholder={t('checkout.address')} value={address} onChange={e => setAddress(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
               <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder="City" value={city} onChange={e => setCity(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
-                <input type="text" placeholder="Postal code" value={postal} onChange={e => setPostal(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
+                <input type="text" placeholder={t('checkout.city')} value={city} onChange={e => setCity(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
+                <input type="text" placeholder={t('checkout.postal')} value={postal} onChange={e => setPostal(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
               </div>
               <select
                 value={country}
@@ -230,7 +224,7 @@ export default function Checkout() {
                 className="w-full bg-black text-white py-4 rounded-xl text-[15px] font-bold mt-2 hover:bg-zinc-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
               >
                 {isLoading && <Loader2 size={16} className="animate-spin" />}
-                Continue to Delivery
+                {t('checkout.continue_shipping')}
               </button>
             </form>
           )}
@@ -238,7 +232,10 @@ export default function Checkout() {
           {/* Step 2: Shipping method */}
           {step === 'shipping' && (
             <form onSubmit={handleShippingSubmit} className="space-y-4">
-              {['Standard Shipping — 5-7 days', 'Express Shipping — 2-3 days'].map((label, i) => (
+              {[
+                { label: t('checkout.standard'), time: '5-7 days', price: t('checkout.free') },
+                { label: t('checkout.express'), time: '2-3 days', price: '$12.00' }
+              ].map((opt, i) => (
                 <label
                   key={i}
                   className={`flex justify-between items-center px-5 py-4 rounded-xl border cursor-pointer transition-all ${
@@ -254,10 +251,10 @@ export default function Checkout() {
                       onChange={() => setSelectedShipping(String(i))}
                       className="accent-black"
                     />
-                    <span className="text-sm font-semibold">{label.split('—')[0].trim()}</span>
-                    <span className="text-xs text-black/40">{label.split('—')[1]?.trim()}</span>
+                    <span className="text-sm font-semibold">{opt.label}</span>
+                    <span className="text-xs text-black/40">{opt.time}</span>
                   </div>
-                  <span className="text-sm font-bold">{i === 0 ? 'Free' : '$12.00'}</span>
+                  <span className="text-sm font-bold">{opt.price}</span>
                 </label>
               ))}
 
@@ -267,7 +264,7 @@ export default function Checkout() {
                   onClick={() => setStep('details')}
                   className="flex-1 py-4 rounded-xl text-[15px] font-bold border border-black/10 hover:border-black/30 transition-colors"
                 >
-                  Back
+                  {t('checkout.back')}
                 </button>
                 <button
                   type="submit"
@@ -275,7 +272,7 @@ export default function Checkout() {
                   className="flex-1 bg-black text-white py-4 rounded-xl text-[15px] font-bold hover:bg-zinc-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {isLoading && <Loader2 size={16} className="animate-spin" />}
-                  Review Order
+                  {t('checkout.review_order')}
                 </button>
               </div>
             </form>
@@ -285,14 +282,14 @@ export default function Checkout() {
           {step === 'confirm' && (
             <div className="space-y-6">
               <div className="bg-black/5 rounded-2xl p-6 space-y-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-black/40 mb-4">Shipping to</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-black/40 mb-4">{t('checkout.shipping_to')}</p>
                 <p className="text-sm font-semibold">{firstName} {lastName}</p>
                 <p className="text-sm text-black/60">{address}, {city} {postal}</p>
                 <p className="text-sm text-black/60">{email}</p>
               </div>
 
-              <p className="text-xs text-black/40 font-medium leading-relaxed">
-                By clicking "Place Order", your order will be submitted to the Faem Studio database securely via Supabase.
+              <p className="text-xs text-black/40 font-medium leading-relaxed italic">
+                Siparişinizi onaylayarak hizmet koşullarımızı kabul etmiş sayılırsınız. Tüm veriler Supabase altyapısı ile uçtan uca korunmaktadır.
               </p>
 
               <div className="flex gap-4">
@@ -301,7 +298,7 @@ export default function Checkout() {
                   onClick={() => setStep('shipping')}
                   className="flex-1 py-4 rounded-xl text-[15px] font-bold border border-black/10 hover:border-black/30 transition-colors"
                 >
-                  Back
+                  {t('checkout.back')}
                 </button>
                 <button
                   onClick={handleCompleteOrder}
@@ -309,7 +306,7 @@ export default function Checkout() {
                   className="flex-1 bg-black text-white py-4 rounded-xl text-[15px] font-bold hover:bg-zinc-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {isLoading && <Loader2 size={16} className="animate-spin" />}
-                  Place Order
+                  {t('checkout.place_order')}
                 </button>
               </div>
             </div>
@@ -318,7 +315,7 @@ export default function Checkout() {
 
         {/* ── Right — Order Summary ── */}
         <div className="bg-black/5 p-8 rounded-[2rem] h-fit">
-          <h2 className="text-lg font-black tracking-tight mb-6">Order Summary</h2>
+          <h2 className="text-lg font-black tracking-tight mb-6">{t('checkout.summary')}</h2>
           <div className="space-y-4 mb-6">
             {cartItems.map(item => (
               <div key={item.id} className="flex justify-between items-center text-sm font-medium">
@@ -328,7 +325,7 @@ export default function Checkout() {
                   )}
                   <div>
                     <p>{item.name}</p>
-                    <p className="text-black/40 text-xs">{item.size} · qty {item.quantity}</p>
+                    <p className="text-black/40 text-xs">{item.size} · {t('checkout.qty')} {item.quantity}</p>
                   </div>
                 </div>
                 <span className="font-bold">{item.price}</span>
@@ -337,7 +334,7 @@ export default function Checkout() {
           </div>
           <div className="w-full h-[1px] bg-black/10 mb-6" />
           <div className="flex justify-between items-center text-lg font-black">
-            <span>Total</span>
+            <span>{t('cart.total')}</span>
             <span>{cartTotal}</span>
           </div>
         </div>

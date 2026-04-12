@@ -5,11 +5,13 @@ import { supabase } from '../lib/supabase';
 import { useNavigate, Link } from 'react-router-dom';
 import { Package, Heart, User as UserIcon, LogOut, ChevronRight, Clock, MapPin } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
+import { useLanguage } from '../context/LanguageContext';
 
 type Tab = 'orders' | 'wishlist' | 'profile';
 
 export default function Account() {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('orders');
   const [orders, setOrders] = useState<any[]>([]);
@@ -17,8 +19,8 @@ export default function Account() {
   const [loading, setLoading] = useState(true);
 
   useSEO({
-    title: 'My Studio Account | Faem Studio',
-    description: 'Manage your Faem Studio orders, wishlist, and profile settings.'
+    title: `${t('account.title')} | Faem Studio`,
+    description: t('account.desc')
   });
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export default function Account() {
             {user.name.charAt(0)}
           </div>
           <div>
-            <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-black/30 mb-1">Studio Member</p>
+            <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-black/30 mb-1">{t('account.member')}</p>
             <h1 className="text-3xl md:text-4xl font-black tracking-tighter leading-none">{user.name}</h1>
             <p className="text-black/40 text-sm font-medium mt-1">{user.email}</p>
           </div>
@@ -77,7 +79,7 @@ export default function Account() {
           onClick={handleLogout}
           className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-black/40 hover:text-red-500 transition-colors"
         >
-          <LogOut size={14} /> Sign Out Account
+          <LogOut size={14} /> {t('account.signout')}
         </button>
       </div>
 
@@ -85,9 +87,9 @@ export default function Account() {
         
         {/* Sidebar Nav */}
         <aside className="lg:col-span-1 flex flex-col gap-2">
-          <NavBtn active={activeTab === 'orders'} onClick={() => setActiveTab('orders')} icon={<Package size={18} />} label="Orders" count={orders.length} />
-          <NavBtn active={activeTab === 'wishlist'} onClick={() => setActiveTab('wishlist')} icon={<Heart size={18} />} label="Wishlist" count={wishlist.length} />
-          <NavBtn active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} icon={<UserIcon size={18} />} label="Profile" />
+          <NavBtn active={activeTab === 'orders'} onClick={() => setActiveTab('orders')} icon={<Package size={18} />} label={t('account.orders')} count={orders.length} />
+          <NavBtn active={activeTab === 'wishlist'} onClick={() => setActiveTab('wishlist')} icon={<Heart size={18} />} label={t('account.wishlist')} count={wishlist.length} />
+          <NavBtn active={activeTab === 'profile'} onClick={() => setActiveTab('profile')} icon={<UserIcon size={18} />} label={t('account.profile')} />
         </aside>
 
         {/* Content Area */}
@@ -95,20 +97,20 @@ export default function Account() {
           <AnimatePresence mode="wait">
             {activeTab === 'orders' && (
               <motion.div key="orders" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                <h2 className="text-xl font-bold mb-8 flex items-center gap-2">Order History <span className="text-[10px] text-black/20 font-bold uppercase tracking-widest">({orders.length})</span></h2>
+                <h2 className="text-xl font-bold mb-8 flex items-center gap-2">{t('account.history')} <span className="text-[10px] text-black/20 font-bold uppercase tracking-widest">({orders.length})</span></h2>
                 {loading ? (
-                  <div className="py-12 text-center text-black/30 animate-pulse font-medium">Loading history...</div>
+                  <div className="py-12 text-center text-black/30 animate-pulse font-medium">{t('account.loading')}</div>
                 ) : orders.length > 0 ? (
                   <div className="flex flex-col gap-6">
                     {orders.map((order) => (
                       <div key={order.id} className="p-6 border border-black/5 rounded-2xl hover:border-black/10 transition-colors group">
                         <div className="flex justify-between items-start mb-6">
                           <div>
-                            <p className="text-[10px] uppercase font-bold text-black/30 mb-1">Order ID</p>
+                            <p className="text-[10px] uppercase font-bold text-black/30 mb-1">{t('account.order_id')}</p>
                             <p className="text-sm font-bold tracking-tight">#{order.id.slice(0, 8).toUpperCase()}</p>
                           </div>
                           <div className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${order.status === 'delivered' ? 'bg-green-50 text-green-600' : 'bg-black/5 text-black/40'}`}>
-                            {order.status}
+                            {t(`account.status.${order.status}`) || order.status}
                           </div>
                         </div>
                         <div className="flex items-center justify-between text-[13px] text-black/60">
@@ -123,7 +125,7 @@ export default function Account() {
                   </div>
                 ) : (
                   <div className="py-20 border border-dashed border-black/10 rounded-3xl text-center text-black/30 font-medium">
-                    You haven't placed any orders yet.
+                    {t('account.no_orders')}
                   </div>
                 )}
               </motion.div>
@@ -131,7 +133,7 @@ export default function Account() {
 
             {activeTab === 'wishlist' && (
               <motion.div key="wishlist" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                <h2 className="text-xl font-bold mb-8">Wishlist</h2>
+                <h2 className="text-xl font-bold mb-8">{t('account.wishlist')}</h2>
                 {wishlist.length > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                     {wishlist.map((item) => (
@@ -148,7 +150,7 @@ export default function Account() {
                   </div>
                 ) : (
                   <div className="py-20 border border-dashed border-black/10 rounded-3xl text-center text-black/30 font-medium">
-                    Your wishlist is currently empty.
+                    {t('account.empty_wishlist')}
                   </div>
                 )}
               </motion.div>
@@ -156,15 +158,15 @@ export default function Account() {
 
             {activeTab === 'profile' && (
               <motion.div key="profile" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                <h2 className="text-xl font-bold mb-8">Profile Settings</h2>
+                <h2 className="text-xl font-bold mb-8">{t('account.profile')}</h2>
                 <div className="space-y-6">
-                  <ProfileField label="Full Name" value={user.name} />
-                  <ProfileField label="Email Address" value={user.email} />
+                  <ProfileField label={t('account.full_name')} value={user.name} />
+                  <ProfileField label={t('account.email')} value={user.email} />
                   <div className="pt-6 border-t border-black/5">
-                    <p className="text-[10px] uppercase font-bold text-black/30 mb-4 tracking-widest">Shipping Address</p>
+                    <p className="text-[10px] uppercase font-bold text-black/30 mb-4 tracking-widest">{t('account.shipping_addr')}</p>
                     <div className="flex items-start gap-4 p-5 bg-black/[0.02] rounded-2xl">
                         <MapPin size={18} className="text-black/20" />
-                        <p className="text-[13px] text-black/60 font-medium leading-relaxed">No shipping address saved yet. We'll collect this at checkout.</p>
+                        <p className="text-[13px] text-black/60 font-medium leading-relaxed">{t('account.no_addr')}</p>
                     </div>
                   </div>
                 </div>

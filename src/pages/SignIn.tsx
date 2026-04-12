@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { useSEO } from '../hooks/useSEO';
+import { useLanguage } from '../context/LanguageContext';
 import { ChevronLeft, Loader2, Mail } from 'lucide-react';
 
 export default function SignIn() {
@@ -12,11 +13,12 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   useSEO({
-    title: 'Studio Access | Faem Studio',
-    description: 'Enter your email for instant, passwordless access to your Faem Studio account.'
+    title: `${t('auth.title')} | Faem Studio`,
+    description: t('auth.desc')
   });
 
   useEffect(() => {
@@ -42,7 +44,7 @@ export default function SignIn() {
       
       setMagicLinkSent(true);
     } catch (err: any) {
-      setError(err.message || 'Sihirli bağlantı gönderilemedi.');
+      setError(err.message || t('auth.error_sending'));
     } finally {
       setLoading(false);
     }
@@ -53,7 +55,7 @@ export default function SignIn() {
       <div className="w-full max-w-sm">
         
         <Link to="/" className="inline-flex items-center gap-2 text-black/30 hover:text-black transition-colors mb-12 text-[10px] uppercase font-bold tracking-widest">
-          <ChevronLeft size={14} /> back to store
+          <ChevronLeft size={14} /> {t('auth.back_to_store')}
         </Link>
 
         <motion.div
@@ -63,10 +65,10 @@ export default function SignIn() {
         >
           <div className="mb-8">
             <h1 className="text-[32px] md:text-[40px] font-black tracking-tighter leading-none mb-3">
-              Studio Access
+              {t('auth.title')}
             </h1>
             <p className="text-black/40 text-sm font-medium leading-relaxed uppercase tracking-tighter">
-              Instant Passwordless Entry
+              {t('auth.instant_entry')}
             </p>
           </div>
 
@@ -99,7 +101,7 @@ export default function SignIn() {
                 className="w-full bg-black text-white py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] hover:bg-zinc-800 transition-all shadow-2xl shadow-black/10 disabled:opacity-40 flex items-center justify-center gap-3"
               >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
-                {loading ? 'Sending...' : 'Send Magic Link'}
+                {loading ? t('auth.sending') : t('auth.send_link')}
               </button>
             </form>
           ) : (
@@ -108,23 +110,23 @@ export default function SignIn() {
                animate={{ opacity: 1, y: 0 }}
                className="bg-black text-white p-8 rounded-3xl"
             >
-              <h2 className="text-xl font-bold mb-2">Check your mail.</h2>
+              <h2 className="text-xl font-bold mb-2">{t('auth.check_mail')}</h2>
               <p className="text-sm opacity-50 mb-6 leading-relaxed">
-                We've sent a secure access link to <br/><span className="text-white opacity-100 font-bold">{email}</span>
+                <span className="text-white opacity-100 font-bold">{email}</span> {t('auth.link_sent_desc')}
               </p>
               <button 
                 onClick={() => setMagicLinkSent(false)}
                 className="text-[10px] uppercase font-black tracking-widest bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors"
               >
-                Change Email
+                {t('auth.change_email')}
               </button>
             </motion.div>
           )}
 
           <div className="mt-12 text-center">
             <p className="text-[10px] text-black/20 font-bold uppercase tracking-widest leading-loose">
-              By entering, you agree to our <br/>
-              <span className="text-black/40">Privacy Policy & Studio Terms</span>
+              {t('nav.about')} <br/>
+              <span className="text-black/40">{t('auth.privacy_terms')}</span>
             </p>
           </div>
         </motion.div>

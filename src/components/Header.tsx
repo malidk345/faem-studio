@@ -87,7 +87,7 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
                 transition={contentTransition}
                 className="flex items-center justify-end h-full pr-1 gap-3"
               >
-                <span className="font-semibold capitalize tracking-wide text-sm">{activePanel}</span>
+                <span className="font-semibold capitalize tracking-wide text-sm">{activePanel ? t(`nav.${activePanel}`) : ''}</span>
                 <button onClick={() => setActivePanel(null)} className="w-8 h-8 rounded-xl flex items-center justify-center glass-nav-btn">
                   <X size={18} strokeWidth={2} />
                 </button>
