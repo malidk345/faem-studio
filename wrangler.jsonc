@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "faem-studio",
+  "name": "faem-studioo",
   "compatibility_date": "2026-04-11",
   "observability": {
     "enabled": true
