@@ -1,20 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
-import { ChevronLeft, Loader2, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, Loader2, ShieldCheck, Truck, CreditCard, Info } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
 import { useLanguage } from '../context/LanguageContext';
 
-type Step = 'details' | 'shipping' | 'confirm' | 'success';
-
-interface ShippingOption {
-  id: string;
-  name: string;
-  amount: number;
-}
+type Step = 'details' | 'shipping' | 'confirm';
 
 export default function Checkout() {
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -30,6 +24,8 @@ export default function Checkout() {
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [identityNumber, setIdentityNumber] = useState(''); // Required for iyzico (Individual)
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [postal, setPostal] = useState('');
@@ -43,303 +39,300 @@ export default function Checkout() {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'auto' });
     if (user) {
-      setEmail(user.email);
-      const parts = user.name.split(' ');
+      setEmail(user.email || '');
+      const parts = (user.name || '').split(' ');
       setFirstName(parts[0] || '');
       setLastName(parts.slice(1).join(' ') || '');
     }
   }, [user]);
 
-  // ── Step 1: Submit contact + shipping address ─────────────────────────────
-  const handleDetailsSubmit = async (e: React.FormEvent) => {
+  // Price calculations
+  const prices = useMemo(() => {
+    // Standardize total calculation by removing currency symbol and converting to float
+    const rawTotal = parseFloat(cartTotal.replace(/[^\d.]/g, '')) || 0;
+    const shipping = selectedShipping === '1' ? 45 : 0; // Express 45 TL
+    const tax = rawTotal * 0.20; // 20% VAT included approach
+    return {
+      subtotal: rawTotal - tax,
+      tax,
+      shipping,
+      total: rawTotal + shipping
+    };
+  }, [cartTotal, selectedShipping]);
+
+  const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!phone || !identityNumber) {
+      setError("Telefon ve T.C. Kimlik numarası iyzico ödeme sistemimiz için zorunludur.");
+      return;
+    }
     setError(null);
     setStep('shipping');
   };
 
-  // ── Step 2: Select shipping method ────────────────────────────────────────
-  const handleShippingSubmit = async (e: React.FormEvent) => {
+  const handleShippingSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStep('confirm');
   };
 
-  // ── Step 3: Complete order ────────────────────────────────────────────────
   const handleCompleteOrder = async () => {
     setError(null);
     setIsLoading(true);
 
     try {
-      const session = await supabase.auth.getSession();
-      const userId = session.data.session?.user?.id;
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
 
-      if (userId) {
-        const { error: dbError } = await supabase.from('orders').insert({
-          user_id: userId,
-          total: cartTotal,
-          status: 'pending',
-          shipping_address: {
-            first_name: firstName,
-            last_name: lastName,
-            address,
-            city,
-            postal,
-            country,
-            email,
-            shipping_method: selectedShipping
-          },
-          items: cartItems
-        });
-        
-        if (dbError) throw dbError;
-      } else {
-        console.warn('Guest checkout: order not saved to database due to RLS. Order complete in UI only.');
-      }
+      const orderData = {
+        user_id: userId || null,
+        total: `₺${prices.total.toFixed(2)}`,
+        status: 'pending',
+        shipping_address: {
+          first_name: firstName,
+          last_name: lastName,
+          phone,
+          identity_number: identityNumber,
+          address,
+          city,
+          postal,
+          country,
+          email,
+          shipping_method: selectedShipping === '1' ? 'Express' : 'Standard'
+        },
+        items: cartItems,
+        payment_provider: 'iyzico',
+        payment_status: 'pending'
+      };
 
+      const { data: newOrder, error: dbError } = await supabase
+        .from('orders')
+        .insert(orderData)
+        .select()
+        .single();
+      
+      if (dbError) throw dbError;
+
+      // Simulate a small delay for premium feel
+      await new Promise(r => setTimeout(r, 1500));
+      
       clearCart();
-      setStep('success');
+      navigate(`/order/success/${newOrder.id}`);
     } catch (err: any) {
-      setError(err?.message ?? 'Could not complete order. Please try again.');
+      console.error(err);
+      navigate('/order/error', { state: { message: err.message || "Sipariş oluşturulurken bir hata oluştu." } });
     } finally {
       setIsLoading(false);
     }
   };
 
-  // ── Empty cart guard ───────────────────────────────────────────────────────
-  if (cartItems.length === 0 && step !== 'success') {
+  if (cartItems.length === 0) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="min-h-screen bg-white pt-[120px] pb-24 px-6 md:px-12 max-w-5xl mx-auto"
-      >
-        <Link to="/" className="inline-flex items-center gap-2 text-black/40 hover:text-black transition-colors mb-12 text-sm font-medium">
-          <ChevronLeft size={16} /> {t('checkout.back')}
+      <div className="min-h-screen bg-white pt-[120px] px-6 text-center flex flex-col items-center justify-center">
+        <h1 className="text-4xl font-black tracking-tighter mb-4">Sepetiniz Boş</h1>
+        <p className="text-zinc-400 mb-8 max-w-xs font-medium">Satın almak istediğiniz parçaları ekleyerek başlayabilirsiniz.</p>
+        <Link to="/shop" className="bg-black text-white px-10 py-4 rounded-xl font-black text-xs uppercase tracking-widest">
+          Alışverişe Dön
         </Link>
-        <h1 className="text-[32px] md:text-[40px] font-black tracking-tighter leading-none mb-6">{t('checkout.title').toLowerCase()}</h1>
-        <p className="text-black/50 text-sm font-medium">{t('checkout.empty_desc')}</p>
-        <Link to="/shop" className="mt-6 inline-block bg-black text-white px-8 py-3 rounded-xl text-sm font-bold hover:bg-zinc-800 transition-colors">
-          {t('checkout.shop_now')}
-        </Link>
-      </motion.div>
+      </div>
     );
   }
-
-  // ── Success screen ─────────────────────────────────────────────────────────
-  if (step === 'success') {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.97 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="min-h-screen bg-white pt-[120px] pb-24 px-6 flex flex-col items-center justify-center text-center"
-      >
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', delay: 0.2 }}
-        >
-          <CheckCircle2 size={56} className="text-black mb-6 mx-auto" strokeWidth={1.5} />
-        </motion.div>
-        <h1 className="text-[32px] font-black tracking-tighter mb-4">{t('checkout.success_title')}</h1>
-        <p className="text-black/50 text-sm font-medium max-w-sm mx-auto mb-10 leading-relaxed">
-          {t('checkout.success_desc')}
-        </p>
-        <Link to="/" className="bg-black text-white px-10 py-4 rounded-xl text-sm font-bold hover:bg-zinc-800 transition-colors">
-          {t('checkout.back_to_store')}
-        </Link>
-      </motion.div>
-    );
-  }
-
-  // ── Checkout form ──────────────────────────────────────────────────────────
-  const stepLabel: Record<Exclude<Step, 'success'>, string> = {
-    details: `01 / ${t('checkout.step_1')}`,
-    shipping: `02 / ${t('checkout.step_2')}`,
-    confirm: `03 / ${t('checkout.step_3')}`,
-  };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 20 }}
-      className="min-h-screen bg-white pt-[120px] pb-24 px-6 md:px-12 max-w-5xl mx-auto"
-    >
-      <Link to="/" className="inline-flex items-center gap-2 text-black/40 hover:text-black transition-colors mb-12 text-sm font-medium">
-        <ChevronLeft size={16} /> {t('checkout.back')}
+    <div className="min-h-screen bg-white pt-[120px] pb-24 px-6 md:px-12 max-w-6xl mx-auto">
+      <Link to="/" className="inline-flex items-center gap-2 text-black/40 hover:text-black transition-colors mb-12 text-[10px] font-black uppercase tracking-widest leading-none">
+        <ChevronLeft size={14} /> Geri Dön
       </Link>
 
-      <div className="grid md:grid-cols-2 gap-16">
-
-        {/* ── Left — Steps ── */}
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-black/40 mb-2">{(stepLabel as any)[step]}</p>
-          <h1 className="text-[32px] md:text-[40px] font-black tracking-tighter leading-none mb-8">{t('checkout.title').toLowerCase()}</h1>
-
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6 px-5 py-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm font-medium"
+      {/* Progress Bar */}
+      <div className="flex items-center gap-4 mb-16 overflow-x-auto hide-scrollbar">
+        {[
+          { id: 'details', label: '01 Bilgiler', icon: Info },
+          { id: 'shipping', label: '02 Teslimat', icon: Truck },
+          { id: 'confirm', label: '03 Ödeme', icon: CreditCard }
+        ].map((s, i) => (
+          <React.Fragment key={s.id}>
+            <div 
+              className={`flex items-center gap-3 whitespace-nowrap transition-all duration-500 ${step === s.id ? 'opacity-100' : 'opacity-30'}`}
             >
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${step === s.id ? 'bg-black text-white border-black' : 'border-zinc-200 text-black'}`}>
+                <s.icon size={14} />
+              </div>
+              <span className="text-[11px] font-black uppercase tracking-widest">{s.label}</span>
+            </div>
+            {i < 2 && <div className="hidden md:block w-8 h-[1px] bg-zinc-100" />}
+          </React.Fragment>
+        ))}
+      </div>
+
+      <div className="grid lg:grid-cols-[1fr,380px] gap-16 items-start">
+        {/* FORM SIDE */}
+        <div className="space-y-8">
+          {error && (
+            <div className="p-4 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 text-[12px] font-bold">
               {error}
-            </motion.div>
-          )}
-
-          {/* Step 1: Contact + Address */}
-          {step === 'details' && (
-            <form onSubmit={handleDetailsSubmit} className="space-y-4">
-              <input
-                type="email"
-                placeholder={t('checkout.email')}
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm"
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder={t('checkout.first_name')} value={firstName} onChange={e => setFirstName(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
-                <input type="text" placeholder={t('checkout.last_name')} value={lastName} onChange={e => setLastName(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
-              </div>
-              <input type="text" placeholder={t('checkout.address')} value={address} onChange={e => setAddress(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
-              <div className="grid grid-cols-2 gap-4">
-                <input type="text" placeholder={t('checkout.city')} value={city} onChange={e => setCity(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
-                <input type="text" placeholder={t('checkout.postal')} value={postal} onChange={e => setPostal(e.target.value)} required className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all placeholder:text-black/30 font-medium text-sm" />
-              </div>
-              <select
-                value={country}
-                onChange={e => setCountry(e.target.value)}
-                className="w-full px-5 py-3.5 bg-black/5 rounded-xl border border-transparent focus:border-black/20 focus:bg-transparent outline-none transition-all text-black/70 font-medium text-sm appearance-none"
-              >
-                <option value="TR">Turkey</option>
-                <option value="US">United States</option>
-                <option value="GB">United Kingdom</option>
-                <option value="DE">Germany</option>
-                <option value="FR">France</option>
-                <option value="NL">Netherlands</option>
-              </select>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-black text-white py-4 rounded-xl text-[15px] font-bold mt-2 hover:bg-zinc-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
-              >
-                {isLoading && <Loader2 size={16} className="animate-spin" />}
-                {t('checkout.continue_shipping')}
-              </button>
-            </form>
-          )}
-
-          {/* Step 2: Shipping method */}
-          {step === 'shipping' && (
-            <form onSubmit={handleShippingSubmit} className="space-y-4">
-              {[
-                { label: t('checkout.standard'), time: '5-7 days', price: t('checkout.free') },
-                { label: t('checkout.express'), time: '2-3 days', price: '$12.00' }
-              ].map((opt, i) => (
-                <label
-                  key={i}
-                  className={`flex justify-between items-center px-5 py-4 rounded-xl border cursor-pointer transition-all ${
-                    selectedShipping === String(i) ? 'border-black bg-black/5' : 'border-black/10 hover:border-black/30'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="radio"
-                      name="shipping"
-                      value={String(i)}
-                      checked={selectedShipping === String(i)}
-                      onChange={() => setSelectedShipping(String(i))}
-                      className="accent-black"
-                    />
-                    <span className="text-sm font-semibold">{opt.label}</span>
-                    <span className="text-xs text-black/40">{opt.time}</span>
-                  </div>
-                  <span className="text-sm font-bold">{opt.price}</span>
-                </label>
-              ))}
-
-              <div className="flex gap-4 mt-2">
-                <button
-                  type="button"
-                  onClick={() => setStep('details')}
-                  className="flex-1 py-4 rounded-xl text-[15px] font-bold border border-black/10 hover:border-black/30 transition-colors"
-                >
-                  {t('checkout.back')}
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="flex-1 bg-black text-white py-4 rounded-xl text-[15px] font-bold hover:bg-zinc-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
-                >
-                  {isLoading && <Loader2 size={16} className="animate-spin" />}
-                  {t('checkout.review_order')}
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* Step 3: Confirm + Pay */}
-          {step === 'confirm' && (
-            <div className="space-y-6">
-              <div className="bg-black/5 rounded-2xl p-6 space-y-3">
-                <p className="text-xs font-bold uppercase tracking-widest text-black/40 mb-4">{t('checkout.shipping_to')}</p>
-                <p className="text-sm font-semibold">{firstName} {lastName}</p>
-                <p className="text-sm text-black/60">{address}, {city} {postal}</p>
-                <p className="text-sm text-black/60">{email}</p>
-              </div>
-
-              <p className="text-xs text-black/40 font-medium leading-relaxed italic">
-                Siparişinizi onaylayarak hizmet koşullarımızı kabul etmiş sayılırsınız. Tüm veriler Supabase altyapısı ile uçtan uca korunmaktadır.
-              </p>
-
-              <div className="flex gap-4">
-                <button
-                  type="button"
-                  onClick={() => setStep('shipping')}
-                  className="flex-1 py-4 rounded-xl text-[15px] font-bold border border-black/10 hover:border-black/30 transition-colors"
-                >
-                  {t('checkout.back')}
-                </button>
-                <button
-                  onClick={handleCompleteOrder}
-                  disabled={isLoading}
-                  className="flex-1 bg-black text-white py-4 rounded-xl text-[15px] font-bold hover:bg-zinc-800 transition-colors disabled:opacity-60 flex items-center justify-center gap-2"
-                >
-                  {isLoading && <Loader2 size={16} className="animate-spin" />}
-                  {t('checkout.place_order')}
-                </button>
-              </div>
             </div>
           )}
-        </div>
 
-        {/* ── Right — Order Summary ── */}
-        <div className="bg-black/5 p-8 rounded-[2rem] h-fit">
-          <h2 className="text-lg font-black tracking-tight mb-6">{t('checkout.summary')}</h2>
-          <div className="space-y-4 mb-6">
-            {cartItems.map(item => (
-              <div key={item.id} className="flex justify-between items-center text-sm font-medium">
-                <div className="flex gap-4 items-center">
-                  {item.image && (
-                    <img src={item.image} alt={item.name} className="w-10 h-10 object-cover rounded-lg" />
-                  )}
-                  <div>
-                    <p>{item.name}</p>
-                    <p className="text-black/40 text-xs">{item.size} · {t('checkout.qty')} {item.quantity}</p>
+          <AnimatePresence mode="wait">
+            {step === 'details' && (
+              <motion.form 
+                key="details"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                onSubmit={handleDetailsSubmit} 
+                className="space-y-6"
+              >
+                <div className="space-y-4">
+                  <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">İletişim & Kimlik</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                       <input type="text" placeholder="T.C. Kimlik Numarası (Zorunlu)" value={identityNumber} onChange={e => setIdentityNumber(e.target.value.replace(/\D/g, ''))} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" maxLength={11} />
+                       <p className="text-[9px] text-zinc-400 uppercase tracking-widest ml-2 italic">iyzico altyapısı için gereklidir</p>
+                    </div>
+                    <input type="tel" placeholder="Telefon (05xx...)" value={phone} onChange={e => setPhone(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
+                  </div>
+                  <input type="email" placeholder="E-posta" value={email} onChange={e => setEmail(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Teslimat Adresi</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <input type="text" placeholder="Ad" value={firstName} onChange={e => setFirstName(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
+                    <input type="text" placeholder="Soyad" value={lastName} onChange={e => setLastName(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
+                  </div>
+                  <textarea placeholder="Adres (Sokak, Bina, No, Daire)" value={address} onChange={e => setAddress(e.target.value)} required className="w-full h-32 px-6 py-4 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm resize-none" />
+                  <div className="grid grid-cols-2 gap-4">
+                    <input type="text" placeholder="Şehir" value={city} onChange={e => setCity(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
+                    <input type="text" placeholder="Posta Kodu" value={postal} onChange={e => setPostal(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
                   </div>
                 </div>
-                <span className="font-bold">{item.price}</span>
+
+                <button type="submit" className="w-full h-16 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-black/10 hover:bg-zinc-800 transition-all">
+                  Kargo Seçimine Geç
+                </button>
+              </motion.form>
+            )}
+
+            {step === 'shipping' && (
+              <motion.form 
+                key="shipping"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                onSubmit={handleShippingSubmit} 
+                className="space-y-8"
+              >
+                <div className="space-y-4">
+                  {[
+                    { id: '0', label: 'Standart Teslimat', price: 'Ücretsiz', time: '3-5 İş Günü' },
+                    { id: '1', label: 'VIP Express', price: '₺45.00', time: '24-48 Saat' }
+                  ].map(opt => (
+                    <label 
+                      key={opt.id}
+                      className={`block p-6 rounded-2xl border-2 cursor-pointer transition-all ${selectedShipping === opt.id ? 'border-black bg-zinc-50' : 'border-zinc-100 hover:border-zinc-200'}`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-4">
+                          <input type="radio" checked={selectedShipping === opt.id} onChange={() => setSelectedShipping(opt.id)} className="w-4 h-4 accent-black" />
+                          <div>
+                            <p className="text-sm font-black uppercase tracking-tight">{opt.label}</p>
+                            <p className="text-[11px] text-zinc-400 font-bold uppercase tracking-widest">{opt.time}</p>
+                          </div>
+                        </div>
+                        <span className="text-sm font-black">{opt.price}</span>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+                <div className="flex gap-4">
+                    <button type="button" onClick={() => setStep('details')} className="flex-1 h-16 bg-zinc-100 text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-200 transition-all">Geri</button>
+                    <button type="submit" className="flex-[2] h-16 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all">Siparişi İncele</button>
+                </div>
+              </motion.form>
+            )}
+
+            {step === 'confirm' && (
+              <motion.div 
+                key="confirm"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                className="space-y-8"
+              >
+                <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-100 space-y-6">
+                  <div>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3">Teslimat Adresi</h4>
+                    <p className="text-sm font-bold text-black">{firstName} {lastName}</p>
+                    <p className="text-sm font-medium text-zinc-500 mt-1">{address}, {city} {postal}</p>
+                    <p className="text-sm font-medium text-zinc-500">{phone}</p>
+                  </div>
+                  <div className="pt-6 border-t border-zinc-200">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3">Güvenlik Önsözü</h4>
+                    <div className="flex items-start gap-4 text-emerald-600 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
+                       <ShieldCheck size={18} className="mt-0.5 flex-shrink-0" />
+                       <p className="text-[11px] font-bold leading-relaxed tracking-tight">
+                         Ödemeniz iyzico 256-bit SSL korumalı altyapısı ile gerçekleşecektir. Kart bilgileriniz asla sisteme kaydedilmez.
+                       </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                    <button type="button" onClick={() => setStep('shipping')} className="flex-1 h-16 bg-zinc-100 text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-200 transition-all">Geri</button>
+                    <button onClick={handleCompleteOrder} disabled={isLoading} className="flex-[2] h-16 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-black/20 hover:bg-zinc-800 transition-all flex items-center justify-center gap-3">
+                      {isLoading ? <Loader2 size={18} className="animate-spin" /> : <>Ödemeyi Başlat <ChevronLeft size={16} className="rotate-180" /></>}
+                    </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* SUMMARY SIDE */}
+        <div className="bg-zinc-50/50 p-8 pt-10 rounded-[2.5rem] border border-zinc-100 h-fit sticky top-32">
+          <h2 className="text-xs font-black uppercase tracking-[0.4em] mb-8 border-b border-zinc-100 pb-4">Sipariş Özeti</h2>
+          
+          <div className="space-y-6 mb-10 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+            {cartItems.map(item => (
+              <div key={item.id} className="flex gap-4">
+                <div className="w-16 h-20 bg-zinc-100 rounded-xl overflow-hidden flex-shrink-0">
+                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex flex-col justify-between py-1">
+                  <div>
+                    <p className="text-[13px] font-black tracking-tight leading-tight">{item.name}</p>
+                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">{item.size} · {item.quantity} Adet</p>
+                  </div>
+                  <p className="text-[13px] font-black">{item.price}</p>
+                </div>
               </div>
             ))}
           </div>
-          <div className="w-full h-[1px] bg-black/10 mb-6" />
-          <div className="flex justify-between items-center text-lg font-black">
-            <span>{t('cart.total')}</span>
-            <span>{cartTotal}</span>
+
+          <div className="space-y-3 border-t border-zinc-100 pt-6">
+             <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+                <span>Ara Toplam</span>
+                <span>₺{prices.subtotal.toFixed(2)}</span>
+             </div>
+             <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+                <span>KDV (20%)</span>
+                <span>₺{prices.tax.toFixed(2)}</span>
+             </div>
+             <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+                <span>Kargo</span>
+                <span className={prices.shipping === 0 ? 'text-emerald-500' : 'text-black'}>
+                  {prices.shipping === 0 ? 'Ücretsiz' : `₺${prices.shipping.toFixed(2)}`}
+                </span>
+             </div>
+             <div className="h-[1px] bg-zinc-200 my-4" />
+             <div className="flex justify-between items-end">
+                <span className="text-[12px] font-black uppercase tracking-[0.2em]">Toplam</span>
+                <span className="text-2xl font-black tracking-tighter leading-none">₺{prices.total.toFixed(2)}</span>
+             </div>
           </div>
         </div>
-
       </div>
-    </motion.div>
+    </div>
   );
 }

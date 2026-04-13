@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid3X3, ShoppingBag, Search, X, User } from 'lucide-react';
+import { Grid3X3, ShoppingBag, Search, X, User, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useCart } from '../context/CartContext';
@@ -72,6 +72,10 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
                 <button onClick={() => setActivePanel('profile')} className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn">
                   <User size={18} strokeWidth={2} />
                 </button>
+                <Link to="/wishlist" className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn 
+                relative group hover:text-rose-500 transition-colors">
+                  <Heart size={18} strokeWidth={2} className="group-hover:fill-rose-500/10" />
+                </Link>
                 <button onClick={() => setActivePanel('menu')} className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn">
                   <Grid3X3 size={20} strokeWidth={2} />
                 </button>

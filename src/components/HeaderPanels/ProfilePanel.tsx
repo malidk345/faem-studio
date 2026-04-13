@@ -62,7 +62,7 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ onClose }) => {
             <div className="flex flex-col gap-1">
                {[
                  { label: t('account.my_orders'), path: '/account' },
-                 { label: t('account.wishlist'), path: '/account' },
+                 { label: t('account.wishlist'), path: '/wishlist' },
                  { label: t('account.studio_profile'), path: '/account' },
                  // Force check: if role is admin OR if the email is in our master admin list
                  ...(user.role === 'admin' || ['dursunkayamustafa@gmail.com', 'fatihduymus21@gmail.com'].includes(user.email) ? [{ label: t('account.admin_portal'), path: '/fatihveemirinadminportali' }] : [])

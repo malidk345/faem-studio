@@ -7,6 +7,11 @@ import SignIn from './pages/SignIn';
 import Shop from './pages/Shop';
 import Admin from './pages/Admin';
 import Account from './pages/Account';
+import Wishlist from './pages/Wishlist';
+import OrderSuccess from './pages/OrderSuccess';
+import OrderError from './pages/OrderError';
+import NotFound from './pages/NotFound';
+import Legal from './pages/Legal';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -34,7 +39,14 @@ function AppRoutes() {
         <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
         <Route path="/signin" element={<MainLayout><SignIn /></MainLayout>} />
         <Route path="/account" element={<MainLayout><Account /></MainLayout>} />
-        <Route path="*" element={<MainLayout><Home /></MainLayout>} />
+        <Route path="/wishlist" element={<MainLayout><Wishlist /></MainLayout>} />
+        <Route path="/order/success/:id" element={<MainLayout><OrderSuccess /></MainLayout>} />
+        <Route path="/order/error" element={<MainLayout><OrderError /></MainLayout>} />
+        <Route path="/legal/distance-sales" element={<MainLayout><Legal /></MainLayout>} />
+        <Route path="/legal/returns" element={<MainLayout><Legal /></MainLayout>} />
+        <Route path="/legal/privacy" element={<MainLayout><Legal /></MainLayout>} />
+        <Route path="/legal/about" element={<MainLayout><Legal /></MainLayout>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

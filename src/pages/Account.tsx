@@ -103,47 +103,64 @@ export default function Account() {
                 ) : orders.length > 0 ? (
                   <div className="flex flex-col gap-6">
                     {orders.map((order) => (
-                      <div key={order.id} className="p-6 border border-black/5 rounded-2xl hover:border-black/10 transition-colors group">
+                      <div key={order.id} className="p-6 border border-zinc-100 rounded-3xl hover:bg-zinc-50 transition-all group relative overflow-hidden">
                         <div className="flex justify-between items-start mb-6">
                           <div>
-                            <p className="text-[10px] uppercase font-bold text-black/30 mb-1">{t('account.order_id')}</p>
-                            <p className="text-sm font-bold tracking-tight">#{order.id.slice(0, 8).toUpperCase()}</p>
+                            <p className="text-[10px] uppercase font-black text-zinc-400 mb-1 tracking-widest">{t('account.order_id')}</p>
+                            <p className="text-sm font-black tracking-tight">#{order.id.slice(0, 8).toUpperCase()}</p>
                           </div>
-                          <div className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${order.status === 'delivered' ? 'bg-green-50 text-green-600' : 'bg-black/5 text-black/40'}`}>
-                            {t(`account.status.${order.status}`) || order.status}
+                          <div className="flex gap-2">
+                             <div className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${order.payment_status === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                                {order.payment_status === 'success' ? 'Ödendi' : 'Ödeme Bekliyor'}
+                             </div>
+                             <div className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest ${order.status === 'delivered' ? 'bg-black text-white' : 'bg-zinc-100 text-zinc-400'}`}>
+                                {t(`account.status.${order.status}`) || order.status}
+                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between text-[13px] text-black/60">
-                          <div className="flex items-center gap-4">
-                            <Clock size={14} />
-                            <span>{new Date(order.created_at).toLocaleDateString()}</span>
+                        <div className="flex items-end justify-between">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-[11px] font-bold text-zinc-400">
+                              <Clock size={12} />
+                              <span>{new Date(order.created_at).toLocaleDateString()}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-[11px] font-bold text-zinc-400">
+                              <Package size={12} />
+                              <span>{(order.items as any[])?.length || 1} Parça</span>
+                            </div>
                           </div>
-                          <p className="font-black text-black text-lg">{order.total}</p>
+                          <p className="font-black text-black text-xl tracking-tighter">{order.total}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="py-20 border border-dashed border-black/10 rounded-3xl text-center text-black/30 font-medium">
-                    {t('account.no_orders')}
+                  <div className="py-20 border-2 border-dashed border-zinc-100 rounded-3xl text-center">
+                    <p className="text-zinc-300 font-bold mb-6 italic">{t('account.no_orders')}</p>
+                    <Link to="/shop" className="bg-black text-white px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest">
+                       Alışverişe Başla
+                    </Link>
                   </div>
                 )}
               </motion.div>
             )}
 
             {activeTab === 'wishlist' && (
-              <motion.div key="wishlist" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }}>
-                <h2 className="text-xl font-bold mb-8">{t('account.wishlist')}</h2>
+              <motion.div key="wishlist" initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="flex flex-col items-center">
+                <div className="w-full flex justify-between items-center mb-8">
+                   <h2 className="text-xl font-bold">{t('account.wishlist')}</h2>
+                   <Link to="/wishlist" className="text-[11px] font-black uppercase tracking-widest border-b border-black pb-0.5">Tümünü Gör</Link>
+                </div>
                 {wishlist.length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                    {wishlist.map((item) => (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full">
+                    {wishlist.slice(0, 3).map((item) => (
                       <Link key={item.id} to={`/product/${item.id}`} className="group flex flex-col gap-3">
-                        <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-black/5">
+                        <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-zinc-50 border border-zinc-100">
                           <img src={item.image_url} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                         </div>
                         <div>
-                          <p className="text-[13px] font-bold tracking-tight">{item.name}</p>
-                          <p className="text-[12px] opacity-40">{item.price}</p>
+                          <p className="text-[13px] font-black tracking-tight">{item.name}</p>
+                          <p className="text-[12px] opacity-40 font-bold">{item.price}</p>
                         </div>
                       </Link>
                     ))}
