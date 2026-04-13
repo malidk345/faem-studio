@@ -89,3 +89,10 @@ CREATE INDEX IF NOT EXISTS idx_wishlist_user_id ON public.wishlist(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_addresses_user_id ON public.user_addresses(user_id);
 -- Fix: Ensure discount_price can store formatted strings (e.g. '500 ₺')
 ALTER TABLE products ALTER COLUMN discount_price TYPE TEXT;
+
+-- iyzico Payment Infrastructure: Add tracking columns to orders
+ALTER TABLE orders 
+ADD COLUMN IF NOT EXISTS payment_id TEXT,
+ADD COLUMN IF NOT EXISTS payment_transaction_id TEXT,
+ADD COLUMN IF NOT EXISTS payment_status TEXT DEFAULT 'pending',
+ADD COLUMN IF NOT EXISTS payment_provider TEXT DEFAULT 'iyzico';
