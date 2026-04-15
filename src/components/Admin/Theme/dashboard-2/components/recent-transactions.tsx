@@ -1,131 +1,86 @@
 "use client"
 
-import { Eye, MoreHorizontal } from "lucide-react"
+import { Eye, MoreHorizontal, Package, Truck, CheckCircle2, Clock } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { assetUrl } from "@/lib/utils"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import type { AdminOrder } from "@/hooks/useAdminData"
 
-const transactions = [
-  {
-    id: "TXN-001",
-    customer: {
-      name: "Olivia Martin",
-      email: "olivia.martin@email.com",
-      avatar: assetUrl("https://notion-avatars.netlify.app/api/avatar/?preset=female-"),
-    },
-    amount: "$1,999.00",
-    status: "completed",
-    date: "2 hours ago",
-  },
-  {
-    id: "TXN-002",
-    customer: {
-      name: "Jackson Lee",
-      email: "jackson.lee@email.com",
-      avatar: assetUrl("https://notion-avatars.netlify.app/api/avatar/?preset=male-1"),
-    },
-    amount: "$2,999.00",
-    status: "pending",
-    date: "5 hours ago",
-  },
-  {
-    id: "TXN-003",
-    customer: {
-      name: "Isabella Nguyen",
-      email: "isabella.nguyen@email.com",
-      avatar: assetUrl("https://notion-avatars.netlify.app/api/avatar/?preset=female-2"),
-    },
-    amount: "$39.00",
-    status: "completed",
-    date: "1 day ago",
-  },
-  {
-    id: "TXN-004",
-    customer: {
-      name: "William Kim",
-      email: "will@email.com",
-      avatar: assetUrl("https://notion-avatars.netlify.app/api/avatar/?preset=male-5"),
-    },
-    amount: "$299.00",
-    status: "failed",
-    date: "2 days ago",
-  },
-  {
-    id: "TXN-005",
-    customer: {
-      name: "Sofia Davis",
-      email: "sofia.davis@email.com",
-      avatar: assetUrl("https://notion-avatars.netlify.app/api/avatar/?preset=female-4"),
-    },
-    amount: "$99.00",
-    status: "completed",
-    date: "3 days ago",
-  },
-]
+interface RecentTransactionsProps {
+  orders: AdminOrder[];
+}
 
-export function RecentTransactions() {
-  return (
-    <Card className="cursor-pointer">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <div>
-          <CardTitle>Recent Transactions</CardTitle>
-          <CardDescription>Latest customer transactions</CardDescription>
-        </div>
-        <Button variant="outline" size="sm" className="cursor-pointer">
-          <Eye className="h-4 w-4 mr-2" />
-          View All
-        </Button>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {transactions.map((transaction) => (
-          <div key={transaction.id} >
-            <div className="flex p-3 rounded-lg border gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={transaction.customer.avatar} alt={transaction.customer.name} />
-                <AvatarFallback>{transaction.customer.name.split(" ").map(n => n[0]).join("")}</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-1 items-center flex-wrap justify-between gap-1">
-                <div className="flex items-center space-x-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium truncate">{transaction.customer.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{transaction.customer.email}</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <Badge
-                    variant={
-                      transaction.status === "completed" ? "default" :
-                      transaction.status === "pending" ? "secondary" : "destructive"
-                    }
-                    className="cursor-pointer"
-                  >
-                    {transaction.status}
-                  </Badge>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">{transaction.amount}</p>
-                    <p className="text-xs text-muted-foreground">{transaction.date}</p>
-                  </div>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 cursor-pointer">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem className="cursor-pointer">View Details</DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">Download Receipt</DropdownMenuItem>
-                      <DropdownMenuItem className="cursor-pointer">Contact Customer</DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div>
+function getStatusBadge(status: string) {
+  switch (status) {
+    case 'delivered':
+      return { variant: 'default' as const, label: 'Teslim Edildi', icon: CheckCircle2 };
+    case 'shipped':
+      return { variant: 'secondary' as const, label: 'Kargoda', icon: Truck };
+    case 'processing':
+      return { variant: 'secondary' as const, label: 'Hazırlanıyor', icon: Package };
+    case 'cancelled':
+      return { variant: 'destructive' as const, label: 'İptal', icon: null };
+    default:
+      return { variant: 'outline' as const, label: 'Beklemede', icon: Clock };
+  }
+}
+
+function getTimeAgo(dateStr: string): string {
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  const diffHour = Math.floor(diffMs / 3600000);
+  const diffDay = Math.floor(diffMs / 86400000);
+
+  if (diffMin < 1) return 'Az önce';
+  if (diffMin < 60) return `${diffMin} dk önce`;
+  if (diffHour < 24) return `${diffHour} saat önce`;
+  if (diffDay < 7) return `${diffDay} gün önce`;
+  return date.toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' });
+}
+
+export function RecentTransactions({ orders }: RecentTransactionsProps) {
+  // Show the 5 most recent orders
+  const recentOrders = orders.slice(0, 5);
+
+  if (recentOrders.length === 0) {
+    return (
+      <Card>
+        <CardContent className="py-12 text-center">
+          <Package className="h-10 w-10 mx-auto text-zinc-300 mb-4" />
+          <p className="text-sm font-medium text-zinc-400">Henüz sipariş bulunmuyor</p>
+          <p className="text-xs text-zinc-300 mt-1">Müşteriler sipariş verdiğinde burada görünecek</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+    <div className="space-y-2">
+      {recentOrders.map((order) => {
+        const statusInfo = getStatusBadge(order.status);
+        const initials = order.user.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+        return (
+          <div key={order.id} className="flex items-center justify-between p-2 rounded-xl bg-zinc-50 border border-zinc-100 hover:bg-white transition-all cursor-pointer">
+            <div className="flex items-center gap-3 min-w-0">
+               <Avatar className="h-7 w-7 border">
+                <AvatarFallback className="text-[9px] font-black">{initials}</AvatarFallback>
+               </Avatar>
+               <div className="min-w-0">
+                  <p className="text-xs font-bold text-zinc-900 truncate">{order.user}</p>
+                  <p className="text-[9px] font-medium text-zinc-400">#{order.shortId} · {getTimeAgo(order.rawDate)}</p>
+               </div>
+            </div>
+            <div className="flex items-center gap-4 flex-shrink-0">
+               <Badge variant="outline" className={`h-6 text-[9px] font-bold border-none bg-zinc-100 text-zinc-500`}>
+                  {statusInfo.label}
+               </Badge>
+               <span className="text-xs font-black text-zinc-900 min-w-[60px] text-right">{order.total}</span>
             </div>
           </div>
-        ))}
-      </CardContent>
-    </Card>
-  )
+        );
+      })}
+    </div>
 }

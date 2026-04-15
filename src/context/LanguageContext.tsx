@@ -154,9 +154,6 @@ const translations = {
     'review.rating_label': 'Puanınız',
     'review.placeholder': 'Kalıp, kalite veya his hakkındaki düşüncelerinizi paylaşın...',
     'review.submit': 'Yorumu Gönder',
-    'search.placeholder': 'Mağazada ara...',
-    'search.popular': 'Popüler Aramalar',
-    'search.results': 'Sonuçlar',
     'search.clear': 'Temizle',
   },
   en: {
@@ -304,9 +301,6 @@ const translations = {
     'review.rating_label': 'Your Rating',
     'review.placeholder': 'Share your thoughts on the fit, quality, or feel...',
     'review.submit': 'Submit Review',
-    'search.placeholder': 'Search store...',
-    'search.popular': 'Popular Searches',
-    'search.results': 'Results',
     'search.clear': 'Clear',
   }
 };

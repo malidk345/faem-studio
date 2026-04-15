@@ -1,110 +1,99 @@
 "use client"
 
-import { useState } from "react"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
+import { useState, useMemo } from "react"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import type { AdminOrder } from "@/hooks/useAdminData"
 
-const salesData = [
-  { month: "Jan", sales: 12500, target: 15000 },
-  { month: "Feb", sales: 18200, target: 15000 },
-  { month: "Mar", sales: 16800, target: 15000 },
-  { month: "Apr", sales: 22400, target: 20000 },
-  { month: "May", sales: 24600, target: 20000 },
-  { month: "Jun", sales: 28200, target: 25000 },
-  { month: "Jul", sales: 31500, target: 25000 },
-  { month: "Aug", sales: 29800, target: 25000 },
-  { month: "Sep", sales: 33200, target: 30000 },
-  { month: "Oct", sales: 35100, target: 30000 },
-  { month: "Nov", sales: 38900, target: 35000 },
-  { month: "Dec", sales: 42300, target: 35000 },
-]
-
-const chartConfig = {
-  sales: {
-    label: "Sales",
-    color: "var(--primary)",
-  },
-  target: {
-    label: "Target",
-    color: "var(--primary)",
-  },
+interface LiveSalesChartProps {
+  orders: AdminOrder[];
 }
 
-export function SalesChart() {
-  const [timeRange, setTimeRange] = useState("12m")
+export function SalesChart({ orders }: LiveSalesChartProps) {
+  const [timeRange, setTimeRange] = useState("6m")
+
+  const chartData = useMemo(() => {
+    const months = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+    const now = new Date();
+    const data: Record<string, { month: string; sales: number; sortKey: number }> = {};
+
+    // Initialize the last 12 months with 0
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      data[key] = {
+        month: months[d.getMonth()],
+        sales: 0,
+        sortKey: d.getTime()
+      };
+    }
+
+    // Aggregate real order data
+    orders.forEach(order => {
+      const d = new Date(order.rawDate);
+      const key = `${d.getFullYear()}-${d.getMonth()}`;
+      if (data[key]) {
+        data[key].sales += order.totalNumeric;
+      }
+    });
+
+    return Object.values(data).sort((a, b) => a.sortKey - b.sortKey);
+  }, [orders]);
+
+  const chartConfig = {
+    sales: {
+      label: "Satışlar",
+      color: "var(--primary)",
+    }
+  };
 
   return (
-    <Card className="cursor-pointer">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <Card className="cursor-pointer border-zinc-100 shadow-sm rounded-[2rem] overflow-hidden">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-8">
         <div>
-          <CardTitle>Sales Performance</CardTitle>
-          <CardDescription>Monthly sales vs targets</CardDescription>
+          <CardTitle className="text-xl font-black tracking-tight">Satış Performansı</CardTitle>
+          <CardDescription className="text-xs font-medium text-zinc-400">Gerçekleşen aylık ciro akışı</CardDescription>
         </div>
         <div className="flex items-center space-x-2">
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className="w-32 cursor-pointer">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="3m" className="cursor-pointer">Last 3 months</SelectItem>
-              <SelectItem value="6m" className="cursor-pointer">Last 6 months</SelectItem>
-              <SelectItem value="12m" className="cursor-pointer">Last 12 months</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" className="cursor-pointer">
-            Export
-          </Button>
+          <Badge variant="outline" className="bg-zinc-50 font-bold text-[10px] uppercase border-none">Canlı</Badge>
         </div>
       </CardHeader>
-      <CardContent className="p-0 pt-6">
-        <div className="px-6 pb-6">
-          <ChartContainer config={chartConfig} className="h-[350px] w-full">
-            <AreaChart data={salesData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+      <CardContent className="p-0 pt-2">
+        <div className="px-4 pb-6">
+          <ChartContainer config={chartConfig} className="h-[300px] w-full">
+            <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-sales)" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="var(--color-sales)" stopOpacity={0.05} />
-                </linearGradient>
-                <linearGradient id="colorTarget" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-target)" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="var(--color-target)" stopOpacity={0} />
+                  <stop offset="5%" stopColor="var(--color-sales)" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="var(--color-sales)" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted/30" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-zinc-100" />
               <XAxis 
                 dataKey="month" 
                 axisLine={false}
                 tickLine={false}
-                className="text-xs"
-                tick={{ fontSize: 12 }}
+                className="text-zinc-400 font-bold"
+                tick={{ fontSize: 10 }}
               />
               <YAxis 
                 axisLine={false}
                 tickLine={false}
-                className="text-xs"
-                tick={{ fontSize: 12 }}
-                tickFormatter={(value) => `$${value.toLocaleString()}`}
+                className="text-zinc-400 font-bold"
+                tick={{ fontSize: 10 }}
+                tickFormatter={(value) => `$${value}`}
               />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Area
                 type="monotone"
-                dataKey="target"
-                stackId="1"
-                stroke="var(--color-target)"
-                fill="url(#colorTarget)"
-                strokeDasharray="5 5"
-                strokeWidth={1}
-              />
-              <Area
-                type="monotone"
                 dataKey="sales"
-                stackId="2"
                 stroke="var(--color-sales)"
+                strokeWidth={3}
                 fill="url(#colorSales)"
-                strokeWidth={1}
+                animationDuration={1500}
               />
             </AreaChart>
           </ChartContainer>
@@ -112,4 +101,8 @@ export function SalesChart() {
       </CardContent>
     </Card>
   )
+}
+
+function Badge({ children, className, variant }: any) {
+  return <span className={`px-2.5 py-1 rounded-full ${className}`}>{children}</span>
 }

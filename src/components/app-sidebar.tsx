@@ -4,17 +4,13 @@ import * as React from "react"
 import {
   LayoutPanelLeft,
   LayoutDashboard,
-  Mail,
-  CheckSquare,
-  MessageCircle,
-  Calendar,
-  Shield,
-  AlertTriangle,
+  LayoutTemplate,
+  CreditCard,
   Settings,
   HelpCircle,
-  CreditCard,
-  LayoutTemplate,
   Users,
+  BookOpen,
+  Monitor,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Logo } from "@/components/logo"
@@ -40,7 +36,7 @@ const data = {
   },
   navGroups: [
     {
-      label: "Management",
+      label: "Operasyon",
       items: [
         {
           title: "Dashboard",
@@ -48,37 +44,52 @@ const data = {
           icon: LayoutDashboard,
         },
         {
-          title: "Inventory",
+          title: "Envanter",
           url: "products",
           icon: LayoutPanelLeft,
         },
         {
-          title: "Collections",
-          url: "categories",
-          icon: LayoutTemplate,
-        },
-        {
-          title: "Sales",
+          title: "Siparişler",
           url: "orders",
           icon: CreditCard,
+        },
+        {
+          title: "Koleksiyonlar",
+          url: "categories",
+          icon: LayoutTemplate,
         },
       ],
     },
     {
-      label: "System",
+      label: "Editöryal",
       items: [
         {
-          title: "Customers",
+          title: "Vitrin Yönetimi",
+          url: "cms",
+          icon: Monitor,
+        },
+        {
+          title: "Stüdyo Günlüğü",
+          url: "journal",
+          icon: BookOpen,
+        },
+        {
+          title: "Müşteriler",
           url: "customers",
           icon: Users,
         },
+      ],
+    },
+    {
+      label: "Sistem",
+      items: [
         {
-          title: "Settings",
+          title: "Ayarlar",
           url: "settings",
           icon: Settings,
         },
         {
-          title: "Help Center",
+          title: "Yardım",
           url: "help",
           icon: HelpCircle,
         },
@@ -107,7 +118,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="px-2">
         {data.navGroups.map((group) => (
           <NavMain key={group.label} label={group.label} items={group.items} />
         ))}

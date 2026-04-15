@@ -10,76 +10,86 @@ import {
 } from "lucide-react"
 import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import type { AdminOrder } from "@/hooks/useAdminData"
 
-const metrics = [
-  {
-    title: "Total Revenue",
-    value: "$54,230",
-    description: "Monthly revenue",
-    change: "+12%",
-    trend: "up",
-    icon: DollarSign,
-    footer: "Trending up this month",
-    subfooter: "Revenue for the last 6 months"
-  },
-  {
-    title: "Active Customers",
-    value: "2,350",
-    description: "Total active users",
-    change: "+5.2%", 
-    trend: "up",
-    icon: Users,
-    footer: "Strong user retention",
-    subfooter: "Engagement exceeds targets"
-  },
-  {
-    title: "Total Orders",
-    value: "1,247",
-    description: "Orders this month",
-    change: "-2.1%",
-    trend: "down", 
-    icon: ShoppingCart,
-    footer: "Down 2% this period",
-    subfooter: "Order volume needs attention"
-  },
-  {
-    title: "Conversion Rate",
-    value: "3.24%",
-    description: "Average conversion",
-    change: "+8.3%",
-    trend: "up",
-    icon: BarChart3,
-    footer: "Steady performance increase",
-    subfooter: "Meets conversion projections"
-  },
-]
+interface MetricsOverviewProps {
+  orders: AdminOrder[];
+  products: any[];
+}
 
-export function MetricsOverview() {
+export function MetricsOverview({ orders, products }: MetricsOverviewProps) {
+  // Calculate real metrics from live data
+  const totalRevenue = orders.reduce((sum, o) => sum + o.totalNumeric, 0);
+  const pendingOrders = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
+  const deliveredOrders = orders.filter(o => o.status === 'delivered').length;
+  const totalOrders = orders.length;
+
+  const formattedRevenue = totalRevenue > 0 
+    ? new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalRevenue)
+    : '$0';
+
+  const metrics = [
+    {
+      title: "Toplam Gelir",
+      value: formattedRevenue,
+      description: "Toplam satış hacmi",
+      change: totalOrders > 0 ? `${totalOrders} sipariş` : "—",
+      trend: "up" as const,
+      icon: DollarSign,
+      footer: "Gerçek zamanlı veriler",
+      subfooter: "Tüm siparişlerden hesaplandı"
+    },
+    {
+      title: "Bekleyen Siparişler",
+      value: pendingOrders.toString(),
+      description: "İşlem bekleyen",
+      change: pendingOrders > 0 ? "Aksiyon gerekli" : "Temiz",
+      trend: pendingOrders > 3 ? "down" as const : "up" as const,
+      icon: ShoppingCart,
+      footer: pendingOrders > 0 ? "Hazırlanması gereken siparişler" : "Tüm siparişler hazır",
+      subfooter: "Kargo bekleyenler dahil"
+    },
+    {
+      title: "Ürün Sayısı",
+      value: products.length.toString(),
+      description: "Aktif katalog",
+      change: `${products.filter(p => (p.stock_count || 0) > 0).length} stokta`,
+      trend: "up" as const,
+      icon: BarChart3,
+      footer: "Aktif envanter durumu",
+      subfooter: "Satışta olan ürünler"
+    },
+    {
+      title: "Teslim Edilen",
+      value: deliveredOrders.toString(),
+      description: "Başarılı teslimat",
+      change: totalOrders > 0 ? `%${Math.round((deliveredOrders / totalOrders) * 100)}` : "—",
+      trend: "up" as const,
+      icon: Users,
+      footer: "Teslimat başarı oranı",
+      subfooter: "Müşteri memnuniyeti"
+    },
+  ]
+
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
       {metrics.map((metric) => {
         const TrendIcon = metric.trend === "up" ? TrendingUp : TrendingDown
         
         return (
-          <Card key={metric.title} className=" cursor-pointer">
-            <CardHeader>
-              <CardDescription>{metric.title}</CardDescription>
-              <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
+          <Card key={metric.title} className="cursor-pointer border-zinc-100 shadow-none rounded-2xl">
+            <CardHeader className="p-4 pt-5">
+              <CardDescription className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{metric.title}</CardDescription>
+              <CardTitle className="text-xl font-black tabular-nums">
                 {metric.value}
               </CardTitle>
-              <CardAction>
-                <Badge variant="outline">
-                  <TrendIcon className="h-4 w-4" />
+            </CardHeader>
+            <CardFooter className="px-4 pb-4 pt-0 flex-col items-start gap-1">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold">
+                <Badge variant="outline" className="px-1.5 h-5 border-none bg-zinc-50 text-zinc-400">
+                  <TrendIcon className="h-3 w-3 mr-1" />
                   {metric.change}
                 </Badge>
-              </CardAction>
-            </CardHeader>
-            <CardFooter className="flex-col items-start gap-1.5 text-sm">
-              <div className="line-clamp-1 flex gap-2 font-medium">
-                {metric.footer} <TrendIcon className="size-4" />
-              </div>
-              <div className="text-muted-foreground">
-                {metric.subfooter}
               </div>
             </CardFooter>
           </Card>

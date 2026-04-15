@@ -8,7 +8,6 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { motion, AnimatePresence } from "motion/react";
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 
 import { useAdminData } from '../hooks/useAdminData';
 import { DashboardTab } from '../components/Admin/Tabs/DashboardTab';
@@ -16,6 +15,8 @@ import { ProductsTab } from '../components/Admin/Tabs/ProductsTab';
 import { CategoriesTab } from '../components/Admin/Tabs/CategoriesTab';
 import { OrdersTab } from '../components/Admin/Tabs/OrdersTab';
 import { ProductEditTab } from '../components/Admin/Tabs/ProductEditTab';
+import { JournalTab } from '../components/Admin/Tabs/JournalTab';
+import { CmsTab } from '../components/Admin/Tabs/CmsTab';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -68,28 +69,28 @@ export default function Admin() {
     <SidebarProvider>
       <AppSidebar collapsible="icon" />
       <SidebarInset className="bg-white">
-        <header className="flex h-20 shrink-0 items-center justify-between gap-2 border-b border-zinc-50 bg-white/80 backdrop-blur-md px-6 sticky top-0 z-30">
-          <div className="flex items-center gap-4">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-zinc-50 bg-white/80 backdrop-blur-md px-4 md:px-6 sticky top-0 z-30">
+          <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-               <SidebarTrigger className="w-10 h-10 rounded-xl hover:bg-zinc-50" />
-               <div className="h-6 w-px bg-zinc-100 mx-1" />
+               <SidebarTrigger className="w-9 h-9 rounded-xl hover:bg-zinc-100 transition-colors" />
+               <div className="h-5 w-px bg-zinc-100 mx-1" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-300 leading-none mb-1">Curation Hub</span>
-              <span className="text-sm font-bold text-zinc-900 capitalize">{isEditing ? 'Editing Asset' : activeTab.replace('-', ' ')}</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-300 leading-none mb-0.5">Curation Hub</span>
+              <span className="text-xs font-bold text-zinc-900 capitalize">{isEditing ? 'Editing Asset' : activeTab.replace('-', ' ')}</span>
             </div>
           </div>
           <SiteHeader />
         </header>
 
-        <main className="flex-1 p-4 md:p-10 lg:p-16">
+        <main className="flex-1 p-3 md:p-6 lg:p-8 overflow-x-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab + (isEditing ? '_editing' : '_listing')}
-              initial={{ opacity: 0, scale: 0.99 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.99 }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
             >
               {activeTab === 'dashboard' && <DashboardTab orders={orders} products={products} />}
               
@@ -119,6 +120,8 @@ export default function Admin() {
 
               {activeTab === 'categories' && <CategoriesTab categories={categories} onAdd={addCategory} />}
               {activeTab === 'orders' && <OrdersTab orders={orders} onUpdateStatus={updateOrderStatus} />}
+              {activeTab === 'journal' && <JournalTab />}
+              {activeTab === 'cms' && <CmsTab />}
             </motion.div>
           </AnimatePresence>
         </main>
