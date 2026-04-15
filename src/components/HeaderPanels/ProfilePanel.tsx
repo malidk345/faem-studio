@@ -21,7 +21,7 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ onClose }) => {
   };
 
   return (
-    <motion.div variants={containerVariants} className="p-6 flex flex-col gap-5">
+    <motion.div variants={containerVariants} className="p-6 flex flex-col gap-6">
       <AnimatePresence mode="wait">
         {!user ? (
           <motion.div 
@@ -29,17 +29,17 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ onClose }) => {
             initial={{ opacity: 0, filter: 'blur(4px)' }}
             animate={{ opacity: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, filter: 'blur(4px)' }}
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-6"
           >
-            <div className="flex flex-col items-center text-center pb-4 border-b border-black/5">
-              <div className="w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-3">
-                <UserIcon size={24} className="text-black/30" />
+            <div className="flex flex-col items-center text-center pb-6 border-b border-white/10">
+              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 border border-white/10">
+                <UserIcon size={24} className="text-white/30" />
               </div>
-              <h3 className="text-black font-bold text-[18px]">{t('auth.studio_access')}</h3>
-              <p className="text-black/40 text-[13px] font-medium leading-relaxed max-w-[200px] mt-1">{t('auth.studio_access_desc')}</p>
+              <h3 className="text-white font-bold text-[18px] tracking-tight">{t('auth.studio_access')}</h3>
+              <p className="text-white/40 text-[13px] font-medium leading-relaxed max-w-[200px] mt-1">{t('auth.studio_access_desc')}</p>
             </div>
             
-            <button onClick={handleSignInClick} className="w-full bg-black text-white py-3.5 rounded-xl text-[14px] font-bold hover:bg-zinc-800 transition-colors shadow-lg shadow-black/10">
+            <button onClick={handleSignInClick} className="w-full bg-white text-black py-4 rounded-xl text-[13px] font-bold uppercase tracking-widest hover:bg-white/90 transition-all shadow-xl">
               {t('auth.title')}
             </button>
           </motion.div>
@@ -49,14 +49,14 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ onClose }) => {
             initial={{ opacity: 0, filter: 'blur(4px)' }}
             animate={{ opacity: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0, filter: 'blur(4px)' }}
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-5"
           >
-            <div className="flex flex-col items-center text-center pb-4 border-b border-black/5">
-              <div className="w-16 h-16 bg-black text-white rounded-full flex items-center justify-center mb-3 shadow-lg shadow-black/20">
+            <div className="flex flex-col items-center text-center pb-6 border-b border-white/10">
+              <div className="w-16 h-16 bg-white text-black rounded-full flex items-center justify-center mb-4 border-2 border-white/20 shadow-xl">
                 <span className="text-[20px] font-bold tracking-tighter">{user.name.charAt(0)}</span>
               </div>
-              <h3 className="text-black font-bold text-[18px] tracking-tight">{user.name}</h3>
-              <p className="text-black/40 text-[12px] font-medium mt-1">{user.email}</p>
+              <h3 className="text-white font-bold text-[18px] tracking-tight">{user.name}</h3>
+              <p className="text-white/30 text-[12px] font-medium mt-1">{user.email}</p>
             </div>
             
             <div className="flex flex-col gap-1">
@@ -64,21 +64,20 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ onClose }) => {
                  { label: t('account.my_orders'), path: '/account' },
                  { label: t('account.wishlist'), path: '/wishlist' },
                  { label: t('account.studio_profile'), path: '/account' },
-                 // Force check: if role is admin OR if the email is in our master admin list
                  ...(user.role === 'admin' || ['dursunkayamustafa@gmail.com', 'fatihduymus21@gmail.com'].includes(user.email) ? [{ label: t('account.admin_portal'), path: '/fatihveemirinadminportali' }] : [])
                ].map((item) => (
                 <button 
                   key={item.label} 
                   onClick={() => { onClose?.(); navigate(item.path); }}
-                  className={`flex items-center justify-between py-2.5 px-3 rounded-lg transition-all group ${item.label === t('account.admin_portal') ? 'bg-black text-white hover:bg-zinc-800 my-2' : 'text-black/70 hover:text-black hover:bg-black/5'}`}
+                  className={`flex items-center justify-between py-3 px-3 rounded-xl transition-all group ${item.label === t('account.admin_portal') ? 'bg-white text-black hover:bg-white/90 my-2' : 'text-white/60 hover:text-white hover:bg-white/5'}`}
                 >
-                  <span className="text-[14px] font-semibold">{item.label}</span>
-                  <ArrowRight size={14} className={`opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all ${item.label === t('account.admin_portal') ? 'text-white' : 'text-black/30'}`} />
+                  <span className="text-[14px] font-bold tracking-tight">{item.label}</span>
+                  <ArrowRight size={14} className={`opacity-20 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all ${item.label === t('account.admin_portal') ? 'text-black' : 'text-white'}`} />
                 </button>
               ))}
             </div>
 
-            <button onClick={logout} className="mt-2 w-full flex items-center justify-center gap-2 bg-black/5 text-black py-3.5 rounded-xl text-[13px] font-bold hover:bg-black/10 transition-colors">
+            <button onClick={logout} className="mt-2 w-full flex items-center justify-center gap-2 bg-white/5 text-white/50 py-4 rounded-xl text-[12px] font-bold uppercase tracking-widest hover:bg-white/10 hover:text-white transition-all">
               <LogOut size={14} /> {t('account.signout_short')}
             </button>
           </motion.div>

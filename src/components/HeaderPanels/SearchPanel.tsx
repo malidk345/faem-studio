@@ -54,23 +54,21 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onClose }) => {
 
   return (
     <motion.div variants={containerVariants} className="p-5 flex flex-col gap-6">
-      {/* Search Input Section */}
       <motion.div variants={itemVariants} className="relative">
         <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-          {isSearching ? <Loader2 size={16} className="animate-spin text-black/20" /> : <Search size={16} className="text-black/30" />}
+          {isSearching ? <Loader2 size={16} className="animate-spin text-white/20" /> : <Search size={16} className="text-white/30" />}
         </div>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t('search.placeholder')}
-          className="w-full bg-black/[0.03] border border-black/[0.05] rounded-xl py-3.5 pl-11 pr-4 text-black placeholder:text-black/30 focus:outline-none focus:border-black/20 transition-all text-[15px] font-medium"
+          className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-11 pr-4 text-white placeholder:text-white/20 focus:outline-none focus:border-white/20 transition-all text-[15px] font-medium"
           autoFocus
         />
       </motion.div>
 
-      {/* Content Section */}
-      <div className="min-h-[100px]">
+      <div className="min-h-[120px]">
         <AnimatePresence mode="wait">
           {!hasResults ? (
             <motion.div 
@@ -78,15 +76,15 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onClose }) => {
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
-              transition={{ duration: 0.2 }}
+              className="px-1"
             >
-              <p className="text-black/40 text-[11px] mb-2 font-bold">{t('search.popular')}</p>
-              <div className="flex flex-wrap gap-1.5">
+              <p className="text-white/30 text-[10px] uppercase tracking-[0.3em] mb-4 font-bold">{t('search.popular')}</p>
+              <div className="flex flex-wrap gap-2">
                 {['Archive', 'Selection', 'Essential', 'Object'].map(term => (
                   <button 
                     key={term} 
                     onClick={() => setQuery(term)}
-                    className="px-3 py-1.5 bg-black/[0.03] border border-black/[0.05] rounded-lg text-black/60 text-[12px] font-medium hover:bg-black hover:text-white transition-all"
+                    className="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white/50 text-[11px] font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all"
                   >
                     {term}
                   </button>
@@ -99,40 +97,37 @@ const SearchPanel: React.FC<SearchPanelProps> = ({ onClose }) => {
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col gap-0"
+              className="flex flex-col px-1"
             >
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-black/40 text-[11px] font-bold">{t('search.results')}</p>
-                <button onClick={() => setQuery('')} className="text-[11px] border-b border-black text-black font-bold">{t('search.clear')}</button>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-white/30 text-[10px] font-bold uppercase tracking-[0.3em]">{t('search.results')}</p>
+                <button onClick={() => setQuery('')} className="text-[10px] uppercase font-bold tracking-widest text-white/50 border-white/20 border-b hover:text-white transition-colors">{t('search.clear')}</button>
               </div>
-              <div className="flex flex-col">
-                {results.map((product, i) => (
+              <div className="flex flex-col gap-1">
+                {results.map((product) => (
                   <button
                     key={product.id}
                     onClick={() => {
                       navigate(`/product/${product.id}`);
                       onClose?.();
                     }}
-                    className={`group flex items-center gap-4 py-4 transition-all text-left ${
-                      i !== results.length - 1 ? 'border-b border-black/[0.04]' : ''
-                    }`}
+                    className="group flex items-center gap-4 py-3 px-3 rounded-2xl hover:bg-white/5 transition-all text-left"
                   >
-                    <div className="w-12 h-16 bg-black/[0.03] rounded-md overflow-hidden flex-shrink-0">
-                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div className="w-12 h-16 bg-white/5 rounded-xl overflow-hidden shrink-0 border border-white/5">
+                      <img src={product.image_url} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                     </div>
-                    <div className="flex flex-col gap-0.5 overflow-hidden flex-1">
-                      <h4 className="text-[14px] font-bold text-black leading-tight">{product.name}</h4>
+                    <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+                      <h4 className="text-[13px] font-bold text-white leading-tight truncate">{product.name}</h4>
                       {product.discount_price ? (
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-medium text-black/20 line-through">{product.price}</span>
-                          <span className="text-[12px] font-bold text-rose-600">{product.discount_price}</span>
+                          <span className="text-[11px] font-bold text-white/20 line-through tracking-tighter">{product.price}</span>
+                          <span className="text-[12px] font-bold text-rose-500 tracking-tighter">{product.discount_price}</span>
                         </div>
                       ) : (
-                        <p className="text-[12px] font-medium text-black/40">{product.price}</p>
+                        <p className="text-[12px] font-bold text-white/30 tracking-tighter">{product.price}</p>
                       )}
                     </div>
-                    <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0 text-black/20" />
+                    <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0 text-white/20" />
                   </button>
                 ))}
               </div>

@@ -27,7 +27,7 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setActivePanel(null)}
-            className="fixed inset-0 z-40 bg-black/[0.02] backdrop-blur-[1px]"
+            className="fixed inset-0 z-40 bg-black/[0.05] backdrop-blur-[1px]"
           />
         )}
       </AnimatePresence>
@@ -42,13 +42,13 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
           borderRadius: activePanel ? 16 : 14,
         }}
         transition={springTransition}
-        className="w-full max-w-5xl glass-nav overflow-hidden pointer-events-auto flex flex-col origin-top"
+        className="w-full max-w-5xl glass-nav overflow-hidden pointer-events-auto flex flex-col origin-top border border-white/5"
       >
         {/* Top Bar (Logo + Icons) */}
         <motion.div layout="position" className="flex items-center justify-between h-[52px] px-2 shrink-0 w-full">
           {/* Logo */}
           <Link to="/" onClick={() => setActivePanel(null)} className="pl-3 flex items-center hover:opacity-60 transition-opacity">
-            <span className="text-[24px] font-extrabold tracking-tighter lowercase leading-none">faem</span>
+            <span className="text-[20px] font-bold tracking-tighter lowercase leading-none">faem</span>
           </Link>
 
           {/* Icons or Close Button */}
@@ -65,30 +65,26 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
                 <button onClick={toggleLanguage} className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn text-[10px] font-black uppercase">
                   {language}
                 </button>
-                <div className="w-[1px] h-3 bg-black/10 mx-0.5"></div>
+                <div className="w-[1px] h-3 bg-white/15 mx-0.5"></div>
                 <button onClick={() => setActivePanel('search')} className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn">
-                  <Search size={18} strokeWidth={2} />
+                  <Search size={17} strokeWidth={2} />
                 </button>
                 <button onClick={() => setActivePanel('profile')} className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn">
-                  <User size={18} strokeWidth={2} />
+                  <User size={17} strokeWidth={2} />
                 </button>
-                <Link to="/wishlist" className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn 
-                relative group hover:text-rose-500 transition-colors">
-                  <Heart size={18} strokeWidth={2} className="group-hover:fill-rose-500/10" />
-                </Link>
                 <button onClick={() => setActivePanel('menu')} className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn">
-                  <Grid3X3 size={20} strokeWidth={2} />
+                  <Grid3X3 size={19} strokeWidth={2} />
                 </button>
-                <div className="w-[1px] h-5 bg-black/10 mx-1"></div>
+                <div className="w-[1px] h-5 bg-white/10 mx-1"></div>
                 <button onClick={() => setActivePanel('cart')} className="relative w-9 h-9 flex items-center justify-center rounded-xl glass-nav-btn mr-1">
-                  <ShoppingBag size={20} strokeWidth={1.5} />
+                  <ShoppingBag size={19} strokeWidth={1.5} />
                   <AnimatePresence>
                     {cartCount > 0 && (
                       <motion.span
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
-                        className="absolute bottom-0.5 right-0 bg-black text-white text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full"
+                        className="absolute bottom-0.5 right-0 bg-white text-black text-[9px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-sm"
                       >
                         {cartCount}
                       </motion.span>
@@ -105,8 +101,8 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
                 transition={contentTransition}
                 className="flex items-center justify-end h-full pr-1 gap-3"
               >
-                <span className="font-semibold capitalize tracking-wide text-sm">{activePanel ? t(`nav.${activePanel}`) : ''}</span>
-                <button onClick={() => setActivePanel(null)} className="w-8 h-8 rounded-xl flex items-center justify-center glass-nav-btn">
+                <span className="font-bold capitalize tracking-tight text-xs opacity-60">{activePanel ? t(`nav.${activePanel}`) : ''}</span>
+                <button onClick={() => setActivePanel(null)} className="w-[38px] h-[38px] rounded-xl flex items-center justify-center glass-nav-btn">
                   <X size={18} strokeWidth={2} />
                 </button>
               </motion.div>
@@ -129,7 +125,7 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
               }}
               className="flex flex-col w-full"
             >
-              <motion.div layout="position" className="w-full h-[1px] bg-black/5 mb-2"></motion.div>
+              <motion.div layout="position" className="w-full h-[1px] bg-white/10 mb-2"></motion.div>
               {activePanel === 'search' && <SearchPanel onClose={() => setActivePanel(null)} />}
               {activePanel === 'menu' && <MenuPanel onClose={() => setActivePanel(null)} />}
               {activePanel === 'profile' && <ProfilePanel onClose={() => setActivePanel(null)} />}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
@@ -6,39 +6,6 @@ import { supabase } from '../lib/supabase';
 import ProductCard from '../components/ProductCard';
 import { useSEO } from '../hooks/useSEO';
 import { useLanguage } from '../context/LanguageContext';
-
-const HERO_SLIDES = [
-  {
-    id: 1,
-    tag: 'Collection 001',
-    headline: ['The Silk', 'Narrative'],
-    sub: 'Summer 26 — Woven from silence and light.',
-    image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600&auto=format&fit=crop',
-  },
-  {
-    id: 2,
-    tag: 'Collection 002',
-    headline: ['Structured', 'Precision'],
-    sub: 'Modern / Minimal — Architecture in cloth.',
-    image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1600&auto=format&fit=crop',
-  },
-  {
-    id: 3,
-    tag: 'Collection 003',
-    headline: ['Essential', 'Luxe'],
-    sub: 'Cashmere Staples — The warmth of restraint.',
-    image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1600&auto=format&fit=crop',
-  },
-];
-
-const MARQUEE_ITEMS = [
-  'Free Global Shipping', '·', 'Handcrafted Precision', '·',
-  'Sustainable Materials', '·', '30-Day Returns', '·',
-  'Two-Year Warranty', '·', 'Studio-Grade Quality', '·',
-];
-
-// Accent warm brown
-const ACCENT = '#000000';
 
 export default function Home() {
   const { t } = useLanguage();
@@ -50,6 +17,7 @@ export default function Home() {
 
   const [activeSlide, setActiveSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
+
   const HERO_SLIDES = [
     {
       id: 1,
@@ -75,10 +43,8 @@ export default function Home() {
   ];
 
   const slide = HERO_SLIDES[activeSlide];
-  const BG = '#FFFFFF';
-  const ACCENT = '#000000';
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchFeatured = async () => {
       const { data } = await supabase.from('products').select('*').limit(4);
       if (data) {
@@ -95,19 +61,18 @@ export default function Home() {
     };
     fetchFeatured();
 
-    // Auto-slide logic: next slide every 5 seconds
     const interval = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-    }, 5000);
+    }, 6000);
 
     return () => clearInterval(interval);
   }, [HERO_SLIDES.length]);
 
   return (
-    <div style={{ backgroundColor: BG }}>
+    <div className="bg-background text-foreground transition-colors duration-500 font-sans">
 
-      {/* ─── HERO ─── */}
-      <section className="relative h-screen overflow-hidden">
+      {/* ─── EDITORIAL HERO ─── */}
+      <section className="relative h-[92vh] md:h-[95vh] overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={slide.id}
@@ -115,63 +80,67 @@ export default function Home() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1.2 }}
+            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
           >
             <motion.img
               src={slide.image}
               alt={slide.headline.join(' ')}
               className="w-full h-full object-cover"
-              initial={{ scale: 1.08 }}
+              initial={{ scale: 1.15 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 6, ease: 'easeOut' }}
+              transition={{ duration: 8, ease: [0.16, 1, 0.3, 1] }}
             />
-            {/* Gradient fades to cream at bottom */}
-            <div className="absolute inset-0" style={{ background: `linear-gradient(to top, ${BG} 0%, ${BG}55 20%, transparent 60%)` }} />
-            <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${BG}99 0%, transparent 50%)` }} />
-            {/* Top dark tint for text readability */}
-            <div className="absolute inset-0 bg-black/20" />
+            {/* Subtle luxury vignette */}
+            <div className="absolute inset-0 bg-black/10" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/20" />
           </motion.div>
         </AnimatePresence>
 
-        {/* Hero content */}
-        <div className="relative z-10 h-full flex flex-col justify-end pb-20 md:pb-28 px-6 md:px-16 max-w-[1400px] mx-auto">
+        {/* Hero Content: Centered & Editorial */}
+        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
           <AnimatePresence mode="wait">
             <motion.div
-              key={slide.id + '_c'}
-              className="flex flex-col gap-5 max-w-3xl"
-              initial={{ opacity: 0, y: 32 }}
+              key={slide.id + '_content'}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="max-w-5xl"
             >
-              <span className="text-[10px] uppercase tracking-[0.5em] font-bold" style={{ color: ACCENT }}>
+              <span className="text-[11px] uppercase tracking-[0.6em] font-semibold text-white/70 mb-8 block drop-shadow-sm">
                 {slide.tag}
               </span>
-              <h1 className="text-[clamp(3.5rem,10vw,9rem)] font-black tracking-[-0.04em] leading-[0.88] text-white drop-shadow-lg">
+              <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-serif italic tracking-tight leading-[0.95] text-white drop-shadow-xl mb-10">
                 {slide.headline.map((line, i) => (
                   <span key={i} className="block">{line}</span>
                 ))}
               </h1>
-              <p className="text-white/60 text-[15px] md:text-[17px] font-light max-w-md drop-shadow">
+              <p className="text-white/80 text-[16px] md:text-[18px] font-medium max-w-xl mx-auto drop-shadow-md mb-12">
                 {slide.sub}
               </p>
-              <div className="flex items-center gap-5 mt-2">
-                <Link to="/shop" className="group flex items-center gap-3 text-[12px] font-bold uppercase tracking-[0.2em] bg-white text-black rounded-xl px-7 py-3.5 hover:bg-black hover:text-white transition-all shadow-lg active:scale-95">
-                  {t('home.explore')}
-                  <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <div className="flex justify-center">
+                <Link 
+                  to="/shop" 
+                  className="group relative overflow-hidden bg-white/90 backdrop-blur-md text-black px-10 py-4 rounded-full text-[12px] font-bold uppercase tracking-[0.25em] transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-2xl"
+                >
+                  <span className="relative z-10 flex items-center gap-3">
+                    {t('home.explore')}
+                    <ArrowUpRight size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  </span>
                 </Link>
               </div>
             </motion.div>
           </AnimatePresence>
 
-          {/* Slide controls */}
-          <div className="absolute right-8 md:right-16 bottom-20 md:bottom-28 flex flex-col items-end gap-4">
+          {/* Minimal Slide Indicators */}
+          <div className="absolute bottom-12 flex gap-4">
             {HERO_SLIDES.map((_, i) => (
-              <button key={i} onClick={() => setActiveSlide(i)} className="flex items-center gap-3 group">
-                <span className={`text-[10px] font-bold tracking-widest transition-colors ${i === activeSlide ? 'text-white' : 'text-white/30 group-hover:text-white/60'}`}>
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <div className={`h-[1px] transition-all ${i === activeSlide ? 'w-10 bg-white' : 'w-4 bg-white/30 group-hover:w-6'}`} />
+              <button 
+                key={i} 
+                onClick={() => setActiveSlide(i)} 
+                className="group p-2"
+              >
+                <div className={`h-[2px] transition-all duration-700 ${i === activeSlide ? 'w-12 bg-white' : 'w-4 bg-white/30 group-hover:bg-white/60'}`} />
               </button>
             ))}
           </div>
@@ -179,114 +148,113 @@ export default function Home() {
       </section>
 
 
-      {/* ─── PRODUCT GRID — immediately after hero ─── */}
-      <section className="px-4 md:px-12 lg:px-20 pt-12 pb-20 max-w-[1600px] mx-auto">
-
-        {/* Section label */}
-        <div className="flex items-center justify-between mb-8 pb-5 border-b" style={{ borderColor: 'rgba(0,0,0,0.07)' }}>
-          <div className="flex flex-col gap-1">
-            <p className="text-[10px] uppercase tracking-[0.4em] font-bold" style={{ color: ACCENT }}>
+      {/* ─── FEATURED ARCHIVE ─── */}
+      <section className="py-24 md:py-36 px-6 lg:px-12 max-w-[1400px] mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
+          <div className="flex flex-col gap-3">
+            <span className="text-[11px] uppercase tracking-[0.5em] font-bold text-neutral-400">
               {t('home.current')}
-            </p>
-            <h2 className="text-[22px] md:text-[28px] font-black tracking-[-0.03em] text-black leading-none">
-              {t('shop.title')}
+            </span>
+            <h2 className="text-[clamp(1.5rem,4vw,2.5rem)] font-serif tracking-tight text-neutral-800 leading-none">
+              Featured Archive
             </h2>
           </div>
           <Link
             to="/shop"
-            className="hidden md:flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] font-bold text-black/30 hover:text-black transition-colors group"
+            className="flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] font-bold text-neutral-400 hover:text-neutral-800 transition-colors group"
           >
-            {t('home.all_pieces')} <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
+            {t('home.all_pieces')} <ArrowRight size={14} className="group-hover:translate-x-1.5 transition-transform" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-10 md:gap-x-5 md:gap-y-14">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
           {products.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
-              rating={4.8}
-              reviewCount={1800}
             />
           ))}
         </div>
       </section>
 
 
-      {/* ─── BRAND STATEMENT ─── */}
-      <section className="relative overflow-hidden py-40 px-6 md:px-16 bg-white border-y" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
-        <div className="max-w-[1400px] mx-auto relative z-10">
-          <p className="text-[10px] uppercase tracking-[0.5em] font-bold mb-12" style={{ color: ACCENT }}>
+      {/* ─── BRAND QUOTE (Linen Background) ─── */}
+      <section className="relative overflow-hidden py-40 md:py-60 px-6 bg-secondary flex justify-center items-center text-center">
+        <div className="max-w-4xl opacity-80">
+          <p className="text-[11px] uppercase tracking-[0.6em] font-bold mb-16 text-neutral-400">
             {t('home.studio_notes')}
           </p>
-          <blockquote className="text-[clamp(1.75rem,4.5vw,4rem)] font-light text-black/55 leading-[1.3] tracking-[-0.02em] max-w-5xl italic">
-            {t('home.quote')}
+          <blockquote className="text-[clamp(1.75rem,5vw,3.5rem)] font-serif italic text-neutral-800 leading-[1.3] tracking-tight">
+            "{t('home.quote')}"
           </blockquote>
-          <p className="text-black/20 text-[12px] tracking-[0.3em] uppercase font-bold mt-10">
-            — Faem Studio, 2026
+          <div className="w-12 h-px bg-neutral-300 mx-auto mt-16 mb-6" />
+          <p className="text-neutral-400 text-[12px] tracking-[0.5em] uppercase font-bold">
+            Studio Narrative, 2026
           </p>
         </div>
       </section>
 
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t px-6 md:px-16 pt-24 pb-16 max-w-[1400px] mx-auto" style={{ borderColor: 'rgba(0,0,0,0.06)' }}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 mb-24">
-          <div className="flex flex-col gap-8">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-black tracking-[-0.04em] text-black">{t('footer.newsletter_title')}</h2>
-              <p className="text-black/40 text-[15px] mt-3 font-light max-w-sm leading-relaxed">
-                {t('footer.newsletter_desc')}
-              </p>
-            </div>
-            <div className="flex gap-3 max-w-sm">
-              <input
-                type="email"
-                placeholder={t('footer.newsletter_placeholder')}
-                className="flex-1 bg-white border px-5 py-4 rounded-xl text-black text-sm placeholder:text-black/25 focus:outline-none transition-all font-light"
-                style={{ borderColor: 'rgba(0,0,0,0.10)' }}
-              />
-              <button className="px-6 py-4 rounded-xl text-[13px] font-bold tracking-wide transition-all active:scale-95 text-white bg-black hover:bg-zinc-800">
-                {t('footer.newsletter_button')}
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-12 md:pt-4">
-            {[
-              { label: t('footer.studio'), links: [
-                { label: t('footer.story'), path: '#' },
-                { label: t('footer.process'), path: '#' },
-                { label: t('footer.sustainability'), path: '#' },
-                { label: t('footer.locations'), path: '#' }
-              ]},
-              { label: t('footer.support'), links: [
-                { label: t('footer.shipping_info'), path: '#' },
-                { label: t('footer.returns_info'), path: '#' },
-                { label: t('footer.care'), path: '#' },
-                { label: t('nav.contact_us'), path: '#' }
-              ]},
-            ].map(col => (
-              <div key={col.label} className="flex flex-col gap-5">
-                <span className="text-[10px] uppercase tracking-[0.4em] font-bold" style={{ color: 'rgba(0,0,0,0.25)' }}>
-                  {col.label}
-                </span>
-                <nav className="flex flex-col gap-3">
-                  {col.links.map(link => (
-                    <a key={link.label} href={link.path} className="text-[14px] text-black/40 hover:text-black transition-colors font-light">{link.label}</a>
-                  ))}
-                </nav>
+      <footer className="bg-background pt-32 pb-16 px-6 lg:px-12">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-24 mb-32">
+            <div className="flex flex-col gap-10">
+              <div>
+                <h2 className="text-[28px] font-serif text-neutral-800 mb-4">{t('footer.newsletter_title')}</h2>
+                <p className="text-neutral-500 text-[15px] max-w-sm leading-relaxed">
+                  {t('footer.newsletter_desc')}
+                </p>
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="flex gap-4 max-w-md">
+                <input
+                  type="email"
+                  placeholder={t('footer.newsletter_placeholder')}
+                  className="flex-1 bg-transparent border-b border-neutral-300 py-3 text-[14px] focus:outline-none focus:border-neutral-800 transition-colors placeholder:text-neutral-300"
+                />
+                <button className="text-[11px] font-bold uppercase tracking-[0.3em] text-neutral-800 hover:text-neutral-500 transition-colors">
+                  {t('footer.newsletter_button')}
+                </button>
+              </div>
+            </div>
 
-        <div className="pt-8 border-t flex justify-between items-center" style={{ borderColor: 'rgba(0,0,0,0.06)' }}>
-          <span className="text-[11px] text-black/20 uppercase tracking-[0.3em] font-bold">© 2026 Faem Studio</span>
-          <div className="flex gap-8">
-            <a href="#" className="text-[11px] text-black/20 hover:text-black/60 uppercase tracking-[0.25em] font-bold transition-colors">Instagram</a>
-            <a href="#" className="text-[11px] text-black/20 hover:text-black/60 uppercase tracking-[0.25em] font-bold transition-colors">{t('footer.terms')}</a>
-            <a href="#" className="text-[11px] text-black/20 hover:text-black/60 uppercase tracking-[0.25em] font-bold transition-colors">{t('footer.privacy')}</a>
+            <div className="grid grid-cols-2 gap-12">
+              {[
+                { label: t('footer.studio'), links: [
+                  { label: t('footer.story'), path: '#' },
+                  { label: t('footer.process'), path: '#' },
+                  { label: t('footer.sustainability'), path: '#' },
+                ]},
+                { label: t('footer.support'), links: [
+                  { label: t('footer.shipping_info'), path: '#' },
+                  { label: t('footer.returns_info'), path: '#' },
+                  { label: t('nav.contact_us'), path: '#' }
+                ]},
+              ].map(col => (
+                <div key={col.label} className="flex flex-col gap-8">
+                  <span className="text-[11px] uppercase tracking-[0.4em] font-bold text-neutral-300">
+                    {col.label}
+                  </span>
+                  <nav className="flex flex-col gap-4">
+                    {col.links.map(link => (
+                      <a key={link.label} href={link.path} className="text-[14px] text-neutral-500 hover:text-neutral-800 transition-colors">{link.label}</a>
+                    ))}
+                  </nav>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="pt-10 border-t border-neutral-200 flex flex-col md:flex-row justify-between items-center gap-8">
+            <span className="text-[11px] text-neutral-300 uppercase tracking-[0.4em] font-bold flex items-center gap-4">
+              <span className="text-[18px] lowercase italic font-serif">faem</span>
+              © 2026 Archive
+            </span>
+            <div className="flex gap-10">
+              <a href="#" className="text-[11px] text-neutral-300 hover:text-neutral-600 uppercase tracking-[0.3em] font-bold transition-colors">Instagram</a>
+              <a href="#" className="text-[11px] text-neutral-300 hover:text-neutral-600 uppercase tracking-[0.3em] font-bold transition-colors">{t('footer.terms')}</a>
+              <a href="#" className="text-[11px] text-neutral-300 hover:text-neutral-600 uppercase tracking-[0.3em] font-bold transition-colors">{t('footer.privacy')}</a>
+            </div>
           </div>
         </div>
       </footer>

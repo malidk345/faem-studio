@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Star } from 'lucide-react';
 import useEmblaCarousel from 'embla-carousel-react';
+import { motion } from 'motion/react';
 
 interface Product {
   id: string;
@@ -15,15 +15,9 @@ interface Product {
 
 interface ProductCardProps {
   product: Product;
-  reviewCount?: number;
-  rating?: number;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
-  product,
-  reviewCount = 0,
-  rating = 4.8,
-}) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, dragFree: true });
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -38,26 +32,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
     emblaApi.on('select', onSelect);
   }, [emblaApi, onSelect]);
 
-  // Gallery sources: support both string arrays and object arrays from Supabase
   const galleryImages = [
     product.image,
     ...(Array.isArray(product.images) ? product.images : [])
   ].filter(Boolean);
 
   return (
-    <div className="block group">
-      {/* ── Scrollable Media Layer ── */}
-      <div className="relative w-full aspect-[1/1] overflow-hidden rounded-[6px] bg-zinc-50 border border-zinc-100">
+    <div className="flex flex-col group">
+      {/* ── Editorial Media Layer ── */}
+      <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[4px] bg-neutral-100">
         <div className="embla h-full" ref={emblaRef}>
           <div className="embla__container h-full flex">
             {galleryImages.map((img, idx) => (
               <div key={idx} className="embla__slide flex-[0_0_100%] min-w-0 h-full relative">
                 <Link to={`/product/${product.id}`} className="block h-full w-full">
-                  <img
+                  <motion.img
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     src={typeof img === 'string' ? img : (img as any).url}
                     alt={`${product.name} - ${idx}`}
-                    className="w-full h-full object-cover transition-opacity duration-300"
-                    style={{ filter: 'brightness(1.15)' }}
+                    className="w-full h-full object-cover"
                   />
                 </Link>
               </div>
@@ -65,116 +59,53 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         </div>
 
-        {/* Gallery Dots (Only if more than 1 image) */}
+        {/* Minimal Progress Line (Brunello inspired) */}
         {galleryImages.length > 1 && (
-          <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
-            {galleryImages.map((_, idx) => (
-              <div 
-                key={idx}
-                className={`w-1 h-1 rounded-full transition-all ${idx === selectedIndex ? 'bg-black w-3' : 'bg-black/20'}`}
-              />
-            ))}
+          <div className="absolute bottom-4 left-4 right-4 h-[1px] bg-white/20 overflow-hidden">
+            <motion.div 
+              className="h-full bg-white"
+              initial={false}
+              animate={{ width: `${((selectedIndex + 1) / galleryImages.length) * 100}%` }}
+              transition={{ duration: 0.3 }}
+            />
           </div>
         )}
 
-        {/* Price badge (Restored original style) */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '0.25rem',
-            left: '0.25rem',
-            zIndex: 10,
-            backgroundColor: '#FFFFFF',
-            padding: product.discount_price ? '0.4rem 0.75rem' : '0.25rem 0.5rem',
-            borderRadius: 6,
-            fontSize: product.discount_price ? 14 : 13,
-            fontWeight: product.discount_price ? 700 : 500,
-            color: '#1A1A1A',
-            lineHeight: 1,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem'
-          }}
-        >
-          {product.discount_price ? (
-            <>
-              <span style={{ textDecoration: 'line-through', color: 'color-mix(in lch, #1A1A1A, transparent 60%)', fontSize: 11, fontWeight: 500 }}>
-                {product.price}
-              </span>
-              <span style={{ color: '#E11D48' }}>
-                {product.discount_price}
-              </span>
-            </>
-          ) : (
-            product.price
-          )}
-        </div>
-
-        {/* Top-right Sale Badge (Circular) */}
+        {/* Subtle Sale Label */}
         {product.discount_price && (
-          <div
-            style={{
-              position: 'absolute',
-              top: '0.5rem',
-              right: '0.5rem',
-              zIndex: 10,
-              backgroundColor: '#E11D48',
-              width: '3.5rem',
-              height: '3.5rem',
-              borderRadius: '50%',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#FFFFFF',
-              boxShadow: '0 4px 12px rgba(225, 29, 72, 0.3)',
-              border: '2px solid rgba(255, 255, 255, 0.2)',
-              pointerEvents: 'none'
-            }}
-          >
-            <span style={{ fontSize: 9, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', lineHeight: 1 }}>
+          <div className="absolute top-4 left-4">
+            <span className="text-[10px] font-bold tracking-widest uppercase px-2 py-1 bg-white/90 text-black rounded-[2px] shadow-sm">
               Sale
-            </span>
-            <span style={{ fontSize: 10, fontWeight: 700, lineHeight: 1, marginTop: 1 }}>
-              İndirim
             </span>
           </div>
         )}
       </div>
 
-      {/* ── Info (Restored original style & typography) ── */}
-      <Link
-        to={`/product/${product.id}`}
-        className="block mt-2"
-        style={{ display: 'grid', gap: '0.25rem' }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          <Star
-            size={16}
-            style={{ color: 'hsl(30 80% 50%)', fill: 'hsl(30 80% 50%)', flexShrink: 0 }}
-          />
-          <span style={{ fontSize: 12, color: 'color-mix(in lch, #1A1A1A, transparent 45%)', fontFamily: 'monospace' }}>
-            {rating} | {reviewCount > 0 ? `${reviewCount.toLocaleString()} Reviews` : 'New Arrival'}
-          </span>
-        </div>
-
-        <h3
-          style={{
-            margin: 0,
-            lineHeight: 1.2,
-            color: '#1A1A1A',
-            fontWeight: 700,
-            fontSize: '0.85rem',
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-            letterSpacing: '-0.02em',
-          }}
-        >
+      {/* ── Minimalist Info Layer ── */}
+      <Link to={`/product/${product.id}`} className="mt-3 flex flex-col items-center">
+        {/* Category: Small, uppercase, tracked out */}
+        <p className="text-[10px] uppercase tracking-[0.25em] text-neutral-400 font-semibold mb-1">
+          {product.category}
+        </p>
+        
+        {/* Name: Serif font, elegant */}
+        <h3 className="text-[14px] md:text-[16px] font-serif text-neutral-800 tracking-tight leading-tight mb-2 text-center px-2">
           {product.name}
         </h3>
 
-        <p style={{ margin: 0, fontSize: 12, color: 'color-mix(in lch, #1A1A1A, transparent 45%)', fontFamily: 'monospace' }}>
-          {product.category}
-        </p>
+        {/* Price: Clean and subtle */}
+        <div className="flex items-center gap-2">
+          {product.discount_price ? (
+            <>
+              <span className="text-[12px] opacity-40 line-through text-neutral-500 font-medium">{product.price}</span>
+              <span className="text-[13px] text-neutral-900 font-bold">{product.discount_price}</span>
+            </>
+          ) : (
+            <span className="text-[13px] text-neutral-900 font-medium tracking-tight">
+              {product.price}
+            </span>
+          )}
+        </div>
       </Link>
     </div>
   );

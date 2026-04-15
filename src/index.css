@@ -43,39 +43,36 @@
 }
 
 :root {
-  --font-inter: 'Inter', system-ui, sans-serif;
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --font-serif: 'Bodoni Moda', serif;
+  --font-sans: 'Outfit', system-ui, sans-serif;
+  --radius: 0.875rem;
+
+  /* Brunello Linen Palette */
+  --background: oklch(0.985 0.002 80);
+  --foreground: oklch(0.25 0.01 40);
+
+  --card: oklch(0.99 0.001 80);
+  --card-foreground: oklch(0.25 0.01 40);
+
+  --popover: oklch(0.99 0.001 80);
+  --popover-foreground: oklch(0.25 0.01 40);
+
+  --primary: oklch(0.32 0.02 40);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  --secondary: oklch(0.94 0.01 80);
+  --secondary-foreground: oklch(0.32 0.02 40);
+
+  --muted: oklch(0.94 0.01 80);
+  --muted-foreground: oklch(0.55 0.01 40);
+
+  --accent: oklch(0.92 0.01 80);
+  --accent-foreground: oklch(0.32 0.02 40);
+
+  --destructive: oklch(0.55 0.2 25);
+  --border: oklch(0.88 0.005 80);
+  --input: oklch(0.88 0.005 80);
+  --ring: oklch(0.32 0.02 40);
 }
 
 /* ===========================
@@ -84,6 +81,66 @@
    =========================== */
 
 @layer utilities {
+
+  /* ── Brunello Typography ── */
+  @font-face {
+    font-family: 'Bodoni Moda';
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: 'Outfit';
+    font-display: swap;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-serif {
+    font-family: var(--font-sans);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    text-transform: none;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  /* ── Brunello 'Mastery' Glass — Shadowless ── */
+  .glass-nav {
+    color: #FFFFFF;
+    background: linear-gradient(180deg,
+        rgba(55, 52, 50, 0.82) 0%,
+        rgba(35, 33, 32, 0.88) 100%);
+    backdrop-filter: blur(64px) saturate(1.1) contrast(1.1);
+    -webkit-backdrop-filter: blur(64px) saturate(1.1) contrast(1.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    /* Only inset for glass depth, no outer shadow */
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  }
+
+  .glass-nav-btn {
+    color: inherit;
+    background: transparent;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: none;
+  }
+
+  .glass-nav-btn:hover,
+  .glass-nav-btn:focus-visible {
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+    opacity: 0.7;
+    transform: translateY(-1px);
+  }
 
   /* Light glass for Selection Card */
   .glass-apple {
@@ -102,73 +159,46 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
   }
 
-  /* CodePen Reference Header/Nav Style + Glassmorphism */
-  .glass-nav {
-    /* Exact equivalent of color-mix(in hsl, canvasText 8%, canvas) in Light mode */
-    --base-bg-color: color-mix(in hsl, #000000 8%, #ffffff);
-    /* Injecting transparency into the exact color for the glass effect */
-    --bg-color: color-mix(in srgb, var(--base-bg-color) 70%, transparent);
-    --text-color: color-mix(in hsl, #000000 92%, #ffffff);
-
-    color: var(--text-color);
-    box-shadow: none;
-    background: var(--bg-color);
-    backdrop-filter: blur(36px) saturate(1.8);
-    -webkit-backdrop-filter: blur(36px) saturate(1.8);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-  }
-
-  .glass-nav-btn {
-    color: inherit;
-    background: transparent;
-    transition: background-color 0.2s, outline-color 0.2s;
-  }
-
-  .glass-nav-btn:hover,
-  .glass-nav-btn:focus-visible {
-    outline: none;
-    /* Transparent hover so it blends nicely on the glass */
-    background: rgba(0, 0, 0, 0.06);
-  }
-
-  /* CodePen Menu Content Styles */
+  /* ── Header Panels (Menu, Search, etc.) ── */
   .menu-content h3 {
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    font-weight: 700;
+    opacity: 0.35;
+    padding: 12px 14px 4px;
     margin: 0;
-    opacity: 0.675;
-    font-weight: 400;
-    padding: 0 12px;
-    margin-block: 6px;
   }
 
   .menu-content ul {
+    list-style: none;
+    padding: 0 8px;
     margin: 0;
-    padding: 0;
-    padding-inline: 4px;
-    list-style-type: none;
   }
 
   .menu-content li a {
-    font-weight: 300;
     display: flex;
-    color: var(--text-color, #0C0C0C);
     align-items: center;
-    height: 40px;
     gap: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
     text-decoration: none;
-    padding: 6px 12px;
-    border-radius: 6px;
   }
 
-  .menu-content li a:hover,
-  .menu-content li a:focus-visible {
-    outline: none;
-    background: rgba(0, 0, 0, 0.05);
-    /* Transparent hover */
+  .menu-content li a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #FFFFFF;
+    transform: translateX(2px);
   }
 
   .menu-content li a svg {
-    width: 16px;
+    width: 17px;
+    height: 17px;
+    opacity: 0.5;
   }
 
   .menu-heading {

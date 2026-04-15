@@ -29,12 +29,7 @@ interface ProductImage {
 //     product.variants    →  product.sizes
 // ─────────────────────────────────────────────────────────────────────────────
 
-const ACCENT = '#000000';
-const BG = '#FFFFFF';
-
 // ─── IMAGE GALLERY ────────────────────────────────────────────────────────────
-// Accepts images from product.images (Medusa ProductImage[])
-// Falls back to [{ id: 'thumb', url: product.image }] if array is empty
 interface GalleryProps {
   images: ProductImage[];
   productName: string;
@@ -45,7 +40,6 @@ function ImageGallery({ images, productName }: GalleryProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const thumbsRef = useRef<HTMLDivElement>(null);
 
-  // Reset gallery when product changes (images prop changes)
   useEffect(() => {
     setActiveIndex(0);
     if (scrollRef.current) {
@@ -53,18 +47,14 @@ function ImageGallery({ images, productName }: GalleryProps) {
     }
   }, [images]);
 
-  // Sync scroll position → active index
   const handleScroll = () => {
     if (!scrollRef.current) return;
     const { scrollLeft, offsetWidth } = scrollRef.current;
-    if (offsetWidth <= 0) return; // Prevent division by zero
+    if (offsetWidth <= 0) return;
     const idx = Math.round(scrollLeft / offsetWidth);
-    if (!isNaN(idx)) {
-      setActiveIndex(idx);
-    }
+    if (!isNaN(idx)) setActiveIndex(idx);
   };
 
-  // Programmatic scroll to index
   const scrollTo = (idx: number) => {
     if (!scrollRef.current) return;
     scrollRef.current.scrollTo({
@@ -72,7 +62,6 @@ function ImageGallery({ images, productName }: GalleryProps) {
       behavior: 'smooth',
     });
     setActiveIndex(idx);
-    // Scroll thumbnail into view
     const thumb = thumbsRef.current?.children[idx] as HTMLElement;
     thumb?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   };
@@ -81,9 +70,7 @@ function ImageGallery({ images, productName }: GalleryProps) {
   const canNext = activeIndex < images.length - 1;
 
   return (
-    <div className="flex flex-col gap-4">
-
-      {/* ── Main scrollable image strip ── */}
+    <div className="flex flex-col gap-3">
       <div className="relative">
         <div
           ref={scrollRef}
@@ -92,11 +79,8 @@ function ImageGallery({ images, productName }: GalleryProps) {
           style={{ scrollBehavior: 'smooth' }}
         >
           {images.map((img, i) => (
-            <div
-              key={img.id}
-              className="flex-shrink-0 w-full snap-center"
-            >
-              <div className="w-full relative rounded-[4px] overflow-hidden" style={{ paddingBottom: '133.33%', backgroundColor: '#E8E5E0' }}>
+            <div key={img.id} className="flex-shrink-0 w-full snap-center">
+              <div className="w-full relative rounded-lg overflow-hidden" style={{ paddingBottom: '133.33%', backgroundColor: '#E8E5E0' }}>
                 <img
                   src={img.url}
                   alt={`${productName} — view ${i + 1}`}
@@ -108,69 +92,53 @@ function ImageGallery({ images, productName }: GalleryProps) {
           ))}
         </div>
 
-        {/* Prev / Next arrow buttons */}
         {canPrev && (
           <button
             onClick={() => scrollTo(activeIndex - 1)}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl transition-all active:scale-95"
-            style={{ backgroundColor: 'rgba(245,244,240,0.9)', backdropFilter: 'blur(8px)', border: '1px solid rgba(0,0,0,0.08)' }}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-xl glass-nav active:scale-95 transition-transform"
             aria-label="Previous image"
           >
-            <ChevronLeft size={18} style={{ color: '#1A1A1A' }} />
+            <ChevronLeft size={16} />
           </button>
         )}
         {canNext && (
           <button
             onClick={() => scrollTo(activeIndex + 1)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-xl transition-all active:scale-95"
-            style={{ backgroundColor: 'rgba(245,244,240,0.9)', backdropFilter: 'blur(8px)', border: '1px solid rgba(0,0,0,0.08)' }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-xl glass-nav active:scale-95 transition-transform"
             aria-label="Next image"
           >
-            <ChevronRight size={18} style={{ color: '#1A1A1A' }} />
+            <ChevronRight size={16} />
           </button>
         )}
 
-        {/* Image counter */}
-        <div
-          className="absolute bottom-4 right-4 text-[11px] font-bold px-3 py-1.5 rounded-lg"
-          style={{ backgroundColor: 'rgba(245,244,240,0.9)', backdropFilter: 'blur(8px)', color: '#1A1A1A' }}
-        >
+        <div className="absolute bottom-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-lg glass-nav">
           {activeIndex + 1} / {images.length}
         </div>
       </div>
 
-      {/* ── Thumbnail strip ── */}
       {images.length > 1 && (
         <div
           ref={thumbsRef}
-          className="flex items-center justify-center gap-4 overflow-x-auto hide-scrollbar py-3 px-4"
+          className="flex items-center justify-center gap-2 overflow-x-auto hide-scrollbar py-1 px-2"
         >
           {images.map((img, i) => (
             <button
               key={img.id}
               onClick={() => scrollTo(i)}
-              className="flex-shrink-0 transition-all duration-300 relative"
-              style={{
-                width: 54,
-                aspectRatio: '3/4',
-                borderRadius: 4,
-                boxShadow: i === activeIndex
-                  ? `0 0 0 1px white, 0 0 0 3px ${ACCENT}`
-                  : 'none',
-                opacity: i === activeIndex ? 1 : 0.35,
-                transform: i === activeIndex ? 'scale(1.08)' : 'scale(1)',
-                zIndex: i === activeIndex ? 10 : 1
-              }}
+              className={`flex-shrink-0 rounded-lg overflow-hidden border transition-all duration-300 ${
+                i === activeIndex
+                  ? 'border-neutral-800 opacity-100 scale-105'
+                  : 'border-transparent opacity-30 hover:opacity-50'
+              }`}
+              style={{ width: 48, aspectRatio: '3/4' }}
               aria-label={`View image ${i + 1}`}
             >
-              <div className="w-full h-full rounded-[4px] overflow-hidden">
-                <img
-                  src={img.url}
-                  alt={`${productName} thumbnail ${i + 1}`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </div>
+              <img
+                src={img.url}
+                alt={`${productName} thumbnail ${i + 1}`}
+                className="w-full h-full object-cover"
+                loading="lazy"
+              />
             </button>
           ))}
         </div>
@@ -316,28 +284,27 @@ export default function ProductDetail() {
 
   if (!product || product.error) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center gap-6 p-8 text-center bg-white">
-        <div className="w-16 h-16 bg-zinc-50 rounded-3xl flex items-center justify-center text-rose-500 border border-zinc-100 shadow-sm">
-           <span className="text-xl font-black">!</span>
+      <div className="h-screen flex flex-col items-center justify-center gap-6 p-8 text-center bg-background">
+        <div className="w-14 h-14 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400 border border-neutral-200">
+           <span className="text-lg font-bold">!</span>
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl font-black tracking-tight">{t('product.access_restricted')}</h2>
-          <p className="text-zinc-500 max-w-sm text-[13px] leading-relaxed font-medium">
+          <h2 className="text-xl font-bold tracking-tight text-neutral-800">{t('product.access_restricted')}</h2>
+          <p className="text-neutral-400 max-w-sm text-[13px] leading-relaxed">
              {product?.error || t('product.error_desc')}
           </p>
         </div>
-        <div className="flex flex-col gap-3 w-full max-w-[240px]">
-          <button onClick={() => window.location.reload()} className="bg-black text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all">
+        <div className="flex flex-col gap-3 w-full max-w-[220px]">
+          <button onClick={() => window.location.reload()} className="bg-neutral-800 text-white px-6 py-3.5 rounded-xl font-bold text-[11px] uppercase tracking-widest active:scale-95 transition-all">
             {t('product.retry')}
           </button>
-          <button onClick={() => navigate('/shop')} className="text-zinc-400 px-8 py-4 rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:text-black transition-all">
+          <button onClick={() => navigate('/shop')} className="text-neutral-400 px-6 py-3 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:text-neutral-800 transition-all">
             {t('product.back_to_gallery')}
           </button>
         </div>
       </div>
     );
   }
-
 
   const handleAddToCart = (e: React.MouseEvent) => {
     try {
@@ -369,35 +336,22 @@ export default function ProductDetail() {
   const related: any[] = []; // We'll handle related products via query later
 
   return (
-    <div style={{ backgroundColor: BG }}>
+    <div className="bg-background min-h-screen">
 
       {/* ─── GALLERY + INFO LAYOUT ─── */}
-      <div className="max-w-[1200px] mx-auto px-6 md:px-16 pt-32 md:pt-40 pb-16">
+      <div className="max-w-[1100px] mx-auto px-4 md:px-10 pt-24 md:pt-28 pb-12">
         
-        {/* Wishlist Toggle (Floating Corner) */}
-        <div className="flex justify-start mb-8">
+        {/* Wishlist Toggle */}
+        <div className="flex justify-start mb-5">
             <button 
               onClick={toggleWishlist}
               disabled={wishlistLoading}
-              className="group flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-300"
-              style={{ 
-                border: '1px solid rgba(0,0,0,0.08)',
-                backgroundColor: 'rgba(0,0,0,0.04)',
-                backdropFilter: 'blur(10px)'
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.backgroundColor = '#000000';
-                e.currentTarget.style.color = '#FFFFFF';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.04)';
-                e.currentTarget.style.color = 'inherit';
-              }}
+              className="group flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-neutral-200 bg-white/60 backdrop-blur-sm hover:bg-neutral-800 hover:text-white hover:border-neutral-800 transition-all duration-300"
             >
               {wishlistLoading ? (
-                 <Loader2 size={14} className="animate-spin opacity-20" />
+                 <Loader2 size={13} className="animate-spin opacity-30" />
               ) : (
-                 <Heart size={14} className={isWishlisted ? 'fill-red-500 text-red-500' : 'text-black/30'} />
+                 <Heart size={13} className={isWishlisted ? 'fill-red-500 text-red-500' : 'text-neutral-300 group-hover:text-white/50'} />
               )}
               <span className="text-[10px] uppercase font-bold tracking-[0.2em] leading-none">
                 {isWishlisted ? t('product.saved') : t('product.add_to_selection')}
@@ -405,14 +359,14 @@ export default function ProductDetail() {
             </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
 
           {/* LEFT: Image Gallery */}
           <div className="w-full">
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 12, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
               <ImageGallery images={galleryImages} productName={product.name} />
@@ -420,65 +374,59 @@ export default function ProductDetail() {
           </div>
 
           {/* RIGHT: Product Info (sticky on desktop) */}
-          <div className="flex flex-col gap-8" style={{ position: 'sticky', top: '120px', alignSelf: 'start' }}>
+          <div className="flex flex-col gap-6" style={{ position: 'sticky', top: '100px', alignSelf: 'start' }}>
             <motion.div
               key={product.id + '_info'}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 12, filter: 'blur(6px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="flex flex-col gap-6"
+              className="flex flex-col gap-4"
             >
               {/* Category */}
-              <p className="text-[10px] uppercase tracking-[0.5em] font-bold" style={{ color: ACCENT }}>
+              <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-neutral-400">
                 {product.category}
               </p>
 
               {/* Name + Price */}
-              <div className="flex flex-col gap-2">
-                <h1 className="text-[clamp(1.5rem,5vw,2.5rem)] font-black tracking-[-0.05em] text-black leading-[0.95]">
+              <div className="flex flex-col gap-1.5">
+                <h1 className="text-[clamp(1.4rem,4vw,2.2rem)] font-bold tracking-[-0.04em] text-neutral-800 leading-[0.95]">
                   {product.name}
                 </h1>
                 <div className="flex items-center gap-3">
                   {product.discount_price ? (
                     <>
-                      <p className="text-[18px] font-bold tracking-tighter line-through text-black/20">
+                      <p className="text-[15px] font-bold tracking-tighter line-through text-neutral-300">
                         {product.price}
                       </p>
-                      <p className="text-[24px] font-black tracking-tighter text-rose-600">
+                      <p className="text-[20px] font-bold tracking-tighter text-rose-600">
                         {product.discount_price}
                       </p>
                     </>
                   ) : (
-                    <p className="text-[18px] font-black tracking-tighter" style={{ color: ACCENT }}>
+                    <p className="text-[16px] font-bold tracking-tighter text-neutral-800">
                       {product.price}
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* Description & Technical Specs - Refined Compact Version */}
-              <div className="flex flex-col gap-3 mt-6">
-                {/* Description Box */}
-                <div className="p-4 rounded-[6px] border border-black/[0.08] bg-black/[0.04] relative overflow-hidden" style={{ backdropFilter: 'blur(10px)' }}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="px-2 py-0.5 rounded-[4px] bg-black text-white text-[9px] font-black uppercase tracking-widest">Açıklama</span>
-                  </div>
-                  <p className="text-[13px] leading-relaxed font-medium text-black/60">
+              {/* Description & Technical Specs — Compact */}
+              <div className="flex flex-col gap-2.5 mt-4">
+                <div className="p-4 rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-sm">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-neutral-300 block mb-2.5">Açıklama</span>
+                  <p className="text-[13px] leading-relaxed text-neutral-500">
                     {product.description}
                   </p>
                 </div>
 
-                {/* Features Box */}
                 {product.features && product.features.length > 0 && (
-                  <div className="p-4 rounded-[6px] border border-black/[0.08] bg-black/[0.04] relative overflow-hidden" style={{ backdropFilter: 'blur(10px)' }}>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="px-2 py-0.5 rounded-[4px] bg-black text-white text-[9px] font-black uppercase tracking-widest">Özellikler</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-                      {product.features.map((f, i) => (
+                  <div className="p-4 rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-sm">
+                    <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-neutral-300 block mb-2.5">Özellikler</span>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                      {product.features.map((f: string, i: number) => (
                         <div key={i} className="flex items-center gap-2">
-                          <div className="w-1 h-1 rounded-full bg-black/20" />
-                          <span className="text-[12px] font-bold text-black/50 tracking-tight">{f}</span>
+                          <div className="w-1 h-1 rounded-full bg-neutral-300" />
+                          <span className="text-[12px] font-medium text-neutral-500 tracking-tight">{f}</span>
                         </div>
                       ))}
                     </div>
@@ -491,50 +439,44 @@ export default function ProductDetail() {
       </div>
 
       {/* ─── REVIEWS ─── */}
-      <div className="max-w-[900px] mx-auto px-6 md:px-16 pb-20">
+      <div className="max-w-[800px] mx-auto px-4 md:px-10 pb-16">
         <ReviewList productId={product.id} reviews={reviews} />
       </div>
 
       {/* ─── INFO SECTIONS ─── */}
-      <div className="max-w-[1200px] mx-auto px-6 md:px-16 pb-24">
+      <div className="max-w-[1100px] mx-auto px-4 md:px-10 pb-20">
         <ProductInfoSections />
       </div>
 
       {/* ─── RELATED ─── */}
-      <div
-        className="px-6 md:px-16 py-20 border-t"
-        style={{ borderColor: 'rgba(0,0,0,0.06)' }}
-      >
-        <div className="max-w-[1200px] mx-auto flex flex-col gap-10">
-          <p className="text-[10px] uppercase tracking-[0.4em] font-bold" style={{ color: ACCENT }}>
+      <div className="px-4 md:px-10 py-16 border-t border-neutral-200">
+        <div className="max-w-[1100px] mx-auto flex flex-col gap-8">
+          <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-neutral-400">
             {t('product.also_like')}
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8">
             {related.map(p => (
               <button
                 key={p.id}
                 onClick={() => navigate(`/product/${p.id}`)}
-                className="group flex flex-col items-center gap-3 text-left"
+                className="group flex flex-col items-center gap-2.5 text-left"
               >
                 <div
-                  className="w-full overflow-hidden"
+                  className="w-full overflow-hidden rounded-lg"
                   style={{ aspectRatio: '3/4', backgroundColor: '#E8E5E0' }}
                 >
                   <img
                     src={p.image}
                     alt={p.name}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                     referrerPolicy="no-referrer"
                   />
                 </div>
-                <div className="flex flex-col items-center gap-1 text-center">
-                  <h4
-                    className="text-[13px] font-normal tracking-tight group-hover:opacity-50 transition-opacity"
-                    style={{ color: '#1A1A1A' }}
-                  >
+                <div className="flex flex-col items-center gap-0.5 text-center">
+                  <h4 className="text-[13px] font-medium tracking-tight text-neutral-600 group-hover:text-neutral-800 transition-colors">
                     {p.name}
                   </h4>
-                  <p className="text-[13px] font-normal" style={{ color: ACCENT }}>
+                  <p className="text-[13px] font-bold text-neutral-800">
                     {p.price}
                   </p>
                 </div>

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
 import { supabase } from '../lib/supabase';
-import { Loader2 } from 'lucide-react';
 import { GlobalPageLoader } from '../components/GlobalPageLoader';
+import { useSEO } from '../hooks/useSEO';
+import { useLanguage } from '../context/LanguageContext';
 
 interface Product {
   id: string;
@@ -17,8 +18,6 @@ interface Product {
   features?: string[];
   discount_price?: string;
 }
-import { useSEO } from '../hooks/useSEO';
-import { useLanguage } from '../context/LanguageContext';
 
 export default function Shop() {
   const { t } = useLanguage();
@@ -74,66 +73,72 @@ export default function Shop() {
   if (isLoading) return <GlobalPageLoader isLoading={true} />;
 
   return (
-    <div className="min-h-screen bg-white pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto">
-
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 border-b border-black/5 pb-8">
-        <div className="flex flex-col gap-2">
-          <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-black/50">
+    <div className="min-h-screen pt-24 pb-32">
+      <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+        {/* Editorial Heading Section */}
+        <div className="flex flex-col items-center justify-center text-center gap-6 mb-16 md:mb-24">
+          <p className="text-[11px] uppercase tracking-[0.45em] font-bold text-neutral-400">
             {t('shop.archive_current')}
           </p>
-          <h1 className="text-[40px] md:text-[56px] font-black tracking-tighter leading-none text-black">
-            {t('shop.title')}
+          <h1 className="text-[clamp(1.5rem,6vw,3.5rem)] font-serif tracking-tight leading-[1.1] text-neutral-800">
+            {activeCategory === 'All' ? t('shop.title') : activeCategory}
           </h1>
+          
+          {/* Minimal Filter Row */}
+          <div className="flex items-center gap-6 md:gap-10 mt-4 overflow-x-auto hide-scrollbar pb-2">
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`text-[12px] font-semibold uppercase tracking-[0.2em] whitespace-nowrap transition-all duration-300 relative pb-1
+                  ${activeCategory === cat
+                    ? 'text-neutral-900 border-b border-neutral-900'
+                    : 'text-neutral-400 hover:text-neutral-600 border-b border-transparent'
+                  }`}
+              >
+                {cat === 'All' ? t('shop.all_categories') : cat}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex items-center gap-4 overflow-x-auto hide-scrollbar">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2.5 rounded-xl text-[12px] font-bold uppercase tracking-[0.1em] whitespace-nowrap transition-all ${
-                activeCategory === cat
-                  ? 'bg-black text-white shadow-lg'
-                  : 'bg-black/5 text-black hover:bg-black/10'
-              }`}
+        {/* Spacious Product Grid */}
+        <div className="relative">
+          <AnimatePresence mode="popLayout">
+            <motion.div
+              layout
+              className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-10 md:gap-y-20"
             >
-              {cat === 'All' ? t('shop.all_categories') : cat}
-            </button>
-          ))}
+              {filteredProducts.map((product, i) => (
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ 
+                    duration: 0.7, 
+                    delay: i * 0.04,
+                    ease: [0.16, 1, 0.3, 1]
+                  }}
+                >
+                  <ProductCard product={product} />
+                </motion.div>
+              ))}
+
+              {filteredProducts.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="col-span-full py-40 text-center text-neutral-400 text-[13px] font-medium tracking-widest uppercase italic"
+                >
+                  {t('shop.no_items')}
+                </motion.div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
-
-      {/* Grid */}
-      <AnimatePresence mode="popLayout">
-        <motion.div
-          layout
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-6 md:gap-y-16"
-        >
-          {filteredProducts.map((product, i) => (
-            <motion.div
-              key={product.id}
-              layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-            >
-              <ProductCard product={product} />
-            </motion.div>
-          ))}
-
-          {filteredProducts.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="col-span-full py-20 text-center text-black/40 text-sm font-medium"
-            >
-              {t('shop.no_items')}
-            </motion.div>
-          )}
-        </motion.div>
-      </AnimatePresence>
     </div>
   );
 }
