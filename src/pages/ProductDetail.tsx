@@ -7,7 +7,7 @@ import ProductSelectionCard from '../components/ProductSelectionCard';
 import ProductInfoSections from '../components/ProductInfoSections';
 import { GlobalPageLoader } from '../components/GlobalPageLoader';
 import ReviewList from '../components/ReviewList';
-import { ChevronLeft, ChevronRight, Heart, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Loader2, Share2, MessageSquare, Ruler } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -341,24 +341,6 @@ export default function ProductDetail() {
       {/* ─── GALLERY + INFO LAYOUT ─── */}
       <div className="max-w-[1100px] mx-auto px-4 md:px-10 pt-24 md:pt-28 pb-12">
         
-        {/* Wishlist Toggle */}
-        <div className="flex justify-start mb-5">
-            <button 
-              onClick={toggleWishlist}
-              disabled={wishlistLoading}
-              className="group flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-neutral-200 bg-white/60 backdrop-blur-sm hover:bg-neutral-800 hover:text-white hover:border-neutral-800 transition-all duration-300"
-            >
-              {wishlistLoading ? (
-                 <Loader2 size={13} className="animate-spin opacity-30" />
-              ) : (
-                 <Heart size={13} className={isWishlisted ? 'fill-red-500 text-red-500' : 'text-neutral-300 group-hover:text-white/50'} />
-              )}
-              <span className="text-[10px] uppercase font-bold tracking-[0.2em] leading-none">
-                {isWishlisted ? t('product.saved') : t('product.add_to_selection')}
-              </span>
-            </button>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
 
           {/* LEFT: Image Gallery */}
@@ -410,9 +392,57 @@ export default function ProductDetail() {
                 </div>
               </div>
 
+              {/* ── Quick Actions Panel ── */}
+              <div className="flex items-center gap-0 rounded-2xl border border-neutral-300 bg-neutral-50 overflow-hidden">
+                <button
+                  onClick={toggleWishlist}
+                  disabled={wishlistLoading}
+                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-[9px] font-bold uppercase tracking-[0.15em] transition-all ${
+                    isWishlisted 
+                      ? 'bg-neutral-800 text-white' 
+                      : 'text-neutral-400 hover:bg-neutral-50 hover:text-neutral-700'
+                  }`}
+                >
+                  {wishlistLoading 
+                    ? <Loader2 size={12} className="animate-spin" />
+                    : <Heart size={12} className={isWishlisted ? 'fill-current' : ''} />
+                  }
+                  {isWishlisted ? 'Kaydedildi' : 'Kaydet'}
+                </button>
+
+                <div className="w-px h-7 bg-neutral-200" />
+
+                <button
+                  onClick={() => navigator.clipboard.writeText(window.location.href)}
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-all"
+                >
+                  <Share2 size={12} />
+                  Paylaş
+                </button>
+
+                <div className="w-px h-6 bg-neutral-200" />
+
+                <button
+                  onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-all"
+                >
+                  <MessageSquare size={12} />
+                  Yorum
+                </button>
+
+                <div className="w-px h-6 bg-neutral-200" />
+
+                <button
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-all"
+                >
+                  <Ruler size={12} />
+                  Beden
+                </button>
+              </div>
+
               {/* Description & Technical Specs — Compact */}
               <div className="flex flex-col gap-2.5 mt-4">
-                <div className="p-4 rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-sm">
+                <div className="p-4 rounded-2xl border border-neutral-200 bg-white/70 backdrop-blur-sm">
                   <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-neutral-300 block mb-2.5">Açıklama</span>
                   <p className="text-[13px] leading-relaxed text-neutral-500">
                     {product.description}
@@ -420,7 +450,7 @@ export default function ProductDetail() {
                 </div>
 
                 {product.features && product.features.length > 0 && (
-                  <div className="p-4 rounded-xl border border-neutral-200 bg-white/70 backdrop-blur-sm">
+                  <div className="p-4 rounded-2xl border border-neutral-200 bg-white/70 backdrop-blur-sm">
                     <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-neutral-300 block mb-2.5">Özellikler</span>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
                       {product.features.map((f: string, i: number) => (
@@ -439,7 +469,7 @@ export default function ProductDetail() {
       </div>
 
       {/* ─── REVIEWS ─── */}
-      <div className="max-w-[800px] mx-auto px-4 md:px-10 pb-16">
+      <div id="reviews-section" className="max-w-[800px] mx-auto px-4 md:px-10 pb-16">
         <ReviewList productId={product.id} reviews={reviews} />
       </div>
 

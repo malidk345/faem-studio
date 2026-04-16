@@ -31,7 +31,7 @@ export default function ProductSelectionCard({
 }: ProductSelectionCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [sizeOpen, setSizeOpen] = useState(false);
 
   useEffect(() => {

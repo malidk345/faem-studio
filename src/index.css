@@ -47,8 +47,8 @@
   --font-sans: 'Outfit', system-ui, sans-serif;
   --radius: 0.875rem;
 
-  /* Brunello Linen Palette */
-  --background: oklch(0.985 0.002 80);
+  /* Pure White Base */
+  --background: oklch(1 0 0);
   --foreground: oklch(0.25 0.01 40);
 
   --card: oklch(0.99 0.001 80);

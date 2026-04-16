@@ -178,86 +178,22 @@ export default function Home() {
       </section>
 
 
-      {/* ─── BRAND QUOTE (Linen Background) ─── */}
-      <section className="relative overflow-hidden py-40 md:py-60 px-6 bg-secondary flex justify-center items-center text-center">
-        <div className="max-w-4xl opacity-80">
-          <p className="text-[11px] uppercase tracking-[0.6em] font-bold mb-16 text-neutral-400">
+      {/* ─── STUDIO NOTES ─── */}
+      <section className="relative overflow-hidden py-20 md:py-28 px-6 bg-secondary flex justify-center items-center text-center">
+        <div className="max-w-3xl">
+          <p className="text-[9px] uppercase tracking-[0.4em] font-bold mb-8 text-neutral-300">
             {t('home.studio_notes')}
           </p>
-          <blockquote className="text-[clamp(1.75rem,5vw,3.5rem)] font-serif italic text-neutral-800 leading-[1.3] tracking-tight">
+          <blockquote className="text-[clamp(1.5rem,4vw,2.5rem)] font-serif italic text-neutral-800 leading-[1.3] tracking-tight">
             "{t('home.quote')}"
           </blockquote>
-          <div className="w-12 h-px bg-neutral-300 mx-auto mt-16 mb-6" />
-          <p className="text-neutral-400 text-[12px] tracking-[0.5em] uppercase font-bold">
+          <div className="w-8 h-px bg-neutral-300 mx-auto mt-8 mb-4" />
+          <p className="text-neutral-300 text-[9px] tracking-[0.4em] uppercase font-bold">
             Studio Narrative, 2026
           </p>
         </div>
       </section>
 
-
-      {/* ─── FOOTER ─── */}
-      <footer className="bg-background pt-32 pb-16 px-6 lg:px-12">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-24 mb-32">
-            <div className="flex flex-col gap-10">
-              <div>
-                <h2 className="text-[28px] font-serif text-neutral-800 mb-4">{t('footer.newsletter_title')}</h2>
-                <p className="text-neutral-500 text-[15px] max-w-sm leading-relaxed">
-                  {t('footer.newsletter_desc')}
-                </p>
-              </div>
-              <div className="flex gap-4 max-w-md">
-                <input
-                  type="email"
-                  placeholder={t('footer.newsletter_placeholder')}
-                  className="flex-1 bg-transparent border-b border-neutral-300 py-3 text-[14px] focus:outline-none focus:border-neutral-800 transition-colors placeholder:text-neutral-300"
-                />
-                <button className="text-[11px] font-bold uppercase tracking-[0.3em] text-neutral-800 hover:text-neutral-500 transition-colors">
-                  {t('footer.newsletter_button')}
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-12">
-              {[
-                { label: t('footer.studio'), links: [
-                  { label: t('footer.story'), path: '#' },
-                  { label: t('footer.process'), path: '#' },
-                  { label: t('footer.sustainability'), path: '#' },
-                ]},
-                { label: t('footer.support'), links: [
-                  { label: t('footer.shipping_info'), path: '#' },
-                  { label: t('footer.returns_info'), path: '#' },
-                  { label: t('nav.contact_us'), path: '#' }
-                ]},
-              ].map(col => (
-                <div key={col.label} className="flex flex-col gap-8">
-                  <span className="text-[11px] uppercase tracking-[0.4em] font-bold text-neutral-300">
-                    {col.label}
-                  </span>
-                  <nav className="flex flex-col gap-4">
-                    {col.links.map(link => (
-                      <a key={link.label} href={link.path} className="text-[14px] text-neutral-500 hover:text-neutral-800 transition-colors">{link.label}</a>
-                    ))}
-                  </nav>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="pt-10 border-t border-neutral-200 flex flex-col md:flex-row justify-between items-center gap-8">
-            <span className="text-[11px] text-neutral-300 uppercase tracking-[0.4em] font-bold flex items-center gap-4">
-              <span className="text-[18px] lowercase italic font-serif">faem</span>
-              © 2026 Archive
-            </span>
-            <div className="flex gap-10">
-              <a href="#" className="text-[11px] text-neutral-300 hover:text-neutral-600 uppercase tracking-[0.3em] font-bold transition-colors">Instagram</a>
-              <a href="#" className="text-[11px] text-neutral-300 hover:text-neutral-600 uppercase tracking-[0.3em] font-bold transition-colors">{t('footer.terms')}</a>
-              <a href="#" className="text-[11px] text-neutral-300 hover:text-neutral-600 uppercase tracking-[0.3em] font-bold transition-colors">{t('footer.privacy')}</a>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
