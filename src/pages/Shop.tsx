@@ -77,10 +77,8 @@ export default function Shop() {
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Editorial Heading Section */}
         <div className="flex flex-col items-center justify-center text-center gap-6 mb-16 md:mb-24">
-          <p className="text-[11px] uppercase tracking-[0.45em] font-bold text-neutral-400">
-            {t('shop.archive_current')}
-          </p>
-          <h1 className="text-[clamp(1.5rem,6vw,3.5rem)] font-serif tracking-tight leading-[1.1] text-neutral-800">
+          <span className="text-[10px] font-normal tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">Technical Archive</span>
+          <h1 className="text-[clamp(1.5rem,5vw,2.8rem)] font-bold tracking-tighter leading-none text-black">
             {activeCategory === 'All' ? t('shop.title') : activeCategory}
           </h1>
           
@@ -90,7 +88,7 @@ export default function Shop() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`text-[12px] font-semibold uppercase tracking-[0.2em] whitespace-nowrap transition-all duration-300 relative pb-1
+                className={`text-[12px] font-semibold tracking-[0.2em] whitespace-nowrap transition-all duration-300 relative pb-1
                   ${activeCategory === cat
                     ? 'text-neutral-900 border-b border-neutral-900'
                     : 'text-neutral-400 hover:text-neutral-600 border-b border-transparent'

@@ -365,14 +365,14 @@ export default function ProductDetail() {
               className="flex flex-col gap-4"
             >
               {/* Category */}
-              <p className="text-[10px] font-normal uppercase tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">
-                {product.category} // ARCHIVE DATA
+              <p className="text-[9px] font-normal uppercase tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">
+                {product.category} // REF.DATA.00{product.id?.substring(0,2)}
               </p>
 
               {/* Name + Price */}
               <div className="flex flex-col gap-1.5">
-                <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-bold tracking-tighter text-black leading-[0.9] italic lowercase">
-                  {product.name}.
+                <h1 className="text-[clamp(1.8rem,4vw,2.8rem)] font-bold tracking-tighter text-black leading-none">
+                  {product.name}
                 </h1>
                 <div className="flex items-center gap-3">
                   {product.discount_price ? (

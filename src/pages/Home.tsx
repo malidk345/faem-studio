@@ -21,21 +21,21 @@ export default function Home() {
   const HERO_SLIDES = [
     {
       id: 1,
-      tag: 'Collection 001',
+      tag: 'ARCHIVE_001 // CORE',
       headline: t('home.hero_1_title').split('\n'),
       sub: t('home.hero_1_sub'),
       image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600&auto=format&fit=crop',
     },
     {
       id: 2,
-      tag: 'Collection 002',
+      tag: 'ARCHIVE_002 // ESSENTIAL',
       headline: t('home.hero_2_title').split('\n'),
       sub: t('home.hero_2_sub'),
       image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1600&auto=format&fit=crop',
     },
     {
       id: 3,
-      tag: 'Collection 003',
+      tag: 'ARCHIVE_003 // TECH',
       headline: t('home.hero_3_title').split('\n'),
       sub: t('home.hero_3_sub'),
       image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1600&auto=format&fit=crop',
@@ -69,10 +69,10 @@ export default function Home() {
   }, [HERO_SLIDES.length]);
 
   return (
-    <div className="bg-background text-foreground transition-colors duration-500 font-sans">
+    <div className="bg-white text-foreground transition-colors duration-500 overflow-x-hidden">
 
-      {/* ─── EDITORIAL HERO ─── */}
-      <section className="relative h-[92vh] md:h-[95vh] overflow-hidden">
+      {/* ─── SINEMATIK HERO ─── */}
+      <section className="relative h-screen overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={slide.id}
@@ -85,18 +85,17 @@ export default function Home() {
             <motion.img
               src={slide.image}
               alt={slide.headline.join(' ')}
-              className="w-full h-full object-cover"
-              initial={{ scale: 1.15 }}
+              className="w-full h-full object-cover grayscale-[0.1]"
+              initial={{ scale: 1.1 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 8, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 10, ease: [0.16, 1, 0.3, 1] }}
             />
-            {/* Subtle luxury vignette */}
-            <div className="absolute inset-0 bg-black/10" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/20" />
+            <div className="absolute inset-0 bg-black/5" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/10" />
           </motion.div>
         </AnimatePresence>
 
-        {/* Hero Content: Centered & Editorial */}
+        {/* Hero Content: Editorial & Technical */}
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
           <AnimatePresence mode="wait">
             <motion.div
@@ -104,70 +103,79 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
               className="max-w-5xl"
             >
-              <span className="text-[11px] uppercase tracking-[0.6em] font-semibold text-white/70 mb-8 block drop-shadow-sm">
-                {slide.tag}
-              </span>
-              <h1 className="text-[clamp(2.5rem,8vw,7rem)] font-serif italic tracking-tight leading-[0.95] text-white drop-shadow-xl mb-10">
+              <div className="flex flex-col items-center gap-6 mb-10">
+                <span className="text-[14px] font-normal uppercase tracking-[0.4em] text-white/50 font-['Handjet',sans-serif] drop-shadow-sm">
+                  {slide.tag}
+                </span>
+                <div className="w-[1px] h-12 bg-white/20" />
+              </div>
+
+              <h1 className="text-[clamp(2.5rem,7vw,6rem)] font-bold tracking-tighter leading-[0.9] text-white drop-shadow-2xl mb-12">
                 {slide.headline.map((line, i) => (
                   <span key={i} className="block">{line}</span>
                 ))}
               </h1>
-              <p className="text-white/80 text-[16px] md:text-[18px] font-medium max-w-xl mx-auto drop-shadow-md mb-12">
-                {slide.sub}
-              </p>
-              <div className="flex justify-center">
+
+              <div className="flex justify-center mt-12">
                 <Link 
                   to="/shop" 
-                  className="group relative overflow-hidden bg-white/90 backdrop-blur-md text-black px-10 py-5 rounded-full text-[18px] font-normal uppercase tracking-[0.05em] transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-2xl font-['Handjet',sans-serif]"
+                  className="group relative overflow-hidden bg-white/95 backdrop-blur-xl text-black px-12 py-5 rounded-[2px] transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-2xl"
                 >
-                  <span className="relative z-10 flex items-center gap-3">
-                    {t('home.explore')}
-                    <ArrowUpRight size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  <span className="relative z-10 flex items-center gap-6">
+                    <span className="text-[20px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">ARŞİVİ KEŞFET</span>
+                    <ArrowUpRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform opacity-40 group-hover:opacity-100" />
                   </span>
                 </Link>
               </div>
             </motion.div>
           </AnimatePresence>
 
-          {/* Minimal Slide Indicators */}
-          <div className="absolute bottom-12 flex gap-4">
+          {/* Minimal Vertical Slide Indicators */}
+          <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-8 hidden md:flex">
             {HERO_SLIDES.map((_, i) => (
               <button 
                 key={i} 
                 onClick={() => setActiveSlide(i)} 
-                className="group p-2"
+                className="group flex flex-col items-center gap-2"
               >
-                <div className={`h-[2px] transition-all duration-700 ${i === activeSlide ? 'w-12 bg-white' : 'w-4 bg-white/30 group-hover:bg-white/60'}`} />
+                <span className={`text-[12px] font-normal font-['Handjet',sans-serif] transition-all ${i === activeSlide ? 'text-white' : 'text-white/20 group-hover:text-white/40'}`}>0{i + 1}</span>
+                <div className={`h-[40px] w-[1px] transition-all duration-700 ${i === activeSlide ? 'bg-white h-[60px]' : 'bg-white/10 group-hover:bg-white/30'}`} />
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Hero Bottom Info (Handjet Style) */}
+        <div className="absolute bottom-10 left-10 flex flex-col gap-1 hidden md:flex">
+           <span className="text-[12px] font-normal text-white/40 font-['Handjet',sans-serif] uppercase tracking-widest">Global Archive Control</span>
+           <span className="text-[12px] font-normal text-white/20 font-['Handjet',sans-serif] uppercase tracking-widest leading-none">Status: // ONLINE</span>
         </div>
       </section>
 
 
       {/* ─── FEATURED ARCHIVE ─── */}
-      <section className="py-24 md:py-36 px-6 lg:px-12 max-w-[1400px] mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
-          <div className="flex flex-col gap-3">
-            <span className="text-[11px] uppercase tracking-[0.5em] font-bold text-neutral-400">
+      <section className="py-32 md:py-48 px-6 lg:px-12 max-w-[1400px] mx-auto">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-24">
+          <div className="flex flex-col gap-4">
+            <span className="text-[14px] font-normal uppercase tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">
               {t('home.current')}
             </span>
-            <h2 className="text-[clamp(1.5rem,4vw,2.5rem)] font-serif tracking-tight text-neutral-800 leading-none">
-              Featured Archive
+            <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-bold tracking-tighter text-black leading-none">
+              Öne Çıkan Arşiv
             </h2>
           </div>
           <Link
             to="/shop"
-            className="flex items-center gap-2 text-[11px] uppercase tracking-[0.3em] font-bold text-neutral-400 hover:text-neutral-800 transition-colors group"
+            className="flex items-center gap-4 text-[18px] font-normal uppercase tracking-[0.05em] text-black/30 hover:text-black transition-all group font-['Handjet',sans-serif]"
           >
-            {t('home.all_pieces')} <ArrowRight size={14} className="group-hover:translate-x-1.5 transition-transform" />
+            TÜM KOLEKSİYON <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-16">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-24">
           {products.map((product) => (
             <ProductCard
               key={product.id}
@@ -178,18 +186,18 @@ export default function Home() {
       </section>
 
 
-      {/* ─── STUDIO NOTES ─── */}
-      <section className="relative overflow-hidden py-20 md:py-28 px-6 bg-secondary flex justify-center items-center text-center">
-        <div className="max-w-3xl">
-          <p className="text-[9px] uppercase tracking-[0.4em] font-bold mb-8 text-neutral-300">
-            {t('home.studio_notes')}
-          </p>
-          <blockquote className="text-[clamp(1.5rem,4vw,2.5rem)] font-serif italic text-neutral-800 leading-[1.3] tracking-tight">
+      {/* ─── STUDIO QUOTE ─── */}
+      <section className="relative overflow-hidden py-32 md:py-48 px-6 bg-[#f7f6f4] flex justify-center items-center text-center">
+        <div className="max-w-4xl flex flex-col items-center">
+          <span className="text-[12px] font-normal uppercase tracking-[0.4em] mb-12 text-black/20 font-['Handjet',sans-serif]">
+            {t('home.studio_notes')} // VOL.01
+          </span>
+          <blockquote className="text-[clamp(1.4rem,3vw,2.5rem)] font-bold text-black leading-[1.2] tracking-tighter mb-16">
             "{t('home.quote')}"
           </blockquote>
-          <div className="w-8 h-px bg-neutral-300 mx-auto mt-8 mb-4" />
-          <p className="text-neutral-300 text-[9px] tracking-[0.4em] uppercase font-bold">
-            Studio Narrative, 2026
+          <div className="w-12 h-[1px] bg-black/10 mb-6" />
+          <p className="text-black/30 text-[12px] tracking-[0.4em] uppercase font-normal font-['Handjet',sans-serif]">
+            Faem Studio Narrative // 2026
           </p>
         </div>
       </section>
