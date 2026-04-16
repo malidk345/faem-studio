@@ -41,7 +41,6 @@ export default function ProductSelectionCard({
       if (!ticking) {
         requestAnimationFrame(() => {
           const y = window.scrollY;
-          // Hysteresis: different thresholds for collapse/expand to prevent jitter
           const shouldCollapse = lastCollapsed ? y > 120 : y > 180;
           if (shouldCollapse !== lastCollapsed) {
             lastCollapsed = shouldCollapse;
@@ -70,50 +69,47 @@ export default function ProductSelectionCard({
   return (
     <div className="fixed bottom-6 left-4 right-4 z-50 flex flex-col items-center pointer-events-none md:right-10 md:bottom-10 md:left-auto md:w-[440px]">
 
-      {/* ── Main Detail Card ── */}
+      {/* ── Main Detail Card (Now Synced with Header Frame) ── */}
       <motion.div
+        layout
         initial={false}
         animate={{
           height: collapsed ? 60 : 'auto',
+          borderRadius: collapsed ? 6 : 8, // Synced with Header (6px sharp, 8px expanded)
         }}
         transition={springTransition}
-        style={{ borderRadius: 16, willChange: 'height' }}
-        className="w-full glass-nav overflow-hidden pointer-events-auto flex flex-col origin-bottom"
+        className="w-full glass-nav overflow-hidden pointer-events-auto flex flex-col origin-bottom border border-white/10 shadow-2xl"
       >
-        {/* Info Area (Thumbnail + Name + Heart) — same animation pattern as Header panels */}
+        {/* Info Area */}
         <AnimatePresence mode="wait">
           {!collapsed && (
             <motion.div
               key="info"
-              initial="hidden"
-              animate="show"
-              exit="exit"
-              variants={{
-                hidden: { opacity: 0, height: 0 },
-                show: { opacity: 1, height: 'auto', transition: { height: springTransition, opacity: { duration: 0.3, delay: 0.1 } } },
-                exit: { opacity: 0, height: 0, transition: { height: springTransition, opacity: { duration: 0.2 } } }
-              }}
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={springTransition}
               className="overflow-hidden"
             >
-              <div className="p-4 flex items-start gap-3">
-                <div className="w-[56px] h-[74px] rounded-lg overflow-hidden border border-white/10 shrink-0 bg-white/5">
+              <div className="p-4 flex items-start gap-4">
+                <div className="w-[64px] h-[80px] rounded-[4px] overflow-hidden border border-white/10 shrink-0 bg-white/5">
                   <img src={product.image} alt="" className="w-full h-full object-cover" />
                 </div>
-                <div className="flex-1 min-w-0 pt-0.5 relative">
+                <div className="flex-1 min-w-0 pt-0.5">
                   <div className="flex items-start justify-between gap-4">
-                    <div className="flex flex-col gap-0.5">
-                      <h3 className="text-[14px] font-bold leading-tight text-white/95 tracking-tighter truncate max-w-[240px]">
+                    <div className="flex flex-col gap-1">
+                      <h3 className="text-[14px] font-bold leading-none text-white/95 tracking-tighter truncate max-w-[240px]">
                         {product.name}
                       </h3>
-                      <p className="text-[13px] font-bold text-white tracking-tight">
+                      <p className="text-[16px] font-bold text-white tracking-tighter mt-1">
                         {product.discount_price || product.price}
                       </p>
-                      <p className="text-[11px] text-white/40 tracking-tight font-medium">
-                        {product.category} (C005)
+                      <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] font-bold mt-2 font-['Handjet',sans-serif]">
+                        {product.category} / ARCHIVE PIECE
                       </p>
                     </div>
-                    <button onClick={() => setIsWishlisted(!isWishlisted)} className="mt-0.5 active:scale-90 transition-transform">
-                      <Heart size={18} className={isWishlisted ? 'fill-white text-white' : 'text-white/40'} />
+                    <button onClick={() => setIsWishlisted(!isWishlisted)} className="active:scale-90 transition-transform mt-1">
+                      <Heart size={20} className={isWishlisted ? 'fill-white text-white' : 'text-white/40'} />
                     </button>
                   </div>
                 </div>
@@ -122,56 +118,53 @@ export default function ProductSelectionCard({
           )}
         </AnimatePresence>
 
-        {/* Action Row — Side by Side Pills */}
-        <div
-          className={`flex items-center gap-2 px-3 pb-3 ${collapsed ? 'h-full pt-3' : 'pt-1'}`}
-        >
-          {/* [Add to Cart] — Solid White */}
+        {/* Action Row */}
+        <div className={`flex items-center gap-2 px-3 pb-3 ${collapsed ? 'h-full pt-3' : 'pt-2'}`}>
           <button
             onClick={handleAdd}
-            className="flex-1 h-[44px] bg-white hover:bg-white/90 text-black rounded-xl font-normal text-[16px] tracking-tight transition-all active:scale-[0.97] flex items-center justify-center shadow-sm"
+            className="flex-1 h-[48px] bg-white hover:bg-white/90 text-black rounded-[4px] transition-all active:scale-[0.97] flex items-center justify-center shadow-lg"
           >
             {isAdding ? (
-              <Check size={18} className="text-emerald-600 animate-in fade-in zoom-in duration-300" />
-            ) : 'Sepete ekle'}
+              <Check size={20} className="text-emerald-600 animate-in fade-in zoom-in duration-300" />
+            ) : (
+              <span className="text-[18px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">SEPETE EKLE</span>
+            )}
           </button>
 
-          {/* [Select Size] — Ghost Glass */}
           <button
             onClick={() => { setCollapsed(false); setSizeOpen(!sizeOpen); }}
-            className="flex-1 h-[44px] rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-normal text-[16px] tracking-tight text-white flex items-center justify-center gap-2 active:scale-[0.97] transition-all"
+            className={`flex-1 h-[48px] rounded-[4px] bg-white/10 hover:bg-white/15 border border-white/10 text-white flex items-center justify-center gap-2 active:scale-[0.97] transition-all font-['Handjet',sans-serif]`}
           >
-            {selectedSize || 'Select size'}
+            <span className="text-[18px] font-normal uppercase tracking-[0.05em]">{selectedSize || 'BEDEN SEÇ'}</span>
             <ChevronDown size={14} className={`transition-transform duration-300 ${sizeOpen ? 'rotate-180' : ''}`} />
           </button>
 
-          {/* [Close/X] — Circular Glass */}
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="w-[44px] h-[44px] shrink-0 bg-white/10 hover:bg-white/15 border border-white/10 rounded-xl flex items-center justify-center active:scale-[0.95] transition-all"
+            className="w-[48px] h-[48px] shrink-0 bg-white/10 hover:bg-white/15 border border-white/10 rounded-[4px] flex items-center justify-center active:scale-[0.95] transition-all text-white/60"
           >
-            {collapsed ? <ChevronUp size={18} /> : <X size={18} />}
+            {collapsed ? <ChevronUp size={20} /> : <X size={20} />}
           </button>
         </div>
 
-        {/* Size Selection Area (Vertical Accordion) */}
+        {/* Size Selection Area */}
         <AnimatePresence>
           {sizeOpen && !collapsed && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ type: 'spring', damping: 26, stiffness: 200 }}
+              transition={springTransition}
               className="px-3 pb-4 overflow-hidden"
             >
-              <div className="w-full h-px bg-white/10 mb-3" />
-              <div className="grid grid-cols-3 gap-1.5">
+              <div className="w-full h-px bg-white/10 mb-4" />
+              <div className="grid grid-cols-3 gap-2">
                 {product.sizes.map(size => (
                   <button
                     key={size}
                     onClick={() => { setSelectedSize(size); setSizeOpen(false); }}
-                    className={`h-10 rounded-xl text-[14px] font-normal transition-all border
-                      ${selectedSize === size ? 'bg-white text-black border-white' : 'bg-white/5 border-white/5 text-white/50 hover:bg-white/10 hover:border-white/10'}`}
+                    className={`h-12 rounded-[4px] text-[16px] font-normal transition-all border font-['Handjet',sans-serif]
+                      ${selectedSize === size ? 'bg-white text-black border-white shadow-xl' : 'bg-white/5 border-white/5 text-white/40 hover:bg-white/10 hover:border-white/20'}`}
                   >
                     {size}
                   </button>

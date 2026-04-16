@@ -365,14 +365,14 @@ export default function ProductDetail() {
               className="flex flex-col gap-4"
             >
               {/* Category */}
-              <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-neutral-400">
-                {product.category}
+              <p className="text-[10px] font-normal uppercase tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">
+                {product.category} // ARCHIVE DATA
               </p>
 
               {/* Name + Price */}
               <div className="flex flex-col gap-1.5">
-                <h1 className="text-[clamp(1.4rem,4vw,2.2rem)] font-bold tracking-[-0.04em] text-neutral-800 leading-[0.95]">
-                  {product.name}
+                <h1 className="text-[clamp(2rem,5vw,3.5rem)] font-bold tracking-tighter text-black leading-[0.9] italic lowercase">
+                  {product.name}.
                 </h1>
                 <div className="flex items-center gap-3">
                   {product.discount_price ? (
@@ -393,70 +393,60 @@ export default function ProductDetail() {
               </div>
 
               {/* ── Quick Actions Panel ── */}
-              <div className="flex items-center gap-0 rounded-2xl border border-neutral-300 bg-neutral-50 overflow-hidden">
+              <div className="grid grid-cols-4 gap-2">
                 <button
                   onClick={toggleWishlist}
                   disabled={wishlistLoading}
-                  className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-[9px] font-bold uppercase tracking-[0.15em] transition-all ${
-                    isWishlisted 
-                      ? 'bg-neutral-800 text-white' 
-                      : 'text-neutral-400 hover:bg-neutral-50 hover:text-neutral-700'
-                  }`}
+                  className="h-12 bg-black/[0.03] border border-black/5 rounded-[4px] flex flex-col items-center justify-center gap-1 group hover:bg-black hover:text-white transition-all transition-colors"
                 >
                   {wishlistLoading 
-                    ? <Loader2 size={12} className="animate-spin" />
-                    : <Heart size={12} className={isWishlisted ? 'fill-current' : ''} />
+                    ? <Loader2 size={14} className="animate-spin" />
+                    : <Heart size={14} className={isWishlisted ? 'fill-current' : 'text-black/30 group-hover:text-white'} />
                   }
-                  {isWishlisted ? 'Kaydedildi' : 'Kaydet'}
+                  <span className="text-[14px] font-normal uppercase font-['Handjet',sans-serif]">Kaydet</span>
                 </button>
-
-                <div className="w-px h-7 bg-neutral-200" />
 
                 <button
                   onClick={() => navigator.clipboard.writeText(window.location.href)}
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-all"
+                  className="h-12 bg-black/[0.03] border border-black/5 rounded-[4px] flex flex-col items-center justify-center gap-1 group hover:bg-black hover:text-white transition-all"
                 >
-                  <Share2 size={12} />
-                  Paylaş
+                  <Share2 size={14} className="text-black/30 group-hover:text-white" />
+                  <span className="text-[14px] font-normal uppercase font-['Handjet',sans-serif]">Paylaş</span>
                 </button>
-
-                <div className="w-px h-6 bg-neutral-200" />
 
                 <button
                   onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-all"
+                  className="h-12 bg-black/[0.03] border border-black/5 rounded-[4px] flex flex-col items-center justify-center gap-1 group hover:bg-black hover:text-white transition-all"
                 >
-                  <MessageSquare size={12} />
-                  Yorum
+                  <MessageSquare size={14} className="text-black/30 group-hover:text-white" />
+                  <span className="text-[14px] font-normal uppercase font-['Handjet',sans-serif]">Yorum</span>
                 </button>
 
-                <div className="w-px h-6 bg-neutral-200" />
-
                 <button
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 text-[9px] font-bold uppercase tracking-[0.15em] text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700 transition-all"
+                  className="h-12 bg-black/[0.03] border border-black/5 rounded-[4px] flex flex-col items-center justify-center gap-1 group hover:bg-black hover:text-white transition-all"
                 >
-                  <Ruler size={12} />
-                  Beden
+                  <Ruler size={14} className="text-black/30 group-hover:text-white" />
+                  <span className="text-[14px] font-normal uppercase font-['Handjet',sans-serif]">Beden</span>
                 </button>
               </div>
 
               {/* Description & Technical Specs — Compact */}
               <div className="flex flex-col gap-2.5 mt-4">
-                <div className="p-4 rounded-2xl border border-neutral-200 bg-white/70 backdrop-blur-sm">
-                  <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-neutral-300 block mb-2.5">Açıklama</span>
-                  <p className="text-[13px] leading-relaxed text-neutral-500">
+                <div className="p-6 rounded-[6px] glass-nav border-white/5 shadow-2xl">
+                  <span className="text-[14px] font-normal uppercase tracking-[0.3em] text-white/30 block mb-2.5 font-['Handjet',sans-serif]">Açıklama</span>
+                  <p className="text-[13px] leading-relaxed text-white/70 font-medium">
                     {product.description}
                   </p>
                 </div>
 
                 {product.features && product.features.length > 0 && (
-                  <div className="p-4 rounded-2xl border border-neutral-200 bg-white/70 backdrop-blur-sm">
-                    <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-neutral-300 block mb-2.5">Özellikler</span>
+                  <div className="p-6 rounded-[6px] glass-nav border-white/5 shadow-2xl">
+                    <span className="text-[14px] font-normal uppercase tracking-[0.3em] text-white/30 block mb-2.5 font-['Handjet',sans-serif]">Özellikler</span>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
                       {product.features.map((f: string, i: number) => (
                         <div key={i} className="flex items-center gap-2">
-                          <div className="w-1 h-1 rounded-full bg-neutral-300" />
-                          <span className="text-[12px] font-medium text-neutral-500 tracking-tight">{f}</span>
+                          <div className="w-1 h-1 rounded-full bg-[#ddff34]" />
+                          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{f}</span>
                         </div>
                       ))}
                     </div>
