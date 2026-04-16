@@ -392,61 +392,47 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              {/* ── Quick Actions Panel ── */}
-              <div className="grid grid-cols-4 gap-2">
-                <button
-                  onClick={toggleWishlist}
-                  disabled={wishlistLoading}
-                  className="h-12 bg-black/[0.03] border border-black/5 rounded-[4px] flex flex-col items-center justify-center gap-1 group hover:bg-black hover:text-white transition-all transition-colors"
-                >
-                  {wishlistLoading 
-                    ? <Loader2 size={14} className="animate-spin" />
-                    : <Heart size={14} className={isWishlisted ? 'fill-current' : 'text-black/30 group-hover:text-white'} />
-                  }
-                  <span className="text-[14px] font-normal uppercase font-['Handjet',sans-serif]">Kaydet</span>
-                </button>
-
-                <button
-                  onClick={() => navigator.clipboard.writeText(window.location.href)}
-                  className="h-12 bg-black/[0.03] border border-black/5 rounded-[4px] flex flex-col items-center justify-center gap-1 group hover:bg-black hover:text-white transition-all"
-                >
-                  <Share2 size={14} className="text-black/30 group-hover:text-white" />
-                  <span className="text-[14px] font-normal uppercase font-['Handjet',sans-serif]">Paylaş</span>
-                </button>
-
-                <button
-                  onClick={() => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="h-12 bg-black/[0.03] border border-black/5 rounded-[4px] flex flex-col items-center justify-center gap-1 group hover:bg-black hover:text-white transition-all"
-                >
-                  <MessageSquare size={14} className="text-black/30 group-hover:text-white" />
-                  <span className="text-[14px] font-normal uppercase font-['Handjet',sans-serif]">Yorum</span>
-                </button>
-
-                <button
-                  className="h-12 bg-black/[0.03] border border-black/5 rounded-[4px] flex flex-col items-center justify-center gap-1 group hover:bg-black hover:text-white transition-all"
-                >
-                  <Ruler size={14} className="text-black/30 group-hover:text-white" />
-                  <span className="text-[14px] font-normal uppercase font-['Handjet',sans-serif]">Beden</span>
-                </button>
+              {/* Utility Grid - Refined Layout */}
+              <div className="flex items-center gap-px bg-black/[0.03] border border-black/5 p-1 rounded-[4px] shadow-sm">
+                {[ 
+                   { icon: Heart, label: 'Kaydet', action: toggleWishlist, loading: wishlistLoading, active: isWishlisted }, 
+                   { icon: Share2, label: 'Paylaş', action: () => navigator.clipboard.writeText(window.location.href) }, 
+                   { icon: MessageSquare, label: 'Yorum', action: () => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' }) }, 
+                   { icon: Ruler, label: 'Beden' } 
+                ].map((item, idx) => (
+                  <button 
+                    key={idx} 
+                    onClick={item.action}
+                    disabled={item.loading}
+                    className={`flex-1 h-11 flex items-center justify-center gap-2 rounded-[2px] transition-all
+                      ${item.active ? 'bg-black text-white' : 'hover:bg-black/5 text-black/40 hover:text-black'}`}
+                  >
+                    {item.loading ? <Loader2 size={12} className="animate-spin" /> : <item.icon size={12} className={item.active ? 'fill-current' : ''} />}
+                    <span className="text-[13px] font-normal uppercase font-['Handjet',sans-serif]">{item.label}</span>
+                  </button>
+                ))}
               </div>
 
               {/* Description & Technical Specs — Compact */}
-              <div className="flex flex-col gap-2.5 mt-4">
-                <div className="p-6 rounded-[6px] glass-nav border-white/5 shadow-2xl">
-                  <span className="text-[14px] font-normal uppercase tracking-[0.3em] text-white/30 block mb-2.5 font-['Handjet',sans-serif]">Açıklama</span>
-                  <p className="text-[13px] leading-relaxed text-white/70 font-medium">
+              {/* Technical Description - Light & Minimalist */}
+              <div className="flex flex-col gap-3 mt-6">
+                <div className="p-8 rounded-[4px] bg-black/[0.02] border border-black/5 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-4 opacity-10 text-[8px] font-['Handjet',sans-serif] uppercase tracking-widest leading-none pointer-events-none text-black">INF.ID: // DESC-A1</div>
+                  <span className="text-[13px] font-normal uppercase tracking-[0.2em] text-black/20 block mb-4 font-['Handjet',sans-serif]">Description // Açıklama</span>
+                  <p className="text-[14px] leading-relaxed text-black/70 font-medium max-w-sm">
                     {product.description}
                   </p>
                 </div>
 
                 {product.features && product.features.length > 0 && (
-                  <div className="p-6 rounded-[6px] glass-nav border-white/5 shadow-2xl">
-                    <span className="text-[14px] font-normal uppercase tracking-[0.3em] text-white/30 block mb-2.5 font-['Handjet',sans-serif]">Özellikler</span>
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-1.5">
+                  <div className="p-8 rounded-[4px] bg-black/[0.02] border border-black/5 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 text-[8px] font-['Handjet',sans-serif] uppercase tracking-widest leading-none pointer-events-none text-black">INF.ID: // SPEC-B2</div>
+                    <span className="text-[13px] font-normal uppercase tracking-[0.2em] text-black/20 block mb-4 font-['Handjet',sans-serif]">Technical Specs // Özellikler</span>
+                    <div className="grid grid-cols-2 gap-x-10 gap-y-3">
                       {product.features.map((f: string, i: number) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <div className="w-1 h-1 rounded-full bg-[#ddff34]" />
-                          <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{f}</span>
+                        <div key={i} className="flex items-center gap-3">
+                          <div className="w-1 h-1 rounded-full bg-black/10" />
+                          <span className="text-[11px] font-bold text-black/40 uppercase tracking-widest leading-none">{f}</span>
                         </div>
                       ))}
                     </div>

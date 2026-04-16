@@ -39,7 +39,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="flex flex-col group relative">
-      {/* ── Technical Media Layer ── */}
+      {/* ── Technical Media Layer (Slider Integration) ── */}
       <div className="relative w-full aspect-[3/4] overflow-hidden rounded-[2px] bg-[#f7f6f4] border border-black/5">
         <div className="embla h-full" ref={emblaRef}>
           <div className="embla__container h-full flex">
@@ -70,6 +70,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
              {product.category}
           </span>
         </div>
+
+        {/* ── Slider Dot Indicators ── */}
+        {galleryImages.length > 1 && (
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 pointer-events-none">
+            {galleryImages.map((_, i) => (
+              <div 
+                key={i}
+                className={`w-1 h-1 rounded-full transition-all duration-300 ${i === selectedIndex ? 'bg-white w-4' : 'bg-white/30'}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── Compact Info Layer ── */}
