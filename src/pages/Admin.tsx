@@ -59,7 +59,7 @@ export default function Admin() {
             <span className="text-3xl text-white font-black">F</span>
         </div>
         <h2 className="text-3xl font-black tracking-tighter">Studio Access Required</h2>
-        <Link to="/signin" className="bg-black text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-xl shadow-black/20">
+        <Link to="/signin" className="bg-black text-white px-10 py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-xl shadow-black/20">
           Sign In Account
         </Link>
       </div>
@@ -70,15 +70,15 @@ export default function Admin() {
     <SidebarProvider>
       <AppSidebar collapsible="icon" />
       <SidebarInset className="bg-white">
-        <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b-2 border-zinc-50 bg-white/80 backdrop-blur-md px-4 md:px-6 sticky top-0 z-30">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-2 liquid-header px-4 md:px-6 sticky top-0 z-30">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-               <SidebarTrigger className="w-9 h-9 rounded-xl hover:bg-zinc-100 transition-colors" />
-               <div className="h-5 w-px bg-zinc-100 mx-1" />
+               <SidebarTrigger className="w-9 h-9 rounded-md hover:bg-white/10 text-white transition-colors" />
+               <div className="h-5 w-px bg-white/10 mx-1" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-300 leading-none mb-0.5">Curation Hub</span>
-              <span className="text-xs font-bold text-zinc-900 capitalize">{isEditing ? 'Editing Asset' : activeTab.replace('-', ' ')}</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 leading-none mb-0.5">Curation Hub</span>
+              <span className="text-xs font-bold text-white capitalize">{isEditing ? 'Editing Asset' : activeTab.replace('-', ' ')}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">

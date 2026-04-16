@@ -39,7 +39,7 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
         initial={false}
         animate={{
           height: activePanel ? 'auto' : 52,
-          borderRadius: activePanel ? 16 : 14,
+          borderRadius: activePanel ? 8 : 6,
         }}
         transition={springTransition}
         className="w-full max-w-5xl glass-nav overflow-hidden pointer-events-auto flex flex-col origin-top border border-white/5"
@@ -65,7 +65,7 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
                 <button onClick={toggleLanguage} className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn text-[10px] font-black uppercase">
                   {language}
                 </button>
-                <div className="w-[1px] h-3 bg-white/15 mx-0.5"></div>
+                <div className="w-[1px] h-3 bg-white/10 mx-0.5"></div>
                 <button onClick={() => setActivePanel('search')} className="w-9 h-9 rounded-xl flex items-center justify-center glass-nav-btn">
                   <Search size={17} strokeWidth={2} />
                 </button>
