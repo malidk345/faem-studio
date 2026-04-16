@@ -12,6 +12,7 @@ import OrderSuccess from './pages/OrderSuccess';
 import OrderError from './pages/OrderError';
 import NotFound from './pages/NotFound';
 import Legal from './pages/Legal';
+import Cart from './pages/Cart';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -36,6 +37,7 @@ function AppRoutes() {
         <Route path="/" element={<MainLayout><Home /></MainLayout>} />
         <Route path="/shop" element={<MainLayout><Shop /></MainLayout>} />
         <Route path="/product/:id" element={<MainLayout><ProductDetail /></MainLayout>} />
+        <Route path="/cart" element={<MainLayout><Cart /></MainLayout>} />
         <Route path="/checkout" element={<MainLayout><Checkout /></MainLayout>} />
         <Route path="/signin" element={<MainLayout><SignIn /></MainLayout>} />
         <Route path="/account" element={<MainLayout><Account /></MainLayout>} />

@@ -121,7 +121,7 @@ export default function Home() {
               <div className="flex justify-center">
                 <Link 
                   to="/shop" 
-                  className="group relative overflow-hidden bg-white/90 backdrop-blur-md text-black px-10 py-4 rounded-full text-[12px] font-bold uppercase tracking-[0.25em] transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-2xl"
+                  className="group relative overflow-hidden bg-white/90 backdrop-blur-md text-black px-10 py-5 rounded-full text-[18px] font-normal uppercase tracking-[0.05em] transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-2xl font-['Handjet',sans-serif]"
                 >
                   <span className="relative z-10 flex items-center gap-3">
                     {t('home.explore')}

@@ -129,7 +129,7 @@ export default function ProductSelectionCard({
           {/* [Add to Cart] — Solid White */}
           <button
             onClick={handleAdd}
-            className="flex-1 h-[44px] bg-white hover:bg-white/90 text-black rounded-xl font-bold text-[12px] tracking-tight transition-all active:scale-[0.97] flex items-center justify-center shadow-sm"
+            className="flex-1 h-[44px] bg-white hover:bg-white/90 text-black rounded-xl font-normal text-[16px] tracking-tight transition-all active:scale-[0.97] flex items-center justify-center shadow-sm"
           >
             {isAdding ? (
               <Check size={18} className="text-emerald-600 animate-in fade-in zoom-in duration-300" />
@@ -139,7 +139,7 @@ export default function ProductSelectionCard({
           {/* [Select Size] — Ghost Glass */}
           <button
             onClick={() => { setCollapsed(false); setSizeOpen(!sizeOpen); }}
-            className="flex-1 h-[44px] rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-bold text-[12px] tracking-tight text-white flex items-center justify-center gap-2 active:scale-[0.97] transition-all"
+            className="flex-1 h-[44px] rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 font-normal text-[16px] tracking-tight text-white flex items-center justify-center gap-2 active:scale-[0.97] transition-all"
           >
             {selectedSize || 'Select size'}
             <ChevronDown size={14} className={`transition-transform duration-300 ${sizeOpen ? 'rotate-180' : ''}`} />
@@ -170,7 +170,7 @@ export default function ProductSelectionCard({
                   <button
                     key={size}
                     onClick={() => { setSelectedSize(size); setSizeOpen(false); }}
-                    className={`h-10 rounded-xl text-[11px] font-bold transition-all border
+                    className={`h-10 rounded-xl text-[14px] font-normal transition-all border
                       ${selectedSize === size ? 'bg-white text-black border-white' : 'bg-white/5 border-white/5 text-white/50 hover:bg-white/10 hover:border-white/10'}`}
                   >
                     {size}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Trash2 } from 'lucide-react';
+import { X, ArrowUpRight, Minus, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useLanguage } from '../../context/LanguageContext';
@@ -11,7 +11,7 @@ interface CartPanelProps {
 }
 
 const CartPanel: React.FC<CartPanelProps> = ({ onClose }) => {
-  const { cartItems, removeFromCart } = useCart();
+  const { cartItems, removeFromCart, updateQuantity } = useCart();
   const { t } = useLanguage();
   const navigate = useNavigate();
   
@@ -22,47 +22,63 @@ const CartPanel: React.FC<CartPanelProps> = ({ onClose }) => {
   }, 0);
 
   return (
-    <motion.div variants={containerVariants} className="flex flex-col max-h-[60vh]">
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 custom-scrollbar">
+    <motion.div variants={containerVariants} className="flex flex-col w-full text-white">
+      {/* Cart Items */}
+      <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-10 max-h-[50vh] custom-scrollbar">
         {cartItems.length === 0 ? (
-          <motion.div variants={itemVariants} className="text-center py-10 text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">
-            {t('cart.empty_msg')}
-          </motion.div>
+          <div className="py-12 text-center opacity-30 uppercase font-bold tracking-[0.3em] text-[10px]">Sepetiniz şu an boş</div>
         ) : (
           cartItems.map(item => (
-            <motion.div variants={itemVariants} key={item.id} className="flex gap-4 items-center bg-white/5 p-3 rounded-2xl border border-white/5">
-              <img src={item.image} alt={item.name} className="w-14 h-18 object-cover rounded-xl shadow-lg border border-white/10" referrerPolicy="no-referrer" />
-              <div className="flex-1 flex flex-col pt-0.5">
-                <span className="text-white/90 text-[13px] font-bold leading-tight tracking-tight">{item.name}</span>
-                <span className="text-white/30 text-[10px] mt-1 font-bold uppercase tracking-widest">
-                  {item.size} · {item.quantity} ADET
-                </span>
-                <span className="text-white text-[13px] font-bold mt-2">{item.price}</span>
+            <motion.div variants={itemVariants} key={item.id} className="flex gap-6 relative group">
+              {/* Product Image Square */}
+              <div className="w-28 h-28 bg-white/[0.03] border border-white/5 rounded-[2px] flex items-center justify-center overflow-hidden shrink-0">
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover opacity-90" />
               </div>
-              <button onClick={() => removeFromCart(item.id)} className="w-9 h-9 flex items-center justify-center text-white/20 hover:text-white hover:bg-white/10 rounded-xl transition-all mr-1 shrink-0">
-                <Trash2 size={16} />
-              </button>
+
+              {/* Product Details */}
+              <div className="flex flex-col flex-1">
+                <div className="flex justify-between items-start">
+                  <h3 className="text-sm font-bold tracking-tight text-white/90">{item.name}</h3>
+                  <button onClick={() => removeFromCart(item.id)} className="w-6 h-10 flex items-center justify-center bg-white/5 rounded-[2px] hover:bg-white/10 transition-colors">
+                     <X size={13} className="text-white/30" />
+                  </button>
+                </div>
+                <p className="text-sm font-bold mt-1 text-white/95">{item.price}</p>
+                <div className="mt-4 space-y-1 text-[9.5px] font-bold uppercase tracking-widest text-white/30 font-['Handjet',sans-serif]">
+                  <p>Beden: <span className="text-white/70">{item.size}</span></p>
+                </div>
+              </div>
             </motion.div>
           ))
         )}
+
       </div>
-      {cartItems.length > 0 && (
-        <motion.div variants={itemVariants} className="px-6 py-6 border-t border-white/10 bg-white/5">
-          <div className="flex justify-between text-white mb-6 items-center">
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/30">{t('cart.total')}</span>
-            <span className="text-2xl font-black tracking-tighter">₺{cartTotal.toFixed(2)}</span>
-          </div>
+
+      {/* Footer / Total */}
+      <div className="p-6 pt-2 border-t border-white/10">
+        <div className="flex justify-between items-baseline mb-1">
+          <span className="text-3xl font-bold tracking-tighter text-white">Toplam</span>
+          <span className="text-3xl font-bold tracking-tighter text-white">₺{cartTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
+        </div>
+        <p className="text-[10px] text-white/20 font-medium mb-8">Vergiler, indirimler ve kargo ödeme aşamasında hesaplanır.</p>
+
+        <div className="grid grid-cols-2 gap-3 pb-2">
           <button 
-            onClick={() => {
-              if(onClose) onClose();
-              navigate('/checkout');
-            }}
-            className="w-full bg-white text-black py-4 rounded-xl text-[12px] font-bold uppercase tracking-widest hover:bg-white/90 transition-all active:scale-[0.98] shadow-xl"
+            onClick={() => { if(onClose) onClose(); navigate('/cart'); }}
+            className="flex items-center justify-between px-4 py-5 bg-white text-black rounded-[2px] group transition-transform active:scale-[0.98]"
           >
-            {t('cart.checkout')}
+            <span className="text-[18px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">SEPETİ GÖR</span>
+            <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" strokeWidth={2.5} />
           </button>
-        </motion.div>
-      )}
+          <button 
+            onClick={() => { if(onClose) onClose(); navigate('/checkout'); }}
+            className="flex items-center justify-between px-4 py-5 bg-[#ddff34] text-black rounded-[2px] group transition-transform active:scale-[0.98]"
+          >
+            <span className="text-[18px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">ÖDEMEYE GEÇ</span>
+            <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" strokeWidth={2.5} />
+          </button>
+        </div>
+      </div>
     </motion.div>
   );
 };
