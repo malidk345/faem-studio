@@ -17,6 +17,7 @@ import { OrdersTab } from '../components/Admin/Tabs/OrdersTab';
 import { ProductEditTab } from '../components/Admin/Tabs/ProductEditTab';
 import { JournalTab } from '../components/Admin/Tabs/JournalTab';
 import { CmsTab } from '../components/Admin/Tabs/CmsTab';
+import { HeaderNotifications } from '../components/Admin/HeaderNotifications';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -69,7 +70,7 @@ export default function Admin() {
     <SidebarProvider>
       <AppSidebar collapsible="icon" />
       <SidebarInset className="bg-white">
-        <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b border-zinc-50 bg-white/80 backdrop-blur-md px-4 md:px-6 sticky top-0 z-30">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b-2 border-zinc-50 bg-white/80 backdrop-blur-md px-4 md:px-6 sticky top-0 z-30">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
                <SidebarTrigger className="w-9 h-9 rounded-xl hover:bg-zinc-100 transition-colors" />
@@ -80,10 +81,13 @@ export default function Admin() {
               <span className="text-xs font-bold text-zinc-900 capitalize">{isEditing ? 'Editing Asset' : activeTab.replace('-', ' ')}</span>
             </div>
           </div>
-          <SiteHeader />
+          <div className="flex items-center gap-2">
+            <HeaderNotifications orders={orders} />
+            <SiteHeader />
+          </div>
         </header>
 
-        <main className="flex-1 p-3 md:p-6 lg:p-8 overflow-x-hidden">
+        <main className="flex-1 p-3 sm:p-5 md:p-6 lg:p-8 overflow-x-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab + (isEditing ? '_editing' : '_listing')}
@@ -121,7 +125,7 @@ export default function Admin() {
               {activeTab === 'categories' && <CategoriesTab categories={categories} onAdd={addCategory} />}
               {activeTab === 'orders' && <OrdersTab orders={orders} onUpdateStatus={updateOrderStatus} />}
               {activeTab === 'journal' && <JournalTab />}
-              {activeTab === 'cms' && <CmsTab />}
+              {activeTab === 'cms' && <CmsTab categories={categories} />}
             </motion.div>
           </AnimatePresence>
         </main>

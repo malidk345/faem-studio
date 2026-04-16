@@ -126,35 +126,35 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
   };
 
   return (
-    <div className="max-w-4xl mx-auto pb-32 px-4 sm:px-0">
+    <div className="max-w-4xl mx-auto pb-20 px-3 sm:px-0">
       {/* ─── COMPACT STICKY ORCHESTRATOR ─── */}
-      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-zinc-100 -mx-4 px-4 py-4 sm:mx-0 sm:px-0 sm:rounded-t-3xl mb-8">
+      <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-xl border-b border-zinc-100 -mx-3 px-3 py-3 sm:mx-0 sm:px-0 sm:rounded-t-3xl mb-4 sm:mb-8 transition-all">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button onClick={onCancel} className="w-10 h-10 flex items-center justify-center hover:bg-zinc-100 rounded-2xl transition-all active:scale-90">
-              <ChevronLeft size={22} className="text-zinc-600" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button onClick={onCancel} className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-zinc-100 rounded-xl sm:rounded-2xl transition-all active:scale-90">
+              <ChevronLeft size={20} className="text-zinc-600" />
             </button>
             <div className="flex flex-col">
-              <h2 className="text-base font-black tracking-tight">{product ? 'Edit Asset' : 'New Curation'}</h2>
-              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest leading-none">Catalog Management</span>
+              <h2 className="text-sm sm:text-base font-black tracking-tight leading-none mb-0.5">{product ? 'Edit Asset' : 'New Curation'}</h2>
+              <span className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest leading-none">Studio Catalog</span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {product?.id && onDelete && (
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => onDelete(product.id)}
-                className="w-10 h-10 text-rose-500 hover:bg-rose-50 rounded-2xl transition-all active:scale-95"
+                className="w-9 h-9 sm:w-10 sm:h-10 text-rose-500 hover:bg-rose-50 rounded-xl sm:rounded-2xl transition-all active:scale-95"
               >
-                <Trash2 size={18} />
+                <Trash2 size={16} />
               </Button>
             )}
             <Button 
               onClick={handleSubmit} 
-              className="bg-black text-white hover:bg-zinc-800 h-12 px-8 rounded-2xl font-black text-[12px] uppercase tracking-[0.2em] shadow-2xl shadow-black/10 active:scale-95 transition-all"
+              className="bg-black text-white hover:bg-zinc-800 h-10 sm:h-12 px-5 sm:px-8 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-[12px] uppercase tracking-[0.15em] sm:tracking-[0.2em] shadow-xl shadow-black/10 active:scale-95 transition-all"
             >
-              <Save size={14} className="mr-2" /> {product ? 'Update' : 'Publish'}
+              <Save size={13} className="mr-1.5 sm:mr-2" /> {product ? 'Update' : 'Publish'}
             </Button>
           </div>
         </div>
@@ -164,34 +164,34 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
         
         {/* LEFT: MEDIA ASSETS */}
         <div className="lg:col-span-5 space-y-8">
-          <section className="space-y-4">
+          <section className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between px-1">
-              <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">Master Source</Label>
-              {formData.image_url && <CheckCircle2 size={14} className="text-emerald-500" />}
+              <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Master Source</Label>
+              {formData.image_url && <CheckCircle2 size={12} className="text-emerald-500" />}
             </div>
             
             <motion.div 
               whileHover={{ scale: 0.99 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => fileInputRef.current?.click()}
-              className="aspect-[4/5] bg-zinc-50 rounded-[2.5rem] border-2 border-dashed border-zinc-200 flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer hover:border-black/20 hover:bg-zinc-100/50 transition-all duration-500"
+              className="aspect-[4/5] bg-zinc-50 rounded-[2rem] sm:rounded-[2.5rem] border-2 border-dashed border-zinc-200 flex flex-col items-center justify-center relative overflow-hidden group cursor-pointer hover:border-black/20 hover:bg-zinc-100/50 transition-all duration-500"
             >
               {formData.image_url ? (
                 <>
                   <img src={formData.image_url} className="w-full h-full object-cover" alt="Primary" />
-                  <div className="absolute inset-x-0 bottom-0 bg-black/60 backdrop-blur-sm p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-center gap-2 text-white">
-                    <ImageIcon size={14} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Swap Master</span>
+                  <div className="absolute inset-x-0 bottom-0 bg-black/60 backdrop-blur-sm p-3 sm:p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-center gap-2 text-white">
+                    <ImageIcon size={12} />
+                    <span className="text-[9px] font-black uppercase tracking-widest">Swap Master</span>
                   </div>
                 </>
               ) : (
-                <div className="flex flex-col items-center gap-5 text-center p-10">
-                  <div className="w-16 h-16 rounded-[1.5rem] bg-white shadow-xl shadow-black/[0.03] flex items-center justify-center text-zinc-400 group-hover:text-black transition-all duration-500">
-                    {uploading === 'primary' ? <Loader2 className="animate-spin text-black" size={24} /> : <Upload size={28} />}
+                <div className="flex flex-col items-center gap-3 sm:gap-5 text-center p-6 sm:p-10">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl sm:rounded-[1.5rem] bg-white shadow-xl shadow-black/[0.03] flex items-center justify-center text-zinc-400 group-hover:text-black transition-all duration-500">
+                    {uploading === 'primary' ? <Loader2 className="animate-spin text-black" size={20} /> : <Upload size={22} />}
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-xs font-black uppercase tracking-[0.2em]">Upload Primary View</p>
-                    <p className="text-[10px] text-zinc-400 font-medium leading-relaxed">Touch to select or take photo<br/>High resolution recommended</p>
+                  <div className="space-y-1">
+                    <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.2em]">Upload Primary</p>
+                    <p className="text-[9px] text-zinc-400 font-medium leading-tight">Touch to select view</p>
                   </div>
                 </div>
               )}
@@ -252,58 +252,58 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
         </div>
 
         {/* RIGHT: CURATION DETAILS */}
-        <div className="lg:col-span-7 space-y-8">
-          <div className="bg-white lg:border border-zinc-100 lg:rounded-3xl lg:p-8 space-y-8">
+        <div className="lg:col-span-7 space-y-6 sm:space-y-8">
+          <div className="bg-white lg:border border-zinc-100 lg:rounded-3xl p-0 lg:p-8 space-y-6 sm:space-y-8">
             
             {/* Core Identification */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Official Name</Label>
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="col-span-2 md:col-span-1 space-y-2">
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Name</Label>
                 <Input 
-                  placeholder="e.g., ARCHIVE TEE v1"
+                  placeholder="e.g., ARCHIVE TEE"
                   value={formData.name} 
                   onChange={(e) => setFormData((prev: any) => ({ ...prev, name: e.target.value }))}
-                  className="h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-bold text-sm transition-all" 
+                  className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-bold text-xs sm:text-sm transition-all shadow-none" 
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Valuation (₺)</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Valuation (₺)</Label>
                 <div className="relative">
                   <Input 
                     type="number"
-                    placeholder="0.00"
+                    placeholder="0"
                     value={formData.price} 
                     onChange={(e) => setFormData((prev: any) => ({ ...prev, price: e.target.value }))}
-                    className="h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-black text-sm pl-10 transition-all" 
+                    className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-black text-xs sm:text-sm pl-8 sm:pl-10 transition-all shadow-none" 
                   />
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-zinc-400 text-sm italic">₺</span>
+                  <span className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 font-black text-zinc-400 text-xs sm:text-sm italic">₺</span>
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-rose-400 ml-1">Strategic Discount (₺)</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-rose-400 ml-1">Discount (₺)</Label>
                 <div className="relative">
                   <Input 
                     type="number"
-                    placeholder="Optional"
+                    placeholder="Opt"
                     value={formData.discount_price} 
                     onChange={(e) => setFormData((prev: any) => ({ ...prev, discount_price: e.target.value }))}
-                    className="h-12 bg-rose-50/20 border-zinc-100 focus:border-rose-500 rounded-xl font-black text-sm pl-10 transition-all text-rose-600" 
+                    className="h-11 sm:h-12 bg-rose-50/20 border-zinc-100 focus:border-rose-500 rounded-xl font-black text-xs sm:text-sm pl-8 sm:pl-10 transition-all text-rose-600 shadow-none" 
                   />
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-rose-400/50 text-sm italic">₺</span>
+                  <span className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 font-black text-rose-400/50 text-xs sm:text-sm italic">₺</span>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Sector</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Sector</Label>
                 <Select value={formData.category} onValueChange={(val) => setFormData((prev: any) => ({ ...prev, category: val }))}>
-                  <SelectTrigger className="h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl text-xs font-black uppercase tracking-wider">
-                    <SelectValue placeholder="SELECT CATEGORY" />
+                  <SelectTrigger className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-none">
+                    <SelectValue placeholder="SELECT" />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
                     {categories.map((cat, i) => (
-                      <SelectItem key={i} value={cat.name || cat} className="rounded-xl font-bold py-3">
+                      <SelectItem key={i} value={cat.name || cat} className="rounded-xl font-bold py-2 sm:py-3 text-xs">
                         {cat.name || cat}
                       </SelectItem>
                     ))}
@@ -311,12 +311,12 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Inventory Level</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Inventory</Label>
                 <Input 
                   type="number" 
                   value={formData.stock_count} 
                   onChange={(e) => setFormData((prev: any) => ({ ...prev, stock_count: parseInt(e.target.value) }))}
-                  className="h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-black text-sm transition-all" 
+                  className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-black text-xs sm:text-sm transition-all shadow-none" 
                 />
               </div>
             </div>
@@ -332,28 +332,28 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
             </div>
 
             {/* Peculiarities (Features) */}
-            <div className="space-y-4 pt-4 border-t border-zinc-50">
+            <div className="space-y-3 sm:space-y-4 pt-4 border-t border-zinc-50">
               <div className="flex items-center justify-between">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Peculiarities</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Peculiarities</Label>
                 <span className="text-[9px] font-bold text-zinc-300 italic">{formData.features.length}/8 Max</span>
               </div>
-              <div className="flex gap-2 p-1.5 bg-zinc-50 rounded-2xl border border-zinc-100 focus-within:border-black transition-colors">
+              <div className="flex gap-2 p-1 bg-zinc-50 rounded-xl sm:rounded-2xl border border-zinc-100 focus-within:border-black transition-colors">
                 <Input 
-                  placeholder="e.g., Premium Heavyweight Cotton"
+                  placeholder="Feature..."
                   value={newFeature} 
                   onChange={(e) => setNewFeature(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
-                  className="border-none bg-transparent h-10 shadow-none focus-visible:ring-0 font-bold text-xs" 
+                  className="border-none bg-transparent h-9 sm:h-10 shadow-none focus-visible:ring-0 font-bold text-xs" 
                 />
                 <Button 
                   onClick={addFeature} 
-                  className="bg-black text-white w-10 h-10 p-0 rounded-xl shadow-lg shadow-black/10 active:scale-90 transition-all"
+                  className="bg-black text-white w-9 h-9 sm:w-10 sm:h-10 p-0 rounded-lg sm:rounded-xl shadow-lg shadow-black/10 active:scale-90 transition-all"
                 >
-                  <Plus size={18} />
+                  <Plus size={16} />
                 </Button>
               </div>
               
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 <AnimatePresence>
                   {formData.features.map((f: string, i: number) => (
                     <motion.div 
@@ -361,15 +361,15 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      className="group flex items-center gap-2 bg-zinc-50 hover:bg-zinc-900 hover:text-white border border-zinc-100 px-3 py-2 rounded-xl transition-all duration-300"
+                      className="group flex items-center gap-1.5 bg-zinc-50 hover:bg-zinc-900 hover:text-white border border-zinc-100 px-2.5 py-1.5 rounded-lg sm:rounded-xl transition-all duration-300"
                     >
-                      <CheckCircle2 size={12} className="text-zinc-300 group-hover:text-white transition-colors" />
-                      <span className="text-[10px] font-black uppercase tracking-wide">{f}</span>
+                      <CheckCircle2 size={10} className="text-zinc-300 group-hover:text-white transition-colors" />
+                      <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wide">{f}</span>
                       <button 
                         onClick={() => setFormData((prev: any) => ({ ...prev, features: prev.features.filter((_: any, idx: number) => idx !== i) }))}
-                        className="ml-1 opacity-40 hover:opacity-100 transition-opacity"
+                        className="ml-0.5 opacity-40 hover:opacity-100 transition-opacity"
                       >
-                        <X size={12} />
+                        <X size={10} />
                       </button>
                     </motion.div>
                   ))}

@@ -91,14 +91,15 @@ export function ProductsTab({ products, onAdd, onEdit, onDelete }: ProductsTabPr
         </div>
         <Button 
           onClick={onAdd}
-          className="bg-black text-white hover:bg-zinc-800 rounded-xl px-4 h-10 font-bold flex items-center gap-2 text-[10px] uppercase tracking-widest shadow-xl shadow-black/10"
+          className="bg-black text-white hover:bg-zinc-800 rounded-xl px-3 sm:px-4 h-9 sm:h-10 font-bold flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] uppercase tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all"
         >
-          <Plus size={14} />
-          Yeni Ürün Ekle
+          <Plus size={13} strokeWidth={3} />
+          <span className="hidden xs:inline">Yeni Ürün Ekle</span>
+          <span className="xs:hidden">Ekle</span>
         </Button>
       </div>
 
-      <div className="bg-white border rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white border-y sm:border rounded-none sm:rounded-2xl shadow-sm overflow-hidden -mx-3 sm:mx-0">
          <DataTable columns={columns} data={products} searchKey="name" />
       </div>
 
@@ -136,15 +137,15 @@ function InventoryInsightCard({ title, value, desc, color }: any) {
   };
   
   return (
-    <div className="p-4 bg-white border rounded-2xl flex flex-col gap-1">
-       <span className="text-[8px] font-black uppercase tracking-widest text-zinc-400">{title}</span>
-       <div className="flex items-baseline gap-2">
-          <span className="text-xl font-black text-zinc-900">{value}</span>
-          <span className={`px-1.5 py-0.5 rounded-lg text-[8px] font-black uppercase ${colors[color]}`}>
-            {color === 'emerald' ? 'Optimal' : color === 'rose' ? 'Kritik' : 'Sistem'}
+    <div className="p-3 sm:p-4 bg-white border rounded-xl sm:rounded-2xl flex flex-col gap-0.5 sm:gap-1">
+       <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-widest text-zinc-400">{title}</span>
+       <div className="flex items-baseline gap-1.5 sm:gap-2">
+          <span className="text-lg sm:text-xl font-black text-zinc-900 leading-none">{value}</span>
+          <span className={`px-1 sm:px-1.5 py-0.5 rounded-md sm:rounded-lg text-[7px] sm:text-[8px] font-black uppercase ${colors[color]}`}>
+            {color === 'emerald' ? 'Opt' : color === 'rose' ? 'Krit' : 'Sist'}
           </span>
        </div>
-       <p className="text-[9px] text-zinc-400 font-bold leading-none">{desc}</p>
+       <p className="text-[8px] sm:text-[9px] text-zinc-400 font-bold leading-none mt-0.5">{desc}</p>
     </div>
   );
 }
