@@ -109,15 +109,15 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
 
   return (
     <section className="flex flex-col gap-10">
-      <div className="flex items-end justify-between pb-6 border-b border-white/10">
+      <div className="flex items-end justify-between pb-6 border-b border-zinc-100">
         <div className="flex flex-col gap-2">
-          <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-foreground">{t('review.verified')}</p>
+          <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-zinc-900">{t('review.verified')}</p>
           <div className="flex items-center gap-3">
             <div className="flex gap-0.5">
               {[1, 2, 3, 4, 5].map(i => <Star key={i} size={12} className="fill-amber-400 text-amber-400" />)}
             </div>
-            <span className="text-foreground text-[14px] font-black tracking-tight">4.9</span>
-            <span className="text-[13px] text-zinc-500">/ 5.0</span>
+            <span className="text-zinc-900 text-[14px] font-black tracking-tight">4.9</span>
+            <span className="text-[13px] text-zinc-400">/ 5.0</span>
           </div>
         </div>
         <button
@@ -129,11 +129,10 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
               setErrorMsg('');
             }
           }}
-          className={`text-[11px] font-bold uppercase tracking-[0.2em] px-5 py-2.5 rounded-xl transition-all border ${
-            isWriting 
-              ? 'bg-foreground text-background border-foreground' 
-              : 'bg-white/5 text-zinc-500 border-white/5 hover:text-foreground hover:border-white/20'
-          }`}
+          className={`text-[11px] font-bold uppercase tracking-[0.2em] px-5 py-2.5 rounded-xl transition-all border ${isWriting
+              ? 'bg-zinc-900 text-white border-zinc-900'
+              : 'bg-white text-zinc-500 border-zinc-200 hover:text-zinc-900 hover:border-zinc-300'
+            }`}
         >
           <span>{isWriting ? 'İptal' : t('review.write')}</span>
         </button>
@@ -175,12 +174,12 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                       placeholder={t('review.placeholder')}
                       value={comment}
                       onChange={(e) => setComment(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-[14px] leading-relaxed resize-none h-28 focus:outline-none focus:border-white/30 transition-colors text-foreground"
+                      className="w-full bg-white border border-zinc-200 rounded-xl p-4 text-[14px] leading-relaxed resize-none h-28 focus:outline-none focus:border-zinc-400 transition-colors"
                     />
                     {errorMsg && <p className="text-rose-500 text-xs mt-2 font-medium">{errorMsg}</p>}
                   </div>
 
-                  <button type="submit" className="self-end bg-foreground text-background px-7 py-3 rounded-xl text-[13px] font-bold hover:bg-zinc-200 transition-colors">
+                  <button type="submit" className="self-end bg-zinc-900 text-white px-7 py-3 rounded-xl text-[13px] font-bold hover:bg-zinc-800 transition-colors">
                     {t('review.submit')}
                   </button>
                 </form>
@@ -193,9 +192,9 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
       <div className="flex flex-col gap-3">
         {/* Count Header */}
         <div className="px-1 mb-2">
-           <span className="text-[11px] font-black uppercase tracking-widest text-black/30">
-             {localReviews.length} {t('search.results')}
-           </span>
+          <span className="text-[11px] font-black uppercase tracking-widest text-black/30">
+            {localReviews.length} {t('search.results')}
+          </span>
         </div>
 
         {localReviews.map((review, i) => (
@@ -207,31 +206,31 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
             <div className="flex justify-between items-start">
               <div className="flex flex-col gap-1.5">
                 <div className="flex items-center gap-2">
-                   <span className="text-foreground text-sm font-black tracking-tight uppercase">{review.user}</span>
-                   {(review as any).isVerified && (
-                     <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                       {t('review.verified')}
-                     </span>
-                   )}
+                  <span className="text-zinc-900 text-sm font-black tracking-tight uppercase">{review.user}</span>
+                  {(review as any).isVerified && (
+                    <span className="text-[9px] uppercase tracking-[0.2em] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      {t('review.verified')}
+                    </span>
+                  )}
                 </div>
                 <div className="flex gap-0.5">
                   {Array.from({ length: 5 }).map((_, j) => (
-                    <Star key={j} size={10} className={j < review.rating ? 'fill-amber-400 text-amber-400' : 'text-white/10 fill-transparent'} />
+                    <Star key={j} size={10} className={j < review.rating ? 'fill-amber-400 text-amber-400' : 'text-zinc-200 fill-transparent'} />
                   ))}
                 </div>
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">{review.date}</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">{review.date}</span>
             </div>
 
-            <p className="text-sm leading-relaxed font-medium text-zinc-400">
+            <p className="text-sm leading-relaxed font-medium text-zinc-600">
               "{review.comment}"
             </p>
 
-            <div className="flex gap-6 pt-4 mt-2 border-t border-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold transition-colors text-zinc-500 hover:text-foreground">
+            <div className="flex gap-6 pt-4 mt-2 border-t border-zinc-100 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold transition-colors text-zinc-400 hover:text-zinc-900">
                 <Heart size={12} /> {t('review.respect')}
               </button>
-              <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold transition-colors text-zinc-500 hover:text-foreground" onClick={() => setIsWriting(true)}>
+              <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold transition-colors text-zinc-400 hover:text-zinc-900" onClick={() => setIsWriting(true)}>
                 <MessageCircle size={12} /> {t('review.reply')}
               </button>
             </div>

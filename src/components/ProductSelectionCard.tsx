@@ -75,7 +75,7 @@ export default function ProductSelectionCard({
         initial={false}
         animate={{
           height: collapsed ? 60 : 'auto',
-          borderRadius: collapsed ? 6 : 8, // Synced with Header (6px sharp, 8px expanded)
+          borderRadius: 8,
         }}
         transition={springTransition}
         className="w-full glass-nav overflow-hidden pointer-events-auto flex flex-col origin-bottom border border-white/10 shadow-2xl"

@@ -39,7 +39,7 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
           initial={false}
           animate={{
             height: activePanel ? 'auto' : 52,
-            borderRadius: activePanel ? 8 : 6, // Restored to 6px sharp corners as in 98e3732
+            borderRadius: 8,
           }}
           transition={springTransition}
           className="w-full max-w-5xl glass-nav overflow-hidden pointer-events-auto flex flex-col origin-top border border-white/5"
