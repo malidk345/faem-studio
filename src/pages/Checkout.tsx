@@ -19,6 +19,12 @@ export default function Checkout() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedShipping, setSelectedShipping] = useState<string>('0');
+  
+  // Discount state
+  const [discountCode, setDiscountCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState<{ code: string, percent: number } | null>(null);
+  const [discountError, setDiscountError] = useState<string | null>(null);
+  const [validatingDiscount, setValidatingDiscount] = useState(false);
 
   // Form state
   const [email, setEmail] = useState('');
@@ -48,17 +54,46 @@ export default function Checkout() {
 
   // Price calculations
   const prices = useMemo(() => {
-    // Standardize total calculation by removing currency symbol and converting to float
     const rawTotal = parseFloat(cartTotal.replace(/[^\d.]/g, '')) || 0;
+    
+    // Apply discount
+    const discountAmount = appliedDiscount ? (rawTotal * (appliedDiscount.percent / 100)) : 0;
+    const subtotalAfterDiscount = rawTotal - discountAmount;
+
     const shipping = selectedShipping === '1' ? 45 : 0; // Express 45 TL
-    const tax = rawTotal * 0.20; // 20% VAT included approach
+    const tax = subtotalAfterDiscount * 0.20; // 20% VAT included approach
+    
     return {
       subtotal: rawTotal - tax,
+      discount: discountAmount,
       tax,
       shipping,
-      total: rawTotal + shipping
+      total: subtotalAfterDiscount + shipping
     };
-  }, [cartTotal, selectedShipping]);
+  }, [cartTotal, selectedShipping, appliedDiscount]);
+
+  const handleApplyDiscount = async () => {
+    if (!discountCode.trim()) return;
+    setValidatingDiscount(true);
+    setDiscountError(null);
+
+    const { data, error } = await supabase
+      .from('promotions')
+      .select('*')
+      .eq('code', discountCode.trim().toUpperCase())
+      .eq('is_active', true)
+      .single();
+
+    setValidatingDiscount(false);
+
+    if (error || !data) {
+      setDiscountError("Geçersiz veya süresi dolmuş kod.");
+      setAppliedDiscount(null);
+    } else {
+      setAppliedDiscount({ code: data.code, percent: data.discount_percent });
+      setDiscountCode('');
+    }
+  };
 
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,7 +136,8 @@ export default function Checkout() {
         },
         items: cartItems,
         payment_provider: 'iyzico',
-        payment_status: 'pending'
+        payment_status: 'pending',
+        applied_discount: appliedDiscount ? `${appliedDiscount.code} (%${appliedDiscount.percent})` : null
       };
 
       const { data: newOrder, error: dbError } = await supabase
@@ -315,6 +351,12 @@ export default function Checkout() {
                 <span>Ara Toplam</span>
                 <span>₺{prices.subtotal.toFixed(2)}</span>
              </div>
+             {appliedDiscount && (
+               <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-emerald-500">
+                  <span>İndirim ({appliedDiscount.code})</span>
+                  <span>-₺{prices.discount.toFixed(2)}</span>
+               </div>
+             )}
              <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-zinc-400">
                 <span>KDV (20%)</span>
                 <span>₺{prices.tax.toFixed(2)}</span>
@@ -330,6 +372,37 @@ export default function Checkout() {
                 <span className="text-[12px] font-black uppercase tracking-[0.2em]">Toplam</span>
                 <span className="text-2xl font-black tracking-tighter leading-none">₺{prices.total.toFixed(2)}</span>
              </div>
+          </div>
+
+          <div className="mt-8 border-t border-zinc-100 pt-6">
+             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3">İndirim Kodu</h4>
+             {appliedDiscount ? (
+               <div className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
+                 <div className="flex items-center gap-2">
+                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
+                   <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest">{appliedDiscount.code} (%{appliedDiscount.percent}) UYGULANDI</span>
+                 </div>
+                 <button onClick={() => setAppliedDiscount(null)} className="text-[10px] text-emerald-600 font-bold uppercase hover:text-emerald-800">Kaldır</button>
+               </div>
+             ) : (
+               <div className="flex gap-2">
+                 <input 
+                   type="text" 
+                   value={discountCode}
+                   onChange={e => setDiscountCode(e.target.value)}
+                   placeholder="Kodunuzu Girin" 
+                   className="w-full h-12 px-4 bg-white border border-zinc-200 rounded-xl focus:border-black outline-none font-bold text-sm uppercase" 
+                 />
+                 <button 
+                   onClick={handleApplyDiscount}
+                   disabled={validatingDiscount || !discountCode.trim()}
+                   className="h-12 px-6 bg-black text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-800 transition-all disabled:opacity-50"
+                 >
+                   {validatingDiscount ? '...' : 'Uygula'}
+                 </button>
+               </div>
+             )}
+             {discountError && <p className="text-[10px] font-bold text-rose-500 mt-2 uppercase tracking-widest">{discountError}</p>}
           </div>
         </div>
       </div>

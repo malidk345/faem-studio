@@ -17,38 +17,29 @@ export default function Home() {
 
   const [activeSlide, setActiveSlide] = useState(0);
   const [products, setProducts] = useState<any[]>([]);
+  const [slides, setSlides] = useState<any[]>([]);
+  const [loadingSlides, setLoadingSlides] = useState(true);
 
-  const HERO_SLIDES = [
+  const fallbackSlides = [
     {
       id: 1,
       tag: 'ARCHIVE_001 // CORE',
       headline: t('home.hero_1_title').split('\n'),
       sub: t('home.hero_1_sub'),
       image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600&auto=format&fit=crop',
-    },
-    {
-      id: 2,
-      tag: 'ARCHIVE_002 // ESSENTIAL',
-      headline: t('home.hero_2_title').split('\n'),
-      sub: t('home.hero_2_sub'),
-      image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1600&auto=format&fit=crop',
-    },
-    {
-      id: 3,
-      tag: 'ARCHIVE_003 // TECH',
-      headline: t('home.hero_3_title').split('\n'),
-      sub: t('home.hero_3_sub'),
-      image: 'https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?q=80&w=1600&auto=format&fit=crop',
-    },
+      link: '/shop'
+    }
   ];
 
-  const slide = HERO_SLIDES[activeSlide];
+  const currentSlides = slides.length > 0 ? slides : fallbackSlides;
+  const slide = currentSlides[activeSlide] || fallbackSlides[0];
 
   useEffect(() => {
-    const fetchFeatured = async () => {
-      const { data } = await supabase.from('products').select('*').limit(4);
-      if (data) {
-        setProducts(data.map(p => ({
+    const fetchContent = async () => {
+      // Fetch Products
+      const { data: pData } = await supabase.from('products').select('*').limit(4);
+      if (pData) {
+        setProducts(pData.map(p => ({
           id: p.id,
           name: p.name,
           price: p.price,
@@ -58,15 +49,37 @@ export default function Home() {
           discount_price: p.discount_price
         })));
       }
+
+      // Fetch Hero Slides from CMS
+      const { data: sData } = await supabase
+        .from('site_content')
+        .select('*')
+        .eq('is_active', true)
+        .order('priority', { ascending: true });
+        
+      if (sData && sData.length > 0) {
+        setSlides(sData.map(s => ({
+          id: s.id,
+          tag: s.subtitle || 'FAEM STUDIO',
+          headline: (s.title || '').split('\n'),
+          sub: s.subtitle,
+          image: s.image_url,
+          link: s.button_link === 'all' || !s.button_link ? '/shop' : `/shop?category=${s.button_link}`,
+          buttonText: s.button_text || 'ARŞİVİ KEŞFET'
+        })));
+      }
+      setLoadingSlides(false);
     };
-    fetchFeatured();
+    fetchContent();
 
     const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
+      if (currentSlides.length > 1) {
+        setActiveSlide((prev) => (prev + 1) % currentSlides.length);
+      }
     }, 6000);
 
     return () => clearInterval(interval);
-  }, [HERO_SLIDES.length]);
+  }, [currentSlides.length]);
 
   return (
     <div className="bg-white text-foreground transition-colors duration-500 overflow-x-hidden">
@@ -122,11 +135,11 @@ export default function Home() {
 
               <div className="flex justify-center mt-12">
                 <Link 
-                  to="/shop" 
+                  to={slide.link} 
                   className="group relative overflow-hidden bg-white/95 backdrop-blur-xl text-black px-12 py-5 rounded-[2px] transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-2xl"
                 >
                   <span className="relative z-10 flex items-center gap-6">
-                    <span className="text-[20px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">ARŞİVİ KEŞFET</span>
+                    <span className="text-[20px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">{slide.buttonText || 'ARŞİVİ KEŞFET'}</span>
                     <ArrowUpRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform opacity-40 group-hover:opacity-100" />
                   </span>
                 </Link>
@@ -134,9 +147,8 @@ export default function Home() {
             </motion.div>
           </AnimatePresence>
 
-          {/* Minimal Vertical Slide Indicators */}
           <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-8 hidden md:flex">
-            {HERO_SLIDES.map((_, i) => (
+            {currentSlides.length > 1 && currentSlides.map((_, i) => (
               <button 
                 key={i} 
                 onClick={() => setActiveSlide(i)} 
