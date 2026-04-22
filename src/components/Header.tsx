@@ -35,14 +35,14 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
       <header className={`${positionClass} top-4 left-4 right-4 sm:top-6 sm:left-6 sm:right-6 flex justify-center z-50 pointer-events-none`}>
         {/* Expandable Full-Width Pill with Night Taupe glassmorphism */}
         <motion.div
-          layout
+          layout="size"
           initial={false}
           animate={{
             height: activePanel ? 'auto' : 52,
           }}
           transition={springTransition}
           style={{ borderRadius: 8 }}
-          className="w-full max-w-5xl glass-nav overflow-hidden pointer-events-auto flex flex-col origin-top border border-white/5"
+          className="w-full max-w-5xl glass-nav overflow-hidden pointer-events-auto flex flex-col origin-top border border-white/10"
         >
           {/* Top Bar (Logo + Icons) */}
           <motion.div layout="position" className="flex items-center justify-between h-[52px] px-2 shrink-0 w-full">
@@ -103,10 +103,10 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
                     className="flex items-center justify-end h-full pr-1 gap-3"
                   >
                     <span className="font-normal uppercase tracking-widest text-[11px] opacity-40 text-white font-['Handjet',sans-serif]">
-                        {activePanel === 'cart' ? 'SEPET' : 
-                         activePanel === 'menu' ? 'MENÜ' : 
-                         activePanel === 'search' ? 'ARA' : 
-                         activePanel === 'profile' ? 'PROFİL' : ''}
+                      {activePanel === 'cart' ? 'SEPET' :
+                        activePanel === 'menu' ? 'MENÜ' :
+                          activePanel === 'search' ? 'ARA' :
+                            activePanel === 'profile' ? 'PROFİL' : ''}
                     </span>
                     <button onClick={() => setActivePanel(null)} className="w-[38px] h-[38px] rounded-xl flex items-center justify-center glass-nav-btn text-white">
                       <X size={18} strokeWidth={2.5} />

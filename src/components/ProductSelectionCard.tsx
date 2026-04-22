@@ -71,7 +71,7 @@ export default function ProductSelectionCard({
 
       {/* ── Main Detail Card (Now Synced with Header Frame) ── */}
       <motion.div
-        layout
+        layout="size"
         initial={false}
         animate={{
           height: collapsed ? 60 : 'auto',
