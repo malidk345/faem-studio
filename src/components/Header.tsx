@@ -27,7 +27,7 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setActivePanel(null)}
-            className="fixed inset-0 z-40 bg-black/[0.05] backdrop-blur-[1px]"
+            className="fixed inset-0 z-40 bg-black/[0.02]"
           />
         )}
       </AnimatePresence>

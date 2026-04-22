@@ -125,11 +125,10 @@ function ImageGallery({ images, productName }: GalleryProps) {
             <button
               key={img.id}
               onClick={() => scrollTo(i)}
-              className={`flex-shrink-0 rounded-xl overflow-hidden transition-all duration-300 ${
-                i === activeIndex
+              className={`flex-shrink-0 rounded-xl overflow-hidden transition-all duration-300 ${i === activeIndex
                   ? 'ring-2 ring-zinc-900 ring-offset-2 opacity-100 scale-105'
                   : 'ring-1 ring-zinc-200 opacity-50 hover:opacity-100 hover:ring-zinc-300'
-              }`}
+                }`}
               style={{ width: 56, aspectRatio: '3/4' }}
               aria-label={`View image ${i + 1}`}
             >
@@ -153,7 +152,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const [product, setProduct] = useState<any>(null);
   const { t } = useLanguage();
-  
+
   useSEO({
     title: product?.name ? `${product.name} | Faem Studio` : t('product.details'),
     description: product?.description || t('shop.desc')
@@ -172,7 +171,7 @@ export default function ProductDetail() {
     window.scrollTo(0, 0);
     const currentId = id || '';
     console.log("🔍 [ProductDetail] Initializing with ID:", currentId);
-    
+
     if (!currentId) {
       console.warn("❌ [ProductDetail] No ID provided in URL.");
       setLoading(false);
@@ -184,7 +183,7 @@ export default function ProductDetail() {
       setLoading(true);
       try {
         const { data, error: fetchError } = await supabase.from('products').select('*').eq('id', currentId).single();
-        
+
         if (fetchError) {
           console.error("📋 [ProductDetail] Supabase Error:", fetchError);
           setProduct({ error: `Connection Error: ${fetchError.message} (${fetchError.details || 'No details'})` });
@@ -234,7 +233,7 @@ export default function ProductDetail() {
         setLoading(false);
       }
     };
-    
+
     const fetchWishlistStatus = async () => {
       if (!user || !id) return;
       try {
@@ -286,12 +285,12 @@ export default function ProductDetail() {
     return (
       <div className="h-screen flex flex-col items-center justify-center gap-6 p-8 text-center bg-background">
         <div className="w-14 h-14 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400 border border-neutral-200">
-           <span className="text-lg font-bold">!</span>
+          <span className="text-lg font-bold">!</span>
         </div>
         <div className="space-y-2">
           <h2 className="text-xl font-bold tracking-tight text-neutral-800">{t('product.access_restricted')}</h2>
           <p className="text-neutral-400 max-w-sm text-[13px] leading-relaxed">
-             {product?.error || t('product.error_desc')}
+            {product?.error || t('product.error_desc')}
           </p>
         </div>
         <div className="flex flex-col gap-3 w-full max-w-[220px]">
@@ -310,7 +309,7 @@ export default function ProductDetail() {
     try {
       e.stopPropagation();
       if (!product) return;
-      
+
       addToCart({
         productId: product.id,
         name: product.name,
@@ -340,7 +339,7 @@ export default function ProductDetail() {
 
       {/* ─── GALLERY + INFO LAYOUT ─── */}
       <div className="max-w-[1100px] mx-auto px-4 md:px-10 pt-24 md:pt-28 pb-12">
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
 
           {/* LEFT: Image Gallery */}
@@ -366,12 +365,12 @@ export default function ProductDetail() {
             >
               {/* Category */}
               <div className="flex items-center gap-3 mb-2">
-                 <span className="px-3 py-1 bg-zinc-100 text-zinc-600 rounded-lg text-[10px] font-bold tracking-widest uppercase">
-                    {product.category}
-                 </span>
-                 <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">
-                    REF. {product.id?.substring(0,6).toUpperCase()}
-                 </span>
+                <span className="px-3 py-1 bg-zinc-100 text-zinc-600 rounded-lg text-[10px] font-bold tracking-widest uppercase">
+                  {product.category}
+                </span>
+                <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">
+                  REF. {product.id?.substring(0, 6).toUpperCase()}
+                </span>
               </div>
 
               {/* Name + Price */}
@@ -399,14 +398,14 @@ export default function ProductDetail() {
 
               {/* Utility Grid - Refined Layout */}
               <div className="grid grid-cols-4 gap-2 mt-4">
-                {[ 
-                   { icon: Heart, label: 'Kaydet', action: toggleWishlist, loading: wishlistLoading, active: isWishlisted }, 
-                   { icon: Share2, label: 'Paylaş', action: () => navigator.clipboard.writeText(window.location.href) }, 
-                   { icon: MessageSquare, label: 'Yorum', action: () => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' }) }, 
-                   { icon: Ruler, label: 'Beden' } 
+                {[
+                  { icon: Heart, label: 'Kaydet', action: toggleWishlist, loading: wishlistLoading, active: isWishlisted },
+                  { icon: Share2, label: 'Paylaş', action: () => navigator.clipboard.writeText(window.location.href) },
+                  { icon: MessageSquare, label: 'Yorum', action: () => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' }) },
+                  { icon: Ruler, label: 'Beden' }
                 ].map((item, idx) => (
-                  <button 
-                    key={idx} 
+                  <button
+                    key={idx}
                     onClick={item.action}
                     disabled={item.loading}
                     className={`h-14 flex flex-col items-center justify-center gap-1.5 rounded-2xl transition-all border
