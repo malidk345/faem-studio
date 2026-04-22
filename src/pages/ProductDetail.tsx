@@ -119,18 +119,18 @@ function ImageGallery({ images, productName }: GalleryProps) {
       {images.length > 1 && (
         <div
           ref={thumbsRef}
-          className="flex items-center justify-center gap-2 overflow-x-auto hide-scrollbar py-1 px-2"
+          className="flex items-center justify-center gap-3 overflow-x-auto hide-scrollbar py-3 px-2"
         >
           {images.map((img, i) => (
             <button
               key={img.id}
               onClick={() => scrollTo(i)}
-              className={`flex-shrink-0 rounded-lg overflow-hidden border transition-all duration-300 ${
+              className={`flex-shrink-0 rounded-xl overflow-hidden transition-all duration-300 ${
                 i === activeIndex
-                  ? 'border-neutral-800 opacity-100 scale-105'
-                  : 'border-transparent opacity-30 hover:opacity-50'
+                  ? 'ring-2 ring-zinc-900 ring-offset-2 opacity-100 scale-105'
+                  : 'ring-1 ring-zinc-200 opacity-50 hover:opacity-100 hover:ring-zinc-300'
               }`}
-              style={{ width: 48, aspectRatio: '3/4' }}
+              style={{ width: 56, aspectRatio: '3/4' }}
               aria-label={`View image ${i + 1}`}
             >
               <img
@@ -365,27 +365,32 @@ export default function ProductDetail() {
               className="flex flex-col gap-4"
             >
               {/* Category */}
-              <p className="text-[9px] font-normal uppercase tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">
-                {product.category} // REF.DATA.00{product.id?.substring(0,2)}
-              </p>
+              <div className="flex items-center gap-3 mb-2">
+                 <span className="px-3 py-1 bg-zinc-100 text-zinc-600 rounded-lg text-[10px] font-bold tracking-widest uppercase">
+                    {product.category}
+                 </span>
+                 <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">
+                    REF. {product.id?.substring(0,6).toUpperCase()}
+                 </span>
+              </div>
 
               {/* Name + Price */}
-              <div className="flex flex-col gap-1.5">
-                <h1 className="text-[clamp(1.8rem,4vw,2.8rem)] font-bold tracking-tighter text-black leading-none">
+              <div className="flex flex-col gap-3">
+                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-zinc-900 leading-tight">
                   {product.name}
                 </h1>
                 <div className="flex items-center gap-3">
                   {product.discount_price ? (
                     <>
-                      <p className="text-[15px] font-bold tracking-tighter line-through text-neutral-300">
+                      <p className="text-lg font-bold tracking-tight line-through text-zinc-400">
                         {product.price}
                       </p>
-                      <p className="text-[20px] font-bold tracking-tighter text-rose-600">
+                      <p className="text-2xl font-black tracking-tight text-rose-600">
                         {product.discount_price}
                       </p>
                     </>
                   ) : (
-                    <p className="text-[16px] font-bold tracking-tighter text-neutral-800">
+                    <p className="text-2xl font-black tracking-tight text-zinc-900">
                       {product.price}
                     </p>
                   )}
@@ -393,7 +398,7 @@ export default function ProductDetail() {
               </div>
 
               {/* Utility Grid - Refined Layout */}
-              <div className="flex items-center gap-px bg-black/[0.03] border border-black/5 p-1 rounded-[4px] shadow-sm">
+              <div className="grid grid-cols-4 gap-2 mt-4">
                 {[ 
                    { icon: Heart, label: 'Kaydet', action: toggleWishlist, loading: wishlistLoading, active: isWishlisted }, 
                    { icon: Share2, label: 'Paylaş', action: () => navigator.clipboard.writeText(window.location.href) }, 
@@ -404,35 +409,32 @@ export default function ProductDetail() {
                     key={idx} 
                     onClick={item.action}
                     disabled={item.loading}
-                    className={`flex-1 h-11 flex items-center justify-center gap-2 rounded-[2px] transition-all
-                      ${item.active ? 'bg-black text-white' : 'hover:bg-black/5 text-black/40 hover:text-black'}`}
+                    className={`h-14 flex flex-col items-center justify-center gap-1.5 rounded-2xl transition-all border
+                      ${item.active ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900'}`}
                   >
-                    {item.loading ? <Loader2 size={12} className="animate-spin" /> : <item.icon size={12} className={item.active ? 'fill-current' : ''} />}
-                    <span className="text-[13px] font-normal uppercase font-['Handjet',sans-serif]">{item.label}</span>
+                    {item.loading ? <Loader2 size={16} className="animate-spin" /> : <item.icon size={16} className={item.active ? 'fill-current' : ''} />}
+                    <span className="text-[9px] font-bold uppercase tracking-widest">{item.label}</span>
                   </button>
                 ))}
               </div>
 
-              {/* Description & Technical Specs — Compact */}
-              {/* Technical Description - Light & Minimalist */}
-              <div className="flex flex-col gap-3 mt-6">
-                <div className="p-8 rounded-[4px] bg-black/[0.02] border border-black/5 relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-10 text-[8px] font-['Handjet',sans-serif] uppercase tracking-widest leading-none pointer-events-none text-black">INF.ID: // DESC-A1</div>
-                  <span className="text-[13px] font-normal uppercase tracking-[0.2em] text-black/20 block mb-4 font-['Handjet',sans-serif]">Description // Açıklama</span>
-                  <p className="text-[14px] leading-relaxed text-black/70 font-medium max-w-sm">
+              {/* Description & Technical Specs — Apple Card Style */}
+              <div className="flex flex-col gap-4 mt-6">
+                <div className="p-6 md:p-8 rounded-[2rem] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group">
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 block mb-4">Açıklama</span>
+                  <p className="text-sm leading-relaxed text-zinc-600 font-medium">
                     {product.description}
                   </p>
                 </div>
 
                 {product.features && product.features.length > 0 && (
-                  <div className="p-8 rounded-[4px] bg-black/[0.02] border border-black/5 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 text-[8px] font-['Handjet',sans-serif] uppercase tracking-widest leading-none pointer-events-none text-black">INF.ID: // SPEC-B2</div>
-                    <span className="text-[13px] font-normal uppercase tracking-[0.2em] text-black/20 block mb-4 font-['Handjet',sans-serif]">Technical Specs // Özellikler</span>
-                    <div className="grid grid-cols-2 gap-x-10 gap-y-3">
+                  <div className="p-6 md:p-8 rounded-[2rem] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group">
+                    <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 block mb-4">Özellikler</span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
                       {product.features.map((f: string, i: number) => (
                         <div key={i} className="flex items-center gap-3">
-                          <div className="w-1 h-1 rounded-full bg-black/10" />
-                          <span className="text-[11px] font-bold text-black/40 uppercase tracking-widest leading-none">{f}</span>
+                          <div className="w-1.5 h-1.5 rounded-full bg-zinc-300" />
+                          <span className="text-xs font-bold text-zinc-600 uppercase tracking-widest">{f}</span>
                         </div>
                       ))}
                     </div>
@@ -455,34 +457,34 @@ export default function ProductDetail() {
       </div>
 
       {/* ─── RELATED ─── */}
-      <div className="px-4 md:px-10 py-16 border-t border-neutral-200">
+      <div className="px-4 md:px-10 py-16">
         <div className="max-w-[1100px] mx-auto flex flex-col gap-8">
-          <p className="text-[10px] uppercase tracking-[0.4em] font-bold text-neutral-400">
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400">
             {t('product.also_like')}
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {related.map(p => (
               <button
                 key={p.id}
                 onClick={() => navigate(`/product/${p.id}`)}
-                className="group flex flex-col items-center gap-2.5 text-left"
+                className="group flex flex-col gap-3 text-left apple-card p-2 border-transparent hover:border-zinc-200 transition-all"
               >
                 <div
-                  className="w-full overflow-hidden rounded-lg"
-                  style={{ aspectRatio: '3/4', backgroundColor: '#E8E5E0' }}
+                  className="w-full overflow-hidden rounded-xl bg-zinc-50"
+                  style={{ aspectRatio: '3/4' }}
                 >
                   <img
                     src={p.image}
                     alt={p.name}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                     referrerPolicy="no-referrer"
                   />
                 </div>
-                <div className="flex flex-col items-center gap-0.5 text-center">
-                  <h4 className="text-[13px] font-medium tracking-tight text-neutral-600 group-hover:text-neutral-800 transition-colors">
+                <div className="px-2 pb-2">
+                  <h4 className="text-sm font-bold tracking-tight text-zinc-900 line-clamp-1">
                     {p.name}
                   </h4>
-                  <p className="text-[13px] font-bold text-neutral-800">
+                  <p className="text-xs font-bold text-zinc-500 mt-1">
                     {p.price}
                   </p>
                 </div>
