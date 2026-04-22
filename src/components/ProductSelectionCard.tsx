@@ -75,9 +75,9 @@ export default function ProductSelectionCard({
         initial={false}
         animate={{
           height: collapsed ? 60 : 'auto',
-          borderRadius: 8,
         }}
         transition={springTransition}
+        style={{ borderRadius: 8 }}
         className="w-full glass-nav overflow-hidden pointer-events-auto flex flex-col origin-bottom border border-white/10 shadow-2xl"
       >
         {/* Info Area */}

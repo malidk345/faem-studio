@@ -39,9 +39,9 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
           initial={false}
           animate={{
             height: activePanel ? 'auto' : 52,
-            borderRadius: 8,
           }}
           transition={springTransition}
+          style={{ borderRadius: 8 }}
           className="w-full max-w-5xl glass-nav overflow-hidden pointer-events-auto flex flex-col origin-top border border-white/5"
         >
           {/* Top Bar (Logo + Icons) */}
