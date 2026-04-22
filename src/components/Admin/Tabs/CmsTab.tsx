@@ -83,19 +83,32 @@ export function CmsTab({ categories }: CmsTabProps) {
       button_text: 'Keşfet'
     };
     const { error } = await supabase.from('site_content').insert([newSlide]);
-    if (!error) fetchData();
+    if (error) {
+      console.error("Add slide failed:", error);
+      alert("Vitrin eklenirken hata oluştu: " + error.message);
+    } else {
+      fetchData();
+    }
   };
 
   const updateSlide = async (id: string, updates: any) => {
     const { error } = await supabase.from('site_content').update(updates).eq('id', id);
-    if (!error) {
+    if (error) {
+      console.error("Update slide failed:", error);
+      alert("Vitrin güncellenirken hata oluştu: " + error.message);
+    } else {
       setHeroSlides(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
     }
   };
 
   const deleteSlide = async (id: string) => {
-    await supabase.from('site_content').delete().eq('id', id);
-    fetchData();
+    const { error } = await supabase.from('site_content').delete().eq('id', id);
+    if (error) {
+      console.error("Delete slide failed:", error);
+      alert("Vitrin silinirken hata oluştu: " + error.message);
+    } else {
+      fetchData();
+    }
   };
 
   const addPromo = async () => {
@@ -105,13 +118,23 @@ export function CmsTab({ categories }: CmsTabProps) {
       discount_percent: 10,
       is_active: true
     };
-    await supabase.from('promotions').insert([newPromo]);
-    fetchData();
+    const { error } = await supabase.from('promotions').insert([newPromo]);
+    if (error) {
+      console.error("Add promo failed:", error);
+      alert("Kampanya eklenirken hata oluştu: " + error.message);
+    } else {
+      fetchData();
+    }
   };
 
   const deletePromo = async (id: string) => {
-    await supabase.from('promotions').delete().eq('id', id);
-    fetchData();
+    const { error } = await supabase.from('promotions').delete().eq('id', id);
+    if (error) {
+      console.error("Delete promo failed:", error);
+      alert("Kampanya silinirken hata oluştu: " + error.message);
+    } else {
+      fetchData();
+    }
   };
 
   return (
