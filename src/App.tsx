@@ -13,6 +13,7 @@ import OrderError from './pages/OrderError';
 import NotFound from './pages/NotFound';
 import Legal from './pages/Legal';
 import Cart from './pages/Cart';
+import Contact from './pages/Contact';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -48,6 +49,7 @@ function AppRoutes() {
         <Route path="/legal/returns" element={<MainLayout><Legal /></MainLayout>} />
         <Route path="/legal/privacy" element={<MainLayout><Legal /></MainLayout>} />
         <Route path="/legal/about" element={<MainLayout><Legal /></MainLayout>} />
+        <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

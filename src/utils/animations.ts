@@ -11,6 +11,6 @@ export const containerVariants = {
 };
 
 export const itemVariants = {
-  hidden: { opacity: 0, y: 12, filter: 'blur(4px)' },
-  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: springTransition }
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: springTransition }
 };

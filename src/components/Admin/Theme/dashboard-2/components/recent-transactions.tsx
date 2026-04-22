@@ -57,27 +57,27 @@ export function RecentTransactions({ orders }: RecentTransactionsProps) {
     );
   }
 
-    <div className="space-y-2">
+    <div className="space-y-3">
       {recentOrders.map((order) => {
         const statusInfo = getStatusBadge(order.status);
         const initials = order.user.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
         return (
-          <div key={order.id} className="flex items-center justify-between p-2 rounded-xl bg-zinc-50 border border-zinc-100 hover:bg-white transition-all cursor-pointer">
-            <div className="flex items-center gap-3 min-w-0">
-               <Avatar className="h-7 w-7 border">
-                <AvatarFallback className="text-[9px] font-black">{initials}</AvatarFallback>
+          <div key={order.id} className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-zinc-50/50 hover:bg-zinc-50 transition-all cursor-pointer">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+               <Avatar className="h-9 w-9 border-none bg-white shadow-sm">
+                <AvatarFallback className="text-[10px] font-semibold text-zinc-600">{initials}</AvatarFallback>
                </Avatar>
                <div className="min-w-0">
-                  <p className="text-xs font-bold text-zinc-900 truncate">{order.user}</p>
-                  <p className="text-[9px] font-medium text-zinc-400">#{order.shortId} · {getTimeAgo(order.rawDate)}</p>
+                  <p className="text-sm font-semibold text-zinc-900 truncate">{order.user}</p>
+                  <p className="text-[10px] sm:text-xs font-medium text-zinc-500">#{order.shortId} · {getTimeAgo(order.rawDate)}</p>
                </div>
             </div>
-            <div className="flex items-center gap-4 flex-shrink-0">
-               <Badge variant="outline" className={`h-6 text-[9px] font-bold border-none bg-zinc-100 text-zinc-500`}>
+            <div className="flex items-center gap-3 sm:gap-5 flex-shrink-0">
+               <Badge variant="secondary" className="h-6 text-[10px] font-medium border-none bg-white shadow-sm text-zinc-600 hidden sm:inline-flex">
                   {statusInfo.label}
                </Badge>
-               <span className="text-xs font-black text-zinc-900 min-w-[60px] text-right">{order.total}</span>
+               <span className="text-sm font-semibold text-zinc-900 min-w-[60px] text-right">{order.total}</span>
             </div>
           </div>
         );

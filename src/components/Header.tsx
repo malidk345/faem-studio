@@ -57,9 +57,9 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
                 {!activePanel ? (
                   <motion.div
                     key="icons"
-                    initial={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
                     transition={contentTransition}
                     className="flex items-center h-full"
                   >
@@ -96,9 +96,9 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
                 ) : (
                   <motion.div
                     key="title"
-                    initial={{ opacity: 0, y: 10, filter: 'blur(4px)' }}
-                    animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                    exit={{ opacity: 0, y: -10, filter: 'blur(4px)' }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
                     transition={contentTransition}
                     className="flex items-center justify-end h-full pr-1 gap-3"
                   >

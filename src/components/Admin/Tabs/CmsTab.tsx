@@ -120,25 +120,25 @@ export function CmsTab({ categories }: CmsTabProps) {
       <section className="space-y-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-2xl bg-zinc-900 flex items-center justify-center text-white">
-                <Layout size={20} />
+              <div className="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-white shadow-sm">
+                <Layout size={18} />
              </div>
              <div>
-                <h2 className="text-2xl font-black tracking-tight">Vitrin Yönetimi</h2>
-                <p className="text-zinc-400 text-xs font-medium">Hero görselleri ve yönlendirme ayarları.</p>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">Vitrin Yönetimi</h2>
+                <p className="text-zinc-500 text-[11px] font-medium mt-1">Hero görselleri ve yönlendirme ayarları.</p>
              </div>
           </div>
-          <Button onClick={addSlide} className="bg-black text-white rounded-2xl px-6 font-bold h-12 uppercase text-[10px] tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all">
+          <Button onClick={addSlide} className="bg-zinc-900 text-white rounded-xl px-4 sm:px-6 font-semibold h-11 uppercase text-[10px] tracking-wider active:scale-95 transition-all">
             <Plus size={16} className="mr-2" /> Yeni Vitrin Ekle
           </Button>
         </div>
 
         <div className="grid grid-cols-1 gap-8">
           {heroSlides.map((slide) => (
-            <div key={slide.id} className="bg-white border border-zinc-100 rounded-[2.5rem] p-4 sm:p-8 flex flex-col md:flex-row gap-8 group hover:border-black transition-all">
+            <div key={slide.id} className="apple-card p-5 sm:p-8 flex flex-col md:flex-row gap-8 group hover:border-zinc-300 transition-all">
               {/* IMAGE SECTOR */}
               <div 
-                className="w-full md:w-80 aspect-[4/5] sm:aspect-video rounded-[1.5rem] overflow-hidden bg-zinc-100 flex-shrink-0 relative group/img cursor-pointer"
+                className="w-full md:w-80 aspect-[4/5] sm:aspect-video rounded-[1rem] overflow-hidden bg-zinc-50 flex-shrink-0 relative group/img cursor-pointer"
                 onClick={() => {
                    setActiveSlideId(slide.id);
                    fileInputRef.current?.click();
@@ -161,34 +161,34 @@ export function CmsTab({ categories }: CmsTabProps) {
               <div className="flex-1 space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Vitrin Başlığı</Label>
+                    <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Vitrin Başlığı</Label>
                     <Input 
                       value={slide.title} 
                       onChange={(e) => updateSlide(slide.id, { title: e.target.value })}
-                      className="h-11 sm:h-12 border-zinc-100 focus:border-black rounded-xl font-bold transition-all"
+                      className="h-11 sm:h-12 border-zinc-200 focus:border-zinc-400 rounded-xl font-medium transition-all"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Alt Metin</Label>
+                    <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Alt Metin</Label>
                     <Input 
                       value={slide.subtitle} 
                       onChange={(e) => updateSlide(slide.id, { subtitle: e.target.value })}
-                      className="h-11 sm:h-12 border-zinc-100 focus:border-black rounded-xl transition-all"
+                      className="h-11 sm:h-12 border-zinc-200 focus:border-zinc-400 rounded-xl transition-all"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Hedef Koleksiyon</Label>
+                    <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Hedef Koleksiyon</Label>
                     <Select 
                       value={slide.button_link || ''} 
                       onValueChange={(val) => updateSlide(slide.id, { button_link: val })}
                     >
-                      <SelectTrigger className="h-11 sm:h-12 border-zinc-100 focus:border-black rounded-xl font-black text-[10px] uppercase tracking-widest bg-zinc-50/30">
-                        <SelectValue placeholder="KOLEKSİYON SEÇ" />
+                      <SelectTrigger className="h-11 sm:h-12 border-zinc-200 focus:border-zinc-400 rounded-xl font-medium text-[11px] bg-zinc-50/50">
+                        <SelectValue placeholder="Koleksiyon Seç" />
                       </SelectTrigger>
-                      <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
-                        <SelectItem value="all" className="rounded-xl font-bold py-2">Tüm Ürünler</SelectItem>
+                      <SelectContent className="rounded-2xl border-zinc-100 shadow-xl p-2">
+                        <SelectItem value="all" className="rounded-xl font-medium py-2">Tüm Ürünler</SelectItem>
                         {categories.map((cat, i) => (
-                          <SelectItem key={i} value={cat.name || cat} className="rounded-xl font-bold py-2">
+                          <SelectItem key={i} value={cat.name || cat} className="rounded-xl font-medium py-2">
                             {cat.name || cat}
                           </SelectItem>
                         ))}
@@ -196,11 +196,11 @@ export function CmsTab({ categories }: CmsTabProps) {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Buton Metni</Label>
+                    <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Buton Metni</Label>
                     <Input 
                       value={slide.button_text} 
                       onChange={(e) => updateSlide(slide.id, { button_text: e.target.value })}
-                      className="h-11 sm:h-12 border-zinc-100 focus:border-black rounded-xl font-bold transition-all" 
+                      className="h-11 sm:h-12 border-zinc-200 focus:border-zinc-400 rounded-xl font-medium transition-all" 
                     />
                   </div>
                 </div>
@@ -255,34 +255,34 @@ export function CmsTab({ categories }: CmsTabProps) {
       <section className="space-y-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-2xl bg-amber-500 flex items-center justify-center text-white">
-                <Tag size={20} />
+             <div className="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center text-white shadow-sm">
+                <Tag size={18} />
              </div>
              <div>
-                <h2 className="text-2xl font-black tracking-tight">Kampanyalar</h2>
-                <p className="text-zinc-400 text-xs font-medium">İndirim kodları ve aktif promosyonlar.</p>
+                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">Kampanyalar</h2>
+                <p className="text-zinc-500 text-[11px] font-medium mt-1">İndirim kodları ve aktif promosyonlar.</p>
              </div>
           </div>
-          <Button onClick={addPromo} className="bg-black text-white rounded-2xl px-6 font-bold h-12 uppercase text-[10px] tracking-widest active:scale-95 transition-all">
+          <Button onClick={addPromo} className="bg-zinc-900 text-white rounded-xl px-4 sm:px-6 font-semibold h-11 uppercase text-[10px] tracking-wider active:scale-95 transition-all">
             <Plus size={16} className="mr-2" /> Yeni Kod Üret
           </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
            {promotions.map((promo) => (
-             <div key={promo.id} className="p-6 bg-white border border-zinc-100 rounded-[2.2rem] flex flex-col gap-5 group hover:border-black/20 transition-all shadow-sm">
+             <div key={promo.id} className="p-6 apple-card flex flex-col gap-5 group hover:border-zinc-300 transition-all">
                 <div className="flex items-center justify-between">
-                   <div className="px-4 py-1.5 bg-zinc-900 text-white rounded-xl font-black tracking-widest text-xs">{promo.code}</div>
-                   <Button variant="ghost" size="icon" onClick={() => deletePromo(promo.id)} className="w-9 h-9 rounded-xl text-zinc-300 hover:text-rose-500 hover:bg-rose-50 transition-all">
+                   <div className="px-3 py-1.5 bg-zinc-100 text-zinc-800 rounded-lg font-semibold tracking-wider text-xs border border-zinc-200">{promo.code}</div>
+                   <Button variant="ghost" size="icon" onClick={() => deletePromo(promo.id)} className="w-9 h-9 rounded-xl text-zinc-400 hover:text-rose-500 hover:bg-rose-50 transition-all">
                       <Trash2 size={16} />
                    </Button>
                 </div>
                 <div>
-                   <h4 className="font-black text-zinc-900 text-xl">%{promo.discount_percent} İndirim</h4>
-                   <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">{promo.title}</p>
+                   <h4 className="font-semibold text-zinc-900 text-xl">%{promo.discount_percent} İndirim</h4>
+                   <p className="text-[11px] text-zinc-500 font-medium uppercase tracking-wider mt-0.5">{promo.title}</p>
                 </div>
-                <div className="flex items-center justify-between mt-2 pt-5 border-t border-zinc-50">
-                   <span className="text-[9px] font-black uppercase tracking-widest text-zinc-300">Statü: Aktif</span>
+                <div className="flex items-center justify-between mt-2 pt-4 border-t border-zinc-100">
+                   <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400">Statü: Aktif</span>
                    <div className={`w-2 h-2 rounded-full ${promo.is_active ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-zinc-200'}`} />
                 </div>
              </div>

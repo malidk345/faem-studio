@@ -72,21 +72,26 @@ export function MetricsOverview({ orders, products }: MetricsOverviewProps) {
   ]
 
   return (
-    <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       {metrics.map((metric) => {
         const TrendIcon = metric.trend === "up" ? TrendingUp : TrendingDown
         
         return (
-          <Card key={metric.title} className="cursor-pointer border-zinc-100 shadow-none rounded-2xl">
-            <CardHeader className="p-4 pt-5">
-              <CardDescription className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{metric.title}</CardDescription>
-              <CardTitle className="text-xl font-black tabular-nums">
+          <Card key={metric.title} className="apple-card cursor-pointer border-none shadow-none rounded-2xl group">
+            <CardHeader className="p-5 pb-2">
+              <div className="flex items-center justify-between mb-1">
+                 <CardDescription className="text-xs font-medium text-zinc-500">{metric.title}</CardDescription>
+                 <div className="w-8 h-8 rounded-full bg-zinc-50 flex items-center justify-center text-zinc-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+                    <metric.icon className="w-4 h-4" />
+                 </div>
+              </div>
+              <CardTitle className="text-2xl sm:text-3xl font-semibold tabular-nums text-zinc-900 tracking-tight">
                 {metric.value}
               </CardTitle>
             </CardHeader>
-            <CardFooter className="px-4 pb-4 pt-0 flex-col items-start gap-1">
-              <div className="flex items-center gap-1.5 text-[10px] font-bold">
-                <Badge variant="outline" className="px-1.5 h-5 border-none bg-zinc-50 text-zinc-400">
+            <CardFooter className="px-5 pb-5 pt-3 flex-col items-start gap-1">
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="px-2 h-6 border-none bg-zinc-100 text-zinc-600 font-medium text-[11px]">
                   <TrendIcon className="h-3 w-3 mr-1" />
                   {metric.change}
                 </Badge>

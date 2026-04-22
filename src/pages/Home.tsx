@@ -86,6 +86,7 @@ export default function Home() {
               src={slide.image}
               alt={slide.headline.join(' ')}
               className="w-full h-full object-cover grayscale-[0.1]"
+              style={{ willChange: "transform" }}
               initial={{ scale: 1.1 }}
               animate={{ scale: 1 }}
               transition={{ duration: 10, ease: [0.16, 1, 0.3, 1] }}

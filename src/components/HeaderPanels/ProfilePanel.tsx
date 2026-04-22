@@ -26,9 +26,9 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ onClose }) => {
         {!user ? (
           <motion.div 
             key="login"
-            initial={{ opacity: 0, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, filter: 'blur(4px)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="flex flex-col gap-6"
           >
             <div className="flex flex-col items-center text-center pb-6 border-b border-white/10">
@@ -46,9 +46,9 @@ const ProfilePanel: React.FC<ProfilePanelProps> = ({ onClose }) => {
         ) : (
           <motion.div 
             key="profile"
-            initial={{ opacity: 0, filter: 'blur(4px)' }}
-            animate={{ opacity: 1, filter: 'blur(0px)' }}
-            exit={{ opacity: 0, filter: 'blur(4px)' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="flex flex-col gap-5"
           >
             <div className="flex flex-col items-center text-center pb-6 border-b border-white/10">

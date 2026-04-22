@@ -10,6 +10,7 @@
   src: url(https://fonts.gstatic.com/s/handjet/v22/oY1n8eXHq7n1OnbQrOY_2FrEwYEMLlcdP1mCtZaLaTutCwcIhGZ0lGU0akFcO3XFHTmaYkwmEUFA.woff2) format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
+
 /* latin */
 @font-face {
   font-family: 'Handjet';
@@ -140,6 +141,9 @@
     -webkit-backdrop-filter: blur(30px) saturate(1.8) brightness(1.1);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+    transform: translateZ(0);
+    will-change: transform, backdrop-filter;
+    backface-visibility: hidden;
   }
 
   .glass-nav-btn {
@@ -177,20 +181,51 @@
 
   /* ── Liquid Header (Reference Implementation) ── */
   .liquid-header {
-    background-color: rgba(32, 31, 29, 0.7);
-    backdrop-filter: blur(30px) saturate(1.8) brightness(1.1);
-    -webkit-backdrop-filter: blur(30px) saturate(1.8) brightness(1.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(40px) saturate(2);
+    -webkit-backdrop-filter: blur(40px) saturate(2);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
+    border-radius: 0;
+    transition: all 0.3s ease;
   }
 
   .liquid-header-dark {
-    background-color: rgba(20, 20, 20, 0.75);
-    backdrop-filter: blur(40px) saturate(1.5) brightness(0.9);
-    -webkit-backdrop-filter: blur(40px) saturate(1.5) brightness(0.9);
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(40px) saturate(2);
+    -webkit-backdrop-filter: blur(40px) saturate(2);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .apple-card {
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.04);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+    border-radius: 20px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .apple-card:hover {
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.02);
+  }
+
+  .admin-theme {
+    --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, system-ui;
+    font-family: var(--font-sans) !important;
+  }
+  
+  .admin-theme * {
+    font-family: inherit;
+  }
+
+  .admin-theme button,
+  .admin-theme [role="button"],
+  .admin-theme .btn,
+  .admin-theme .button {
+    font-family: var(--font-sans) !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
   }
 
   /* ── Header Panels (Menu, Search, etc.) ── */
@@ -295,7 +330,7 @@
   }
 }
 
-button, 
+button,
 [role="button"],
 .btn,
 .button {

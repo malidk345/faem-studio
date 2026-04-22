@@ -37,6 +37,15 @@ const MenuPanel: React.FC<MenuPanelProps> = ({ onClose }) => {
                   <span className="text-[14px] font-medium text-white/80 group-hover:text-white transition-colors">Seçkilerim</span>
                 </Link>
               </li>
+              <li>
+                <Link to="/contact" onClick={onClose} className="group flex items-center gap-3 px-4 py-2.5 rounded-[4px] hover:bg-white/5 transition-all">
+                  <svg className="w-4 h-4 text-white/30 group-hover:text-[#ddff34] transition-colors" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.303.025-.607.047-.912.066a33.313 33.313 0 0 1-13.416 0A30.932 30.932 0 0 1 4.5 17.087c-1.133-.094-1.98-1.057-1.98-2.193v-4.286c0-.97.616-1.813 1.5-2.097a30.22 30.22 0 0 1 16.25 0Z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z" />
+                  </svg>
+                  <span className="text-[14px] font-medium text-white/80 group-hover:text-white transition-colors">İletişim/Destek</span>
+                </Link>
+              </li>
             </motion.ul>
           </div>
 

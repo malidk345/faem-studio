@@ -51,14 +51,14 @@ export function SalesChart({ orders }: LiveSalesChartProps) {
   };
 
   return (
-    <Card className="cursor-pointer border-zinc-100 shadow-sm rounded-[2rem] overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-8">
+    <Card className="apple-card border-none overflow-hidden h-full">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-5 sm:p-6 lg:p-8">
         <div>
-          <CardTitle className="text-xl font-black tracking-tight">Satış Performansı</CardTitle>
-          <CardDescription className="text-xs font-medium text-zinc-400">Gerçekleşen aylık ciro akışı</CardDescription>
+          <CardTitle className="text-xl sm:text-2xl font-semibold tracking-tight text-zinc-900">Satış Performansı</CardTitle>
+          <CardDescription className="text-xs font-medium text-zinc-500 mt-1">Gerçekleşen aylık ciro akışı</CardDescription>
         </div>
         <div className="flex items-center space-x-2">
-          <Badge variant="outline" className="bg-zinc-50 font-bold text-[10px] uppercase border-none">Canlı</Badge>
+          <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 font-semibold text-[10px] uppercase border-none">Canlı</Badge>
         </div>
       </CardHeader>
       <CardContent className="p-0 pt-2">

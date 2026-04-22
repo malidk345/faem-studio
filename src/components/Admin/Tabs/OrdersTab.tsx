@@ -57,8 +57,8 @@ export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
       header: "Sipariş No",
       cell: ({ row }: any) => (
         <button onClick={() => openDetail(row.original)} className="flex flex-col text-left">
-          <span className="font-bold text-xs text-zinc-900 leading-tight">#{row.original.shortId}</span>
-          <span className="text-[9px] text-zinc-400 font-bold">{row.original.date}</span>
+          <span className="font-semibold text-sm text-zinc-900 leading-tight">#{row.original.shortId}</span>
+          <span className="text-[10px] text-zinc-500 font-medium">{row.original.date}</span>
         </button>
       )
     },
@@ -66,13 +66,13 @@ export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
       accessorKey: "user",
       header: "Müşteri",
       cell: ({ row }: any) => (
-        <button onClick={() => openDetail(row.original)} className="flex items-center gap-2 text-left">
-          <div className="w-7 h-7 rounded-full bg-zinc-100 flex items-center justify-center font-black text-[9px] border uppercase">
+        <button onClick={() => openDetail(row.original)} className="flex items-center gap-3 text-left">
+          <div className="w-8 h-8 rounded-full bg-zinc-50 flex items-center justify-center font-semibold text-xs border-none shadow-sm uppercase text-zinc-600">
             {row.original.user?.charAt(0)}
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-xs text-zinc-900 leading-none mb-0.5">{row.original.user}</span>
-            <span className="text-[9px] text-zinc-400 font-bold uppercase">{row.original.isGuest ? 'Misafir' : 'Üye'}</span>
+            <span className="font-semibold text-sm text-zinc-900 leading-none mb-1">{row.original.user}</span>
+            <span className="text-[10px] text-zinc-500 font-medium uppercase">{row.original.isGuest ? 'Misafir' : 'Üye'}</span>
           </div>
         </button>
       )
@@ -83,7 +83,7 @@ export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
       cell: ({ row }: any) => {
         const statusInfo = getStatusInfo(row.original.status);
         return (
-          <Badge variant="outline" className={`font-black text-[8px] uppercase tracking-widest border-none px-2 py-0.5 ${statusInfo.color}`}>
+          <Badge variant="secondary" className={`font-medium text-[10px] uppercase tracking-widest border-none px-2.5 py-1 ${statusInfo.color}`}>
             {statusInfo.label}
           </Badge>
         )
@@ -92,7 +92,7 @@ export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
     {
       accessorKey: "total",
       header: "Tutar",
-      cell: ({ row }: any) => <span className="font-black text-xs text-zinc-900">{row.original.total}</span>
+      cell: ({ row }: any) => <span className="font-semibold text-sm text-zinc-900">{row.original.total}</span>
     },
     {
       id: "actions",
@@ -112,7 +112,7 @@ export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
               {STATUS_OPTIONS.map((opt) => (
                 <DropdownMenuItem 
                   key={opt.value}
-                  className="cursor-pointer text-xs font-bold gap-2"
+                  className="cursor-pointer text-xs font-semibold gap-2"
                   onClick={() => onUpdateStatus(row.original.id, opt.value)}
                 >
                   <opt.icon className="h-3 w-3" /> {opt.label}
@@ -128,34 +128,34 @@ export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
   return (
     <div className="space-y-4">
       {/* Sales Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-2">
         <div>
-           <h2 className="text-xl font-black tracking-tighter text-zinc-900">Sipariş Yönetimi</h2>
-           <p className="text-zinc-400 text-[9px] font-bold uppercase tracking-widest">Canlı Takip</p>
+           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">Sipariş Yönetimi</h2>
+           <p className="text-zinc-500 text-[11px] font-medium uppercase tracking-wider mt-1">Canlı Takip</p>
         </div>
       </div>
 
       {/* Performance Mini-Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          <div className="p-4 bg-zinc-900 text-white rounded-2xl flex flex-col gap-1">
-             <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500">Toplam</span>
-             <span className="text-xl font-black">{orders.length}</span>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="p-5 bg-zinc-900 text-white rounded-2xl flex flex-col gap-1.5 shadow-lg shadow-zinc-900/20">
+             <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Toplam</span>
+             <span className="text-2xl sm:text-3xl font-semibold tracking-tight">{orders.length}</span>
           </div>
-          <div className="p-4 bg-white border rounded-2xl flex flex-col gap-1">
-             <span className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Ciro</span>
-             <span className="text-xl font-black">{formattedRevenue}</span>
+          <div className="p-5 apple-card rounded-2xl flex flex-col gap-1.5">
+             <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">Ciro</span>
+             <span className="text-2xl sm:text-3xl font-semibold tracking-tight">{formattedRevenue}</span>
           </div>
-          <div className="p-4 bg-white border rounded-2xl flex flex-col gap-1">
-             <span className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Bekleyen</span>
-             <span className={`text-xl font-black ${pendingCount > 0 ? 'text-amber-500' : 'text-emerald-500'}`}>{pendingCount}</span>
+          <div className="p-5 apple-card rounded-2xl flex flex-col gap-1.5">
+             <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">Bekleyen</span>
+             <span className={`text-2xl sm:text-3xl font-semibold tracking-tight ${pendingCount > 0 ? 'text-amber-500' : 'text-emerald-500'}`}>{pendingCount}</span>
           </div>
-          <div className="p-4 bg-white border rounded-2xl flex flex-col gap-1">
-             <span className="text-[8px] font-black uppercase tracking-widest text-zinc-400">Teslim</span>
-             <span className="text-xl font-black text-emerald-500">{deliveredCount}</span>
+          <div className="p-5 apple-card rounded-2xl flex flex-col gap-1.5">
+             <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">Teslim</span>
+             <span className="text-2xl sm:text-3xl font-semibold tracking-tight text-emerald-500">{deliveredCount}</span>
           </div>
       </div>
 
-      <div className="bg-white border rounded-2xl shadow-sm overflow-hidden">
+      <div className="apple-card overflow-hidden">
          <DataTable columns={columns} data={orders} searchKey="user" />
       </div>
 

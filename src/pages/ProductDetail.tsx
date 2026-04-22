@@ -347,8 +347,8 @@ export default function ProductDetail() {
           <div className="w-full">
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, y: 12, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
               <ImageGallery images={galleryImages} productName={product.name} />
@@ -359,8 +359,8 @@ export default function ProductDetail() {
           <div className="flex flex-col gap-6" style={{ position: 'sticky', top: '100px', alignSelf: 'start' }}>
             <motion.div
               key={product.id + '_info'}
-              initial={{ opacity: 0, y: 12, filter: 'blur(6px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="flex flex-col gap-4"
             >

@@ -14,8 +14,8 @@ export interface AdminOrder {
   rawDate: string;     // ISO date for sorting
   items: any[];        // Cart items array
   itemCount: number;   // Number of unique items
-  shippingAddress: any; // Full shipping address object
   isGuest: boolean;    // True if order was placed without login
+  userId: string | null; // Profile UUID if registered
 }
 
 export function useAdminData() {
@@ -24,6 +24,9 @@ export function useAdminData() {
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<any[]>([]);
+  const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
@@ -36,6 +39,21 @@ export function useAdminData() {
       // Categories
       const { data: cData } = await supabase.from('categories').select('*');
       if (cData) setCategories(cData.map(c => c.name));
+
+      // Messages
+      const { data: mData } = await supabase
+        .from('contact_messages')
+        .select('*')
+        .order('created_at', { ascending: false })
+      if (mData) setMessages(mData);
+
+      // Customers
+      const { data: custData } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+      if (custData) setCustomers(custData);
+
+      // Settings
+      const { data: setData } = await supabase.from('store_settings').select('*').limit(1).single();
+      if (setData) setSettings(setData);
 
       // Orders — fetch ALL columns, join with profiles for customer name
       const { data: oData, error: oError } = await supabase
@@ -77,6 +95,7 @@ export function useAdminData() {
             itemCount: items.length,
             shippingAddress: shippingAddr,
             isGuest: !o.user_id,
+            userId: o.user_id || null,
           };
         });
         setOrders(mapped);
@@ -115,20 +134,19 @@ export function useAdminData() {
   useEffect(() => {
     if (isAdmin !== true) return;
 
-    const channel = supabase
+    const ordersChannel = supabase
       .channel('admin-orders-realtime')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'orders' },
-        (_payload) => {
-          // Re-fetch all orders on any change (insert, update, delete)
-          fetchData();
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => fetchData())
+      .subscribe();
+
+    const messagesChannel = supabase
+      .channel('admin-messages-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'contact_messages' }, () => fetchData())
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(ordersChannel);
+      supabase.removeChannel(messagesChannel);
     };
   }, [isAdmin, fetchData]);
 
@@ -163,17 +181,42 @@ export function useAdminData() {
     return { error };
   };
 
+  const toggleMessageRead = async (id: string, isRead: boolean) => {
+    const { error } = await supabase.from('contact_messages').update({ is_read: isRead }).eq('id', id);
+    if (!error) fetchData();
+    return { error };
+  };
+
+  const deleteMessage = async (id: string) => {
+    const { error } = await supabase.from('contact_messages').delete().eq('id', id);
+    if (!error) fetchData();
+    return { error };
+  };
+
+  const updateSettings = async (updates: any) => {
+    if (!settings?.id) return { error: new Error("No settings record found") };
+    const { error } = await supabase.from('store_settings').update(updates).eq('id', settings.id);
+    if (!error) fetchData();
+    return { error };
+  };
+
   return {
     isAdmin,
     products,
     orders,
     categories,
+    messages,
+    customers,
+    settings,
     loading,
     refreshData: fetchData,
     deleteProduct,
     addCategory,
     publishProduct,
     updateProduct,
-    updateOrderStatus
+    updateOrderStatus,
+    toggleMessageRead,
+    deleteMessage,
+    updateSettings
   };
 }

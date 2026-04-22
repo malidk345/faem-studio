@@ -78,6 +78,7 @@ export default function Footer() {
           {/* İletişim */}
           <div className="flex flex-col gap-2.5">
             <h4 className="text-[9px] font-bold uppercase tracking-[0.3em] text-neutral-300 mb-1">İletişim</h4>
+            <Link to="/contact" className="text-[12px] font-medium text-neutral-500 hover:text-neutral-800 transition-colors">İletişim/Destek</Link>
             <a href="mailto:info@faemstudio.com" className="text-[12px] font-medium text-neutral-500 hover:text-neutral-800 transition-colors flex items-center gap-1.5">
               <Mail size={12} /> info@faemstudio.com
             </a>

@@ -16,15 +16,20 @@ import { CategoriesTab } from '../components/Admin/Tabs/CategoriesTab';
 import { OrdersTab } from '../components/Admin/Tabs/OrdersTab';
 import { ProductEditTab } from '../components/Admin/Tabs/ProductEditTab';
 import { JournalTab } from '../components/Admin/Tabs/JournalTab';
+import { CustomersTab } from '../components/Admin/Tabs/CustomersTab';
+import { SettingsTab } from '../components/Admin/Tabs/SettingsTab';
+import { HelpTab } from '../components/Admin/Tabs/HelpTab';
 import { CmsTab } from '../components/Admin/Tabs/CmsTab';
+import { MessagesTab } from '../components/Admin/Tabs/MessagesTab';
 import { HeaderNotifications } from '../components/Admin/HeaderNotifications';
 
 import { useSearchParams } from 'react-router-dom';
 
 export default function Admin() {
   const { 
-    isAdmin, products, orders, categories, loading, 
-    deleteProduct, publishProduct, addCategory, updateProduct, updateOrderStatus 
+    isAdmin, products, orders, categories, messages, customers, settings, loading, 
+    deleteProduct, publishProduct, addCategory, updateProduct, updateOrderStatus,
+    toggleMessageRead, deleteMessage, updateSettings 
   } = useAdminData();
   
   const [searchParams] = useSearchParams();
@@ -38,6 +43,11 @@ export default function Admin() {
   React.useEffect(() => {
     setIsEditing(false);
   }, [activeTab]);
+
+  React.useEffect(() => {
+    document.body.classList.add('admin-theme');
+    return () => document.body.classList.remove('admin-theme');
+  }, []);
 
   if (isAdmin === null || (loading && isAdmin === true && products.length === 0)) {
     return (
@@ -67,18 +77,19 @@ export default function Admin() {
   }
 
   return (
-    <SidebarProvider>
-      <AppSidebar collapsible="icon" />
-      <SidebarInset className="bg-white">
-        <header className="flex h-16 shrink-0 items-center justify-between gap-2 liquid-header px-4 md:px-6 sticky top-0 z-30">
+    <div className="admin-theme">
+      <SidebarProvider>
+        <AppSidebar collapsible="icon" />
+        <SidebarInset className="bg-white">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-2 liquid-header px-4 md:px-8 sticky top-0 z-30">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
-               <SidebarTrigger className="w-9 h-9 rounded-md hover:bg-white/10 text-white transition-colors" />
-               <div className="h-5 w-px bg-white/10 mx-1" />
+               <SidebarTrigger className="w-9 h-9 rounded-xl hover:bg-black/5 text-zinc-900 transition-colors" />
+               <div className="h-5 w-px bg-black/10 mx-1" />
             </div>
             <div className="flex flex-col">
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/40 leading-none mb-0.5">Curation Hub</span>
-              <span className="text-xs font-bold text-white capitalize">{isEditing ? 'Editing Asset' : activeTab.replace('-', ' ')}</span>
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-400 leading-none mb-0.5">Curation Hub</span>
+              <span className="text-sm font-semibold text-zinc-900 capitalize tracking-tight">{isEditing ? 'Editing Asset' : activeTab.replace('-', ' ')}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -87,7 +98,7 @@ export default function Admin() {
           </div>
         </header>
 
-        <main className="flex-1 p-3 sm:p-5 md:p-6 lg:p-8 overflow-x-hidden">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 xl:px-12 mx-auto w-full max-w-7xl overflow-x-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab + (isEditing ? '_editing' : '_listing')}
@@ -124,12 +135,17 @@ export default function Admin() {
 
               {activeTab === 'categories' && <CategoriesTab categories={categories} onAdd={addCategory} />}
               {activeTab === 'orders' && <OrdersTab orders={orders} onUpdateStatus={updateOrderStatus} />}
+              {activeTab === 'customers' && <CustomersTab customers={customers} orders={orders} />}
               {activeTab === 'journal' && <JournalTab />}
+              {activeTab === 'settings' && <SettingsTab settings={settings} onUpdateSettings={updateSettings} />}
+              {activeTab === 'help' && <HelpTab />}
+              {activeTab === 'messages' && <MessagesTab messages={messages} onToggleRead={toggleMessageRead} onDelete={deleteMessage} />}
               {activeTab === 'cms' && <CmsTab categories={categories} />}
             </motion.div>
           </AnimatePresence>
         </main>
       </SidebarInset>
     </SidebarProvider>
+    </div>
   );
 }

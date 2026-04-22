@@ -28,8 +28,8 @@ export function ProductsTab({ products, onAdd, onEdit, onDelete }: ProductsTabPr
             />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-xs text-zinc-900 leading-tight">{row.original.name}</span>
-            <span className="text-[9px] text-zinc-400 font-mono">#{row.original.id?.slice(0,8)}</span>
+            <span className="font-semibold text-sm text-zinc-900 leading-tight">{row.original.name}</span>
+            <span className="text-[10px] text-zinc-500 font-mono">#{row.original.id?.slice(0,8)}</span>
           </div>
         </div>
       )
@@ -38,7 +38,7 @@ export function ProductsTab({ products, onAdd, onEdit, onDelete }: ProductsTabPr
       accessorKey: "category",
       header: "Kategori",
       cell: ({ row }: any) => (
-        <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 border-none font-black text-[8px] uppercase tracking-widest px-2 group-hover:bg-white">
+        <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 border-none font-semibold text-[10px] uppercase tracking-widest px-2 group-hover:bg-white">
           {row.getValue("category")}
         </Badge>
       )
@@ -46,7 +46,7 @@ export function ProductsTab({ products, onAdd, onEdit, onDelete }: ProductsTabPr
     {
       accessorKey: "price",
       header: "Fiyat",
-      cell: ({ row }: any) => <span className="font-black text-xs text-zinc-900">{row.getValue("price")}</span>
+      cell: ({ row }: any) => <span className="font-semibold text-sm text-zinc-900">{row.getValue("price")}</span>
     },
     {
       accessorKey: "stock_count",
@@ -55,8 +55,8 @@ export function ProductsTab({ products, onAdd, onEdit, onDelete }: ProductsTabPr
         const stock = row.getValue("stock_count") || 0;
         return (
           <div className="flex items-center gap-1.5">
-            <div className={`w-1 h-1 rounded-full ${stock > 5 ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'}`} />
-            <span className={`text-[10px] font-bold ${stock > 5 ? 'text-zinc-600' : 'text-rose-600'}`}>
+            <div className={`w-1.5 h-1.5 rounded-full ${stock > 5 ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'}`} />
+            <span className={`text-[11px] font-medium ${stock > 5 ? 'text-zinc-600' : 'text-rose-600'}`}>
               {stock} adet
             </span>
           </div>
@@ -84,22 +84,22 @@ export function ProductsTab({ products, onAdd, onEdit, onDelete }: ProductsTabPr
   return (
     <div className="space-y-4">
       {/* Strategic Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-2">
         <div>
-           <h2 className="text-xl font-black tracking-tighter">Envanter Yönetimi</h2>
-           <p className="text-zinc-400 text-[9px] font-bold uppercase tracking-widest">Mağaza Kataloğu</p>
+           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">Envanter Yönetimi</h2>
+           <p className="text-zinc-500 text-[11px] font-medium uppercase tracking-wider mt-1">Mağaza Kataloğu</p>
         </div>
         <Button 
           onClick={onAdd}
-          className="bg-black text-white hover:bg-zinc-800 rounded-xl px-3 sm:px-4 h-9 sm:h-10 font-bold flex items-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] uppercase tracking-widest shadow-xl shadow-black/10 active:scale-95 transition-all"
+          className="bg-black text-white hover:bg-zinc-800 rounded-2xl px-4 sm:px-5 h-10 sm:h-11 font-semibold flex items-center gap-2 text-[11px] sm:text-xs uppercase tracking-wider shadow-lg shadow-black/10 active:scale-95 transition-all"
         >
-          <Plus size={13} strokeWidth={3} />
+          <Plus size={16} strokeWidth={2.5} />
           <span className="hidden xs:inline">Yeni Ürün Ekle</span>
           <span className="xs:hidden">Ekle</span>
         </Button>
       </div>
 
-      <div className="bg-white border-y sm:border rounded-none sm:rounded-2xl shadow-sm overflow-hidden -mx-3 sm:mx-0">
+      <div className="apple-card overflow-hidden">
          <DataTable columns={columns} data={products} searchKey="name" />
       </div>
 
@@ -137,15 +137,15 @@ function InventoryInsightCard({ title, value, desc, color }: any) {
   };
   
   return (
-    <div className="p-3 sm:p-4 bg-white border rounded-xl sm:rounded-2xl flex flex-col gap-0.5 sm:gap-1">
-       <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-widest text-zinc-400">{title}</span>
-       <div className="flex items-baseline gap-1.5 sm:gap-2">
-          <span className="text-lg sm:text-xl font-black text-zinc-900 leading-none">{value}</span>
-          <span className={`px-1 sm:px-1.5 py-0.5 rounded-md sm:rounded-lg text-[7px] sm:text-[8px] font-black uppercase ${colors[color]}`}>
+    <div className="p-4 sm:p-5 apple-card flex flex-col gap-1 sm:gap-1.5">
+       <span className="text-[10px] sm:text-[11px] font-medium uppercase tracking-wider text-zinc-500">{title}</span>
+       <div className="flex items-baseline gap-2 mt-1">
+          <span className="text-2xl sm:text-3xl font-semibold text-zinc-900 leading-none tracking-tight">{value}</span>
+          <span className={`px-1.5 sm:px-2 py-0.5 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-semibold uppercase ${colors[color]}`}>
             {color === 'emerald' ? 'Opt' : color === 'rose' ? 'Krit' : 'Sist'}
           </span>
        </div>
-       <p className="text-[8px] sm:text-[9px] text-zinc-400 font-bold leading-none mt-0.5">{desc}</p>
+       <p className="text-[10px] sm:text-[11px] text-zinc-400 font-medium leading-none mt-1">{desc}</p>
     </div>
   );
 }

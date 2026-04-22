@@ -64,9 +64,9 @@ export function JournalTab() {
             <Button variant="ghost" size="icon" onClick={() => setEditingPost(null)} className="rounded-xl">
               <X size={20} />
             </Button>
-            <h2 className="text-2xl font-black tracking-tight">{editingPost.id ? 'Yazıyı Düzenle' : 'Yeni Yazı'}</h2>
+            <h2 className="text-2xl font-bold tracking-tight">{editingPost.id ? 'Yazıyı Düzenle' : 'Yeni Yazı'}</h2>
           </div>
-          <Button onClick={handleSave} className="bg-black text-white rounded-2xl px-8 font-bold text-xs uppercase tracking-widest">
+          <Button onClick={handleSave} className="bg-zinc-900 text-white rounded-xl px-6 font-semibold text-[11px] uppercase tracking-wider">
             <Save size={14} className="mr-2" /> Kaydet
           </Button>
         </div>
@@ -74,15 +74,15 @@ export function JournalTab() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Başlık</Label>
+              <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Başlık</Label>
               <Input 
                 value={editingPost.title} 
                 onChange={(e) => setEditingPost({...editingPost, title: e.target.value})}
-                className="rounded-xl h-12 font-bold"
+                className="rounded-xl h-12 font-medium"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Kısa Özet</Label>
+              <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Kısa Özet</Label>
               <Textarea 
                 value={editingPost.excerpt} 
                 onChange={(e) => setEditingPost({...editingPost, excerpt: e.target.value})}
@@ -90,7 +90,7 @@ export function JournalTab() {
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Kategori</Label>
+              <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Kategori</Label>
               <Input 
                 value={editingPost.category} 
                 onChange={(e) => setEditingPost({...editingPost, category: e.target.value})}
@@ -100,7 +100,7 @@ export function JournalTab() {
           </div>
           <div className="space-y-6">
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Kapak Görseli URL</Label>
+              <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">Kapak Görseli URL</Label>
               <Input 
                 value={editingPost.image_url} 
                 onChange={(e) => setEditingPost({...editingPost, image_url: e.target.value})}
@@ -114,7 +114,7 @@ export function JournalTab() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">İçerik (Markdown Destekler)</Label>
+          <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">İçerik (Markdown Destekler)</Label>
           <Textarea 
             value={editingPost.content} 
             onChange={(e) => setEditingPost({...editingPost, content: e.target.value})}
@@ -127,12 +127,12 @@ export function JournalTab() {
 
   return (
     <div className="space-y-10">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-2">
         <div>
-          <h2 className="text-3xl font-black tracking-tighter">Stüdyo Günlüğü</h2>
-          <p className="text-zinc-400 text-xs font-medium">Marka hikayelerini ve editorial içerikleri yönetin.</p>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">Stüdyo Günlüğü</h2>
+          <p className="text-zinc-500 text-[11px] font-medium uppercase tracking-wider mt-1">Marka hikayelerini ve editorial içerikleri yönetin.</p>
         </div>
-        <Button onClick={() => setEditingPost({ title: '', excerpt: '', content: '', image_url: '', category: 'Editorial' })} className="bg-black text-white rounded-2xl px-6 font-bold h-12 uppercase text-[10px] tracking-widest">
+        <Button onClick={() => setEditingPost({ title: '', excerpt: '', content: '', image_url: '', category: 'Editorial' })} className="bg-zinc-900 text-white rounded-xl px-4 sm:px-6 font-semibold h-11 uppercase text-[10px] tracking-wider">
           <Plus size={16} className="mr-2" /> Yeni İçerik Ekle
         </Button>
       </div>
@@ -142,20 +142,20 @@ export function JournalTab() {
           <motion.div 
             key={post.id} 
             layoutId={post.id}
-            className="group bg-white border border-zinc-100 rounded-[2rem] overflow-hidden hover:shadow-2xl transition-all duration-500"
+            className="group apple-card rounded-[1.5rem] overflow-hidden hover:-translate-y-1 transition-all duration-300"
           >
-            <div className="aspect-video overflow-hidden">
-              <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+            <div className="aspect-video overflow-hidden relative">
+              <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             </div>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{post.category}</span>
-                <span className="text-[10px] font-bold text-zinc-300">{new Date(post.created_at).toLocaleDateString()}</span>
+            <div className="p-5 sm:p-6">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400">{post.category}</span>
+                <span className="text-[10px] font-medium text-zinc-400">{new Date(post.created_at).toLocaleDateString()}</span>
               </div>
-              <h3 className="text-lg font-black tracking-tight leading-tight mb-3">{post.title}</h3>
-              <p className="text-xs text-zinc-500 line-clamp-2 font-medium leading-relaxed mb-6">{post.excerpt}</p>
+              <h3 className="text-lg font-semibold tracking-tight leading-tight text-zinc-900 mb-2">{post.title}</h3>
+              <p className="text-xs text-zinc-500 line-clamp-2 font-medium leading-relaxed mb-4">{post.excerpt}</p>
               
-              <div className="flex items-center justify-end gap-2 pt-4 border-t border-zinc-50">
+              <div className="flex items-center justify-end gap-2 pt-4 border-t border-zinc-100">
                 <Button variant="ghost" size="icon" onClick={() => setEditingPost(post)} className="w-10 h-10 rounded-xl hover:bg-zinc-100">
                   <Edit size={16} className="text-zinc-400 group-hover:text-black transition-colors" />
                 </Button>
@@ -169,9 +169,9 @@ export function JournalTab() {
       </div>
 
       {posts.length === 0 && !loading && (
-        <div className="h-64 flex flex-col items-center justify-center border-2 border-dashed border-zinc-100 rounded-[3rem]">
-          <BookOpen className="text-zinc-200 mb-4" size={48} />
-          <p className="text-zinc-400 font-bold text-xs uppercase tracking-widest">Henüz yazı bulunmuyor.</p>
+        <div className="h-64 flex flex-col items-center justify-center border border-dashed border-zinc-200 bg-zinc-50/50 rounded-[2rem]">
+          <BookOpen className="text-zinc-300 mb-4" size={48} />
+          <p className="text-zinc-500 font-semibold text-[11px] uppercase tracking-wider">Henüz yazı bulunmuyor.</p>
         </div>
       )}
     </div>

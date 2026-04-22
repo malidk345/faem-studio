@@ -54,13 +54,13 @@ export function RevenueBreakdown({ orders }: RevenueBreakdownProps) {
   }, [categoryData]);
 
   return (
-    <Card data-chart={id} className="flex flex-col border-zinc-100 shadow-sm rounded-[2rem] overflow-hidden h-full">
+    <Card data-chart={id} className="apple-card border-none flex flex-col overflow-hidden h-full">
       <ChartStyle id={id} config={chartConfig} />
-      <CardHeader className="p-8 pb-2">
-        <CardTitle className="text-xl font-black tracking-tight">Kategori Dağılımı</CardTitle>
-        <CardDescription className="text-xs font-medium text-zinc-400">Ürün kategorilerine göre ciro paylaşımı</CardDescription>
+      <CardHeader className="p-5 sm:p-6 lg:p-8 pb-2">
+        <CardTitle className="text-xl sm:text-2xl font-semibold tracking-tight text-zinc-900">Kategori Dağılımı</CardTitle>
+        <CardDescription className="text-xs font-medium text-zinc-500 mt-1">Ürün kategorilerine göre ciro paylaşımı</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-1 flex-col justify-center p-8 pt-2">
+      <CardContent className="flex flex-1 flex-col justify-center p-5 sm:p-6 lg:p-8 pt-2">
         <div className="mx-auto aspect-square w-full max-w-[250px] mb-8">
           <ChartContainer
             id={id}
@@ -94,14 +94,14 @@ export function RevenueBreakdown({ orders }: RevenueBreakdownProps) {
                           <tspan
                             x={viewBox.cx}
                             y={viewBox.cy}
-                            className="fill-zinc-900 text-2xl font-black"
+                            className="fill-zinc-900 text-2xl font-semibold"
                           >
                             ${Math.round(totalRevenue)}
                           </tspan>
                           <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 20}
-                            className="fill-zinc-400 text-[10px] font-bold uppercase tracking-widest"
+                            className="fill-zinc-500 text-[10px] font-medium uppercase tracking-widest"
                           >
                             Toplam
                           </tspan>
@@ -115,16 +115,16 @@ export function RevenueBreakdown({ orders }: RevenueBreakdownProps) {
           </ChartContainer>
         </div>
 
-        <div className="grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-1 gap-2.5">
           {categoryData.slice(0, 4).map((item) => (
-            <div key={item.category} className="flex items-center justify-between p-3 rounded-2xl bg-zinc-50 border border-zinc-100/50">
+            <div key={item.category} className="flex items-center justify-between p-3 rounded-2xl bg-zinc-50/50 hover:bg-zinc-50 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.fill }} />
-                <span className="text-xs font-bold text-zinc-600 truncate max-w-[100px]">{item.category}</span>
+                <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: item.fill }} />
+                <span className="text-sm font-semibold text-zinc-600 truncate max-w-[100px]">{item.category}</span>
               </div>
-              <div className="text-right">
-                <span className="text-xs font-black text-zinc-900">${Math.round(item.amount)}</span>
-                <span className="text-[9px] font-bold text-zinc-400 ml-2">
+              <div className="text-right flex items-center gap-2">
+                <span className="text-sm font-semibold text-zinc-900">${Math.round(item.amount)}</span>
+                <span className="text-[10px] font-medium text-zinc-500 bg-white px-1.5 py-0.5 rounded-md shadow-sm">
                   %{Math.round((item.amount / totalRevenue) * 100)}
                 </span>
               </div>

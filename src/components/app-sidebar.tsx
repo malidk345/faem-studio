@@ -11,6 +11,7 @@ import {
   Users,
   BookOpen,
   Monitor,
+  Mail,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Logo } from "@/components/logo"
@@ -57,6 +58,11 @@ const data = {
           title: "Koleksiyonlar",
           url: "categories",
           icon: LayoutTemplate,
+        },
+        {
+          title: "Mesajlar",
+          url: "messages",
+          icon: Mail,
         },
       ],
     },
@@ -110,8 +116,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Logo size={24} className="text-current" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-black tracking-tight">FAEM Manager</span>
-                  <span className="truncate text-[10px] uppercase font-bold text-zinc-400">Studio Command</span>
+                  <span className="truncate font-semibold tracking-tight text-zinc-900">FAEM Manager</span>
+                  <span className="truncate text-[10px] uppercase font-medium text-zinc-500">Studio Command</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -124,7 +130,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <SidebarNotification />
         <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
