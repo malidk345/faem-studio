@@ -67,32 +67,32 @@
   --font-sans: 'Outfit', system-ui, sans-serif;
   --radius: 4px;
 
-  /* Light Granite / Stone Base */
-  --background: oklch(0.98 0.002 60);
-  --foreground: oklch(0.2 0.01 40);
+  /* Deep Obsidian / Stealth Base */
+  --background: #080808;
+  --foreground: #f2f2f2;
 
-  --card: oklch(0.99 0.001 80);
-  --card-foreground: oklch(0.25 0.01 40);
+  --card: #111111;
+  --card-foreground: #f2f2f2;
 
-  --popover: oklch(0.99 0.001 80);
-  --popover-foreground: oklch(0.25 0.01 40);
+  --popover: #0c0c0c;
+  --popover-foreground: #f2f2f2;
 
-  --primary: oklch(0.32 0.02 40);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: #ffffff;
+  --primary-foreground: #000000;
 
-  --secondary: oklch(0.94 0.01 80);
-  --secondary-foreground: oklch(0.32 0.02 40);
+  --secondary: #1a1a1a;
+  --secondary-foreground: #ffffff;
 
-  --muted: oklch(0.94 0.01 80);
-  --muted-foreground: oklch(0.55 0.01 40);
+  --muted: #1a1a1a;
+  --muted-foreground: #888888;
 
-  --accent: oklch(0.92 0.01 80);
-  --accent-foreground: oklch(0.32 0.02 40);
+  --accent: #222222;
+  --accent-foreground: #ffffff;
 
-  --destructive: oklch(0.55 0.2 25);
-  --border: oklch(0.88 0.005 80);
-  --input: oklch(0.88 0.005 80);
-  --ring: oklch(0.32 0.02 40);
+  --destructive: #991b1b;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.08);
+  --ring: #ffffff;
 }
 
 /* ===========================
@@ -131,9 +131,9 @@
     -webkit-font-smoothing: antialiased;
     background-color: var(--background);
     color: var(--foreground);
-    background-image:
-      radial-gradient(at 0% 0%, rgba(0, 0, 0, 0.01) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(0, 0, 0, 0.01) 0px, transparent 50%);
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.02) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.01) 0px, transparent 50%);
   }
 
   body::after {
@@ -141,9 +141,10 @@
     position: fixed;
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.015;
+    opacity: 0.025;
     pointer-events: none;
     z-index: -1;
+    filter: invert(1); /* Invert noise for dark background */
   }
 
   /* ── Brunello 'Mastery' Glass — Shadowless ── */
@@ -212,15 +213,16 @@
   }
 
   .apple-card {
-    background: #ffffff;
-    border: 1px solid rgba(0, 0, 0, 0.04);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+    background: #111111;
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.2);
     border-radius: 20px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
-
+  
   .apple-card:hover {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+    border-color: rgba(255,255,255,0.1);
   }
 
   .admin-theme {
@@ -372,7 +374,7 @@ html {
 
 body {
   background-color: var(--background);
-  color: #0C0C0C;
+  color: var(--foreground);
   font-family: "SF Pro Text", "SF Pro Icons", "AOS Icons", "Helvetica Neue", Helvetica, Arial, sans-serif, system-ui;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

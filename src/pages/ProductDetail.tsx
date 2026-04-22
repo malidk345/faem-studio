@@ -284,20 +284,20 @@ export default function ProductDetail() {
   if (!product || product.error) {
     return (
       <div className="h-screen flex flex-col items-center justify-center gap-6 p-8 text-center bg-background">
-        <div className="w-14 h-14 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-400 border border-neutral-200">
+        <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-500 border border-white/5">
           <span className="text-lg font-bold">!</span>
         </div>
         <div className="space-y-2">
-          <h2 className="text-xl font-bold tracking-tight text-neutral-800">{t('product.access_restricted')}</h2>
-          <p className="text-neutral-400 max-w-sm text-[13px] leading-relaxed">
+          <h2 className="text-xl font-bold tracking-tight text-foreground">{t('product.access_restricted')}</h2>
+          <p className="text-zinc-500 max-w-sm text-[13px] leading-relaxed">
             {product?.error || t('product.error_desc')}
           </p>
         </div>
         <div className="flex flex-col gap-3 w-full max-w-[220px]">
-          <button onClick={() => window.location.reload()} className="bg-neutral-800 text-white px-6 py-3.5 rounded-xl font-bold text-[11px] uppercase tracking-widest active:scale-95 transition-all">
+          <button onClick={() => window.location.reload()} className="bg-foreground text-background px-6 py-3.5 rounded-xl font-bold text-[11px] uppercase tracking-widest active:scale-95 transition-all">
             {t('product.retry')}
           </button>
-          <button onClick={() => navigate('/shop')} className="text-neutral-400 px-6 py-3 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:text-neutral-800 transition-all">
+          <button onClick={() => navigate('/shop')} className="text-zinc-500 px-6 py-3 rounded-xl font-bold text-[11px] uppercase tracking-widest hover:text-foreground transition-all">
             {t('product.back_to_gallery')}
           </button>
         </div>
@@ -364,76 +364,97 @@ export default function ProductDetail() {
               className="flex flex-col gap-4"
             >
               {/* Category */}
-              <div className="flex items-center gap-3 mb-2">
-                <span className="px-3 py-1 bg-zinc-100 text-zinc-600 rounded-lg text-[10px] font-bold tracking-widest uppercase">
-                  {product.category}
-                </span>
-                <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">
-                  REF. {product.id?.substring(0, 6).toUpperCase()}
-                </span>
+              <div className="flex items-center gap-3">
+                 <span className="text-[10px] font-black tracking-widest uppercase text-zinc-500">
+                    {product.category} — {product.id?.substring(0,6).toUpperCase()}
+                 </span>
               </div>
 
-              {/* Name + Price */}
-              <div className="flex flex-col gap-3">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-zinc-900 leading-tight">
-                  {product.name}
-                </h1>
-                <div className="flex items-center gap-3">
-                  {product.discount_price ? (
-                    <>
-                      <p className="text-lg font-bold tracking-tight line-through text-zinc-400">
-                        {product.price}
-                      </p>
-                      <p className="text-2xl font-black tracking-tight text-rose-600">
-                        {product.discount_price}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-2xl font-black tracking-tight text-zinc-900">
+              {/* Name */}
+              <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground leading-tight">
+                {product.name}
+              </h1>
+
+              {/* Price */}
+              <div className="flex items-center gap-3 mt-1">
+                {product.discount_price ? (
+                  <>
+                    <p className="text-xl font-bold tracking-tight text-rose-500">
+                      {product.discount_price}
+                    </p>
+                    <p className="text-lg font-medium tracking-tight line-through text-zinc-600">
                       {product.price}
                     </p>
-                  )}
+                  </>
+                ) : (
+                  <p className="text-2xl font-black tracking-tight text-foreground">
+                    {product.price}
+                  </p>
+                )}
+              </div>
+
+              {/* BUYING UI INTEGRATED */}
+              <div className="flex flex-col gap-6 mt-8 pt-8 border-t border-white/5">
+                {/* Size Selection Swatches */}
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black uppercase tracking-widest text-foreground">BEDEN SEÇ</span>
+                    <button className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest hover:text-foreground transition-colors">Size Guide</button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {product.sizes.map((size: string) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`h-12 min-w-[60px] px-4 rounded-xl font-black text-xs transition-all border
+                          ${selectedSize === size 
+                            ? 'bg-foreground text-background border-foreground' 
+                            : 'bg-white/5 border-white/5 text-zinc-500 hover:border-white/20 hover:text-foreground'}`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Add to Cart Button */}
+                <button 
+                  onClick={handleAddToCart}
+                  className="w-full h-16 bg-foreground text-background rounded-2xl font-black text-xs uppercase tracking-[0.2em] hover:bg-zinc-200 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+                >
+                  Sepete Ekle
+                </button>
+
+                {/* Secondary Actions */}
+                <div className="grid grid-cols-2 gap-3">
+                   <button onClick={toggleWishlist} className="h-12 flex items-center justify-center gap-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
+                      <Heart size={14} className={isWishlisted ? 'fill-foreground text-foreground' : 'text-zinc-500'} />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Favorilere Ekle</span>
+                   </button>
+                   <button onClick={() => navigator.clipboard.writeText(window.location.href)} className="h-12 flex items-center justify-center gap-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
+                      <Share2 size={14} className="text-zinc-500" />
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Paylaş</span>
+                   </button>
                 </div>
               </div>
 
-              {/* Utility Grid - Refined Layout */}
-              <div className="grid grid-cols-4 gap-2 mt-4">
-                {[
-                  { icon: Heart, label: 'Kaydet', action: toggleWishlist, loading: wishlistLoading, active: isWishlisted },
-                  { icon: Share2, label: 'Paylaş', action: () => navigator.clipboard.writeText(window.location.href) },
-                  { icon: MessageSquare, label: 'Yorum', action: () => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' }) },
-                  { icon: Ruler, label: 'Beden' }
-                ].map((item, idx) => (
-                  <button
-                    key={idx}
-                    onClick={item.action}
-                    disabled={item.loading}
-                    className={`h-14 flex flex-col items-center justify-center gap-1.5 rounded-2xl transition-all border
-                      ${item.active ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900'}`}
-                  >
-                    {item.loading ? <Loader2 size={16} className="animate-spin" /> : <item.icon size={16} className={item.active ? 'fill-current' : ''} />}
-                    <span className="text-[9px] font-bold uppercase tracking-widest">{item.label}</span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Description & Technical Specs — Apple Card Style */}
-              <div className="flex flex-col gap-4 mt-6">
-                <div className="p-6 md:p-8 rounded-[2rem] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group">
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 block mb-4">Açıklama</span>
-                  <p className="text-sm leading-relaxed text-zinc-600 font-medium">
+              {/* Description & Technical Specs — Minimalist */}
+              <div className="flex flex-col gap-8 mt-12">
+                <div className="space-y-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Ürün Açıklaması</span>
+                  <p className="text-sm leading-relaxed text-zinc-400 font-medium">
                     {product.description}
                   </p>
                 </div>
 
                 {product.features && product.features.length > 0 && (
-                  <div className="p-6 md:p-8 rounded-[2rem] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group">
-                    <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 block mb-4">Özellikler</span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                  <div className="space-y-4">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Teknik Detaylar</span>
+                    <div className="grid grid-cols-1 gap-y-3">
                       {product.features.map((f: string, i: number) => (
                         <div key={i} className="flex items-center gap-3">
-                          <div className="w-1.5 h-1.5 rounded-full bg-zinc-300" />
-                          <span className="text-xs font-bold text-zinc-600 uppercase tracking-widest">{f}</span>
+                          <div className="w-1.5 h-1.5 rounded-full bg-zinc-800" />
+                          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">{f}</span>
                         </div>
                       ))}
                     </div>
@@ -456,9 +477,9 @@ export default function ProductDetail() {
       </div>
 
       {/* ─── RELATED ─── */}
-      <div className="px-4 md:px-10 py-16">
+      <div className="px-4 md:px-10 py-16 border-t border-white/5">
         <div className="max-w-[1100px] mx-auto flex flex-col gap-8">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400">
+          <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
             {t('product.also_like')}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -466,10 +487,10 @@ export default function ProductDetail() {
               <button
                 key={p.id}
                 onClick={() => navigate(`/product/${p.id}`)}
-                className="group flex flex-col gap-3 text-left apple-card p-2 border-transparent hover:border-zinc-200 transition-all"
+                className="group flex flex-col gap-3 text-left apple-card p-2 border-transparent hover:border-white/10 transition-all"
               >
                 <div
-                  className="w-full overflow-hidden rounded-xl bg-zinc-50"
+                  className="w-full overflow-hidden rounded-xl bg-white/5"
                   style={{ aspectRatio: '3/4' }}
                 >
                   <img
@@ -480,7 +501,7 @@ export default function ProductDetail() {
                   />
                 </div>
                 <div className="px-2 pb-2">
-                  <h4 className="text-sm font-bold tracking-tight text-zinc-900 line-clamp-1">
+                  <h4 className="text-sm font-bold tracking-tight text-foreground line-clamp-1">
                     {p.name}
                   </h4>
                   <p className="text-xs font-bold text-zinc-500 mt-1">
@@ -493,18 +514,20 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* Fixed floating selection card */}
-      <ProductSelectionCard
-        product={product}
-        quantity={quantity}
-        selectedSize={selectedSize}
-        isExpanded={isExpanded}
-        setIsExpanded={setIsExpanded}
-        setSelectedSize={setSelectedSize}
-        handleDecrease={() => setQuantity(q => Math.max(1, q - 1))}
-        handleIncrease={() => setQuantity(q => q + 1)}
-        handleAddToCart={handleAddToCart}
-      />
+      {/* Floating selection card hidden on desktop as it's integrated above */}
+      <div className="md:hidden">
+        <ProductSelectionCard
+          product={product}
+          quantity={quantity}
+          selectedSize={selectedSize}
+          isExpanded={isExpanded}
+          setIsExpanded={setIsExpanded}
+          setSelectedSize={setSelectedSize}
+          handleDecrease={() => setQuantity(q => Math.max(1, q - 1))}
+          handleIncrease={() => setQuantity(q => q + 1)}
+          handleAddToCart={handleAddToCart}
+        />
+      </div>
     </div>
   );
 }
