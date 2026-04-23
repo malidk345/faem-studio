@@ -22,19 +22,8 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState('All');
   const [availableCats, setAvailableCats] = useState<string[]>(['All']);
 
-  const fallbackSlides = [
-    {
-      id: 1,
-      tag: 'ARCHIVE_001 // CORE',
-      headline: t('home.hero_1_title').split('\n'),
-      sub: t('home.hero_1_sub'),
-      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600&auto=format&fit=crop',
-      link: '/shop'
-    }
-  ];
-
-  const currentSlides = slides.length > 0 ? slides : fallbackSlides;
-  const slide = currentSlides[activeSlide] || fallbackSlides[0];
+  const currentSlides = slides;
+  const slide = currentSlides[activeSlide] || null;
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -105,64 +94,68 @@ export default function Home() {
       {/* ─── SINEMATIK HERO ─── */}
       <section className="relative h-screen overflow-hidden">
         <AnimatePresence mode="wait">
-          <motion.div
-            key={slide.id}
-            className="absolute inset-0"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <motion.img
-              src={slide.image}
-              alt={slide.headline.join(' ')}
-              className="w-full h-full object-cover grayscale-[0.1]"
-              style={{ willChange: "transform" }}
-              initial={{ scale: 1.1 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 10, ease: [0.16, 1, 0.3, 1] }}
-            />
-            <div className="absolute inset-0 bg-black/5" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/10" />
-          </motion.div>
+          {slide && (
+            <motion.div
+              key={slide.id}
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <motion.img
+                src={slide.image}
+                alt={slide.headline.join(' ')}
+                className="w-full h-full object-cover grayscale-[0.1]"
+                style={{ willChange: "transform" }}
+                initial={{ scale: 1.1 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 10, ease: [0.16, 1, 0.3, 1] }}
+              />
+              <div className="absolute inset-0 bg-black/5" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/10" />
+            </motion.div>
+          )}
         </AnimatePresence>
 
         {/* Hero Content: Editorial & Technical */}
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
           <AnimatePresence mode="wait">
-            <motion.div
-              key={slide.id + '_content'}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-              className="max-w-5xl"
-            >
-              <div className="flex flex-col items-center gap-6 mb-10">
-                <span className="text-[14px] font-normal uppercase tracking-[0.4em] text-white/50 font-['Handjet',sans-serif] drop-shadow-sm">
-                  {slide.tag}
-                </span>
-                <div className="w-[1px] h-12 bg-white/20" />
-              </div>
-
-              <h1 className="text-[clamp(2.5rem,7vw,6rem)] font-bold tracking-tighter leading-[0.9] text-white drop-shadow-2xl mb-12">
-                {slide.headline.map((line, i) => (
-                  <span key={i} className="block">{line}</span>
-                ))}
-              </h1>
-
-              <div className="flex justify-center mt-12">
-                <Link 
-                  to={slide.link} 
-                  className="group relative overflow-hidden bg-white/95 backdrop-blur-xl text-black px-12 py-5 rounded-[2px] transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-2xl"
-                >
-                  <span className="relative z-10 flex items-center gap-6">
-                    <span className="text-[20px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">{slide.buttonText || 'ARŞİVİ KEŞFET'}</span>
-                    <ArrowUpRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform opacity-40 group-hover:opacity-100" />
+            {slide && (
+              <motion.div
+                key={slide.id + '_content'}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                className="max-w-5xl"
+              >
+                <div className="flex flex-col items-center gap-6 mb-10">
+                  <span className="text-[14px] font-normal uppercase tracking-[0.4em] text-white/50 font-['Handjet',sans-serif] drop-shadow-sm">
+                    {slide.tag}
                   </span>
-                </Link>
-              </div>
-            </motion.div>
+                  <div className="w-[1px] h-12 bg-white/20" />
+                </div>
+
+                <h1 className="text-[clamp(2.5rem,7vw,6rem)] font-bold tracking-tighter leading-[0.9] text-white drop-shadow-2xl mb-12">
+                  {slide.headline.map((line: string, i: number) => (
+                    <span key={i} className="block">{line}</span>
+                  ))}
+                </h1>
+
+                <div className="flex justify-center mt-12">
+                  <Link 
+                    to={slide.link} 
+                    className="group relative overflow-hidden bg-white/95 backdrop-blur-xl text-black px-12 py-5 rounded-[2px] transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-2xl"
+                  >
+                    <span className="relative z-10 flex items-center gap-6">
+                      <span className="text-[20px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">{slide.buttonText || 'ARŞİVİ KEŞFET'}</span>
+                      <ArrowUpRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform opacity-40 group-hover:opacity-100" />
+                    </span>
+                  </Link>
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
 
           <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-8 hidden md:flex">

@@ -124,6 +124,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
       name: formData.name,
       price: formData.price.toString().includes('₺') ? formData.price : `${formData.price} ₺`,
       category: formData.category,
+      collection: formData.collection,
       image_url: formData.image_url,
       images: formData.images,
       features: formData.features,

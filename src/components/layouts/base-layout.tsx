@@ -4,8 +4,6 @@ import * as React from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
-import { ThemeCustomizer, ThemeCustomizerTrigger } from "@/components/theme-customizer"
-import { UpgradeToProButton } from "@/components/upgrade-to-pro-button"
 import { useSidebarConfig } from "@/hooks/use-sidebar-config"
 import {
   SidebarInset,
@@ -93,13 +91,6 @@ export function BaseLayout({ children, title, description }: BaseLayoutProps) {
         </>
       )}
       
-      {/* Theme Customizer */}
-      <ThemeCustomizerTrigger onClick={() => setThemeCustomizerOpen(true)} />
-      <ThemeCustomizer 
-        open={themeCustomizerOpen} 
-        onOpenChange={setThemeCustomizerOpen} 
-      />
-      <UpgradeToProButton />
     </SidebarProvider>
   )
 }
