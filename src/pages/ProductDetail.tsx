@@ -175,6 +175,7 @@ export default function ProductDetail() {
   const [userWeight, setUserWeight] = useState('');
   const [recommendedSize, setRecommendedSize] = useState<string | null>(null);
   const [shareToast, setShareToast] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -302,28 +303,12 @@ export default function ProductDetail() {
         console.log("🔗 [Share] Using Navigator API");
         await navigator.share(shareData);
       } else {
-        throw new Error('Navigator share not supported');
+        setShowShareModal(true);
       }
     } catch (err) {
-      console.log("🔗 [Share] Falling back to clipboard", err);
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        setShareToast(true);
-        setTimeout(() => setShareToast(false), 2000);
-      } catch (clipErr) {
-        console.error("🔗 [Share] Clipboard API failed, using execCommand", clipErr);
-        const textArea = document.createElement("textarea");
-        textArea.value = window.location.href;
-        document.body.appendChild(textArea);
-        textArea.select();
-        try {
-          document.execCommand('copy');
-          setShareToast(true);
-          setTimeout(() => setShareToast(false), 2000);
-        } catch (execErr) {
-          console.error("🔗 [Share] All share methods failed", execErr);
-        }
-        document.body.removeChild(textArea);
+      console.log("🔗 [Share] Error or Cancelled", err);
+      if (err instanceof Error && err.name !== 'AbortError') {
+        setShowShareModal(true);
       }
     }
   };
@@ -446,7 +431,7 @@ export default function ProductDetail() {
 
               {/* Name + Price */}
               <div className="flex flex-col gap-3">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-black tracking-tighter text-zinc-900 leading-tight">
+                <h1 className="text-2xl md:text-3xl font-black tracking-tight text-zinc-900 leading-none">
                   {product.name}
                 </h1>
                 <div className="flex items-center gap-3">
@@ -563,6 +548,69 @@ export default function ProductDetail() {
           </div>
         </div>
       </div>
+
+      {/* Share Modal (Custom UI for Share Screen) */}
+      <AnimatePresence>
+        {showShareModal && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowShareModal(false)}
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200]"
+            />
+            <motion.div 
+              initial={{ opacity: 0, y: '100%' }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: '100%' }}
+              className="fixed bottom-0 left-0 right-0 md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:bottom-auto w-full md:max-w-[360px] bg-white z-[201] p-6 md:p-8 rounded-t-[32px] md:rounded-[32px] shadow-2xl"
+            >
+              <div className="flex flex-col gap-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xl font-bold tracking-tighter uppercase">Paylaş</h3>
+                  <button onClick={() => setShowShareModal(false)} className="p-2 hover:bg-zinc-50 rounded-full transition-colors">
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-4 gap-4">
+                  {[
+                    { name: 'WhatsApp', icon: 'https://cdn-icons-png.flaticon.com/512/733/733585.png', url: `https://wa.me/?text=${encodeURIComponent(window.location.href)}` },
+                    { name: 'Telegram', icon: 'https://cdn-icons-png.flaticon.com/512/2111/2111646.png', url: `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}` },
+                    { name: 'Twitter', icon: 'https://cdn-icons-png.flaticon.com/512/3256/3256013.png', url: `https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}` },
+                    { name: 'Link', icon: 'https://cdn-icons-png.flaticon.com/512/1621/1621635.png', action: () => {
+                      navigator.clipboard.writeText(window.location.href);
+                      setShowShareModal(false);
+                      setShareToast(true);
+                      setTimeout(() => setShareToast(false), 2000);
+                    }}
+                  ].map((app, i) => (
+                    <a 
+                      key={i}
+                      href={app.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => {
+                        if (app.action) {
+                          e.preventDefault();
+                          app.action();
+                        }
+                      }}
+                      className="flex flex-col items-center gap-2 group"
+                    >
+                      <div className="w-12 h-12 rounded-2xl bg-zinc-50 flex items-center justify-center group-hover:bg-zinc-100 transition-colors border border-zinc-100">
+                        <img src={app.icon} alt={app.name} className="w-6 h-6 grayscale group-hover:grayscale-0 transition-all" />
+                      </div>
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-400 group-hover:text-black">{app.name}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Fixed floating selection card */}
       <ProductSelectionCard
