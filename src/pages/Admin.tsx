@@ -22,6 +22,8 @@ import { HelpTab } from '../components/Admin/Tabs/HelpTab';
 import { CmsTab } from '../components/Admin/Tabs/CmsTab';
 import { MessagesTab } from '../components/Admin/Tabs/MessagesTab';
 import { HeaderNotifications } from '../components/Admin/HeaderNotifications';
+import { BulkImportModal } from '../components/Admin/Modals/BulkImportModal';
+import { toast } from 'sonner';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -29,7 +31,7 @@ export default function Admin() {
   const { 
     isAdmin, products, orders, categories, messages, customers, settings, loading, 
     deleteProduct, publishProduct, addCategory, updateProduct, updateOrderStatus,
-    toggleMessageRead, deleteMessage, updateSettings 
+    toggleMessageRead, deleteMessage, updateSettings, refreshData, clearAllProducts 
   } = useAdminData();
   
   const [searchParams] = useSearchParams();
@@ -38,6 +40,7 @@ export default function Admin() {
   // View State for Product Management (Listing vs Editing)
   const [isEditing, setIsEditing] = React.useState(false);
   const [editingProduct, setEditingProduct] = React.useState<any>(null);
+  const [isBulkImportOpen, setIsBulkImportOpen] = React.useState(false);
 
   // Sync edit state with tab changes
   React.useEffect(() => {
@@ -127,8 +130,10 @@ export default function Admin() {
                   <ProductsTab 
                     products={products} 
                     onAdd={() => { setEditingProduct(null); setIsEditing(true); }} 
+                    onBulkImport={() => setIsBulkImportOpen(true)}
                     onEdit={(p) => { setEditingProduct(p); setIsEditing(true); }}
                     onDelete={deleteProduct} 
+                    onClearAll={clearAllProducts}
                   />
                 )
               )}
@@ -144,8 +149,17 @@ export default function Admin() {
             </motion.div>
           </AnimatePresence>
         </main>
-      </SidebarInset>
-    </SidebarProvider>
+        </SidebarInset>
+      </SidebarProvider>
+
+      <BulkImportModal 
+        isOpen={isBulkImportOpen} 
+        onClose={() => setIsBulkImportOpen(false)} 
+        refreshData={refreshData}
+        onSuccess={() => {
+          setIsBulkImportOpen(false);
+        }}
+      />
     </div>
   );
 }

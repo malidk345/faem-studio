@@ -200,6 +200,12 @@ export function useAdminData() {
     return { error };
   };
 
+  const clearAllProducts = async () => {
+    const { error } = await supabase.from('products').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (!error) fetchData();
+    return { error };
+  };
+
   return {
     isAdmin,
     products,
@@ -211,6 +217,7 @@ export function useAdminData() {
     loading,
     refreshData: fetchData,
     deleteProduct,
+    clearAllProducts,
     addCategory,
     publishProduct,
     updateProduct,

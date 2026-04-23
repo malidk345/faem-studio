@@ -8,7 +8,7 @@ import {
   SelectTrigger, SelectValue
 } from "@/components/ui/select";
 import { 
-  Plus, X, ChevronLeft, Save, Trash2, Upload, Loader2, Image as ImageIcon, CheckCircle2
+  Plus, X, ChevronLeft, Save, Trash2, Upload, Loader2, Image as ImageIcon, CheckCircle2, Link as LinkIcon
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
@@ -38,6 +38,9 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
   const [newFeature, setNewFeature] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const galleryInputRef = useRef<HTMLInputElement>(null);
+  const [showImageUrlInput, setShowImageUrlInput] = useState(false);
+  const [showGalleryUrlInput, setShowGalleryUrlInput] = useState(false);
+  const [tempGalleryUrl, setTempGalleryUrl] = useState('');
 
   useEffect(() => {
     if (product) {
@@ -167,8 +170,35 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
           <section className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between px-1">
               <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Master Source</Label>
-              {formData.image_url && <CheckCircle2 size={12} className="text-emerald-500" />}
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setShowImageUrlInput(!showImageUrlInput)}
+                  className={`p-1.5 rounded-lg transition-all ${showImageUrlInput ? 'bg-black text-white' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'}`}
+                  title="Link ile Ekle"
+                >
+                  <LinkIcon size={12} />
+                </button>
+                {formData.image_url && <CheckCircle2 size={12} className="text-emerald-500" />}
+              </div>
             </div>
+
+            {showImageUrlInput && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-2 overflow-hidden"
+              >
+                <div className="relative">
+                  <Input 
+                    placeholder="Görsel linkini yapıştırın..."
+                    value={formData.image_url}
+                    onChange={(e) => setFormData((prev: any) => ({ ...prev, image_url: e.target.value }))}
+                    className="h-10 bg-zinc-50 border-zinc-100 focus:border-black rounded-xl text-[10px] font-bold"
+                  />
+                </div>
+              </motion.div>
+            )}
             
             <motion.div 
               whileHover={{ scale: 0.99 }}
@@ -202,8 +232,63 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
           <section className="space-y-4">
             <div className="flex items-center justify-between px-1">
               <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">Studio Gallery</Label>
-              <span className="text-[10px] font-bold text-zinc-300 italic">{formData.images.length} Loaded</span>
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setShowGalleryUrlInput(!showGalleryUrlInput)}
+                  className={`p-1.5 rounded-lg transition-all ${showGalleryUrlInput ? 'bg-black text-white' : 'bg-zinc-100 text-zinc-500 hover:bg-zinc-200'}`}
+                  title="Link ile Ekle"
+                >
+                  <LinkIcon size={12} />
+                </button>
+                <span className="text-[10px] font-bold text-zinc-300 italic">{formData.images.length} Loaded</span>
+              </div>
             </div>
+
+            {showGalleryUrlInput && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="space-y-2 overflow-hidden"
+              >
+                <div className="flex gap-2">
+                  <Input 
+                    placeholder="Galeri görsel linki..."
+                    value={tempGalleryUrl}
+                    onChange={(e) => setTempGalleryUrl(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (tempGalleryUrl.trim()) {
+                          setFormData((prev: any) => ({
+                            ...prev,
+                            images: [...prev.images, { id: crypto.randomUUID(), url: tempGalleryUrl.trim() }]
+                          }));
+                          setTempGalleryUrl('');
+                        }
+                      }
+                    }}
+                    className="h-10 bg-zinc-50 border-zinc-100 focus:border-black rounded-xl text-[10px] font-bold flex-1"
+                  />
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      if (tempGalleryUrl.trim()) {
+                        setFormData((prev: any) => ({
+                          ...prev,
+                          images: [...prev.images, { id: crypto.randomUUID(), url: tempGalleryUrl.trim() }]
+                        }));
+                        setTempGalleryUrl('');
+                      }
+                    }}
+                    className="h-10 rounded-xl px-3 border-zinc-100 hover:bg-zinc-100"
+                  >
+                    <Plus size={14} />
+                  </Button>
+                </div>
+              </motion.div>
+            )}
             
             <div className="grid grid-cols-2 xs:grid-cols-3 gap-3">
               <AnimatePresence>

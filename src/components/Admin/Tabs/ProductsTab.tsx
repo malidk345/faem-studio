@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataTable } from "../Theme/tasks/components/data-table";
 import { 
-  Plus, MoreHorizontal 
+  Plus, MoreHorizontal, FileSpreadsheet, Trash2 
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,11 +9,13 @@ import { Badge } from "@/components/ui/badge";
 interface ProductsTabProps {
   products: any[];
   onAdd: () => void;
+  onBulkImport: () => void;
   onEdit: (product: any) => void;
   onDelete: (id: string) => void;
+  onClearAll: () => void;
 }
 
-export function ProductsTab({ products, onAdd, onEdit, onDelete }: ProductsTabProps) {
+export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, onClearAll }: ProductsTabProps) {
   const columns = [
     {
       accessorKey: "image",
@@ -89,14 +91,37 @@ export function ProductsTab({ products, onAdd, onEdit, onDelete }: ProductsTabPr
            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">Envanter Yönetimi</h2>
            <p className="text-zinc-500 text-[11px] font-medium uppercase tracking-wider mt-1">Mağaza Kataloğu</p>
         </div>
-        <Button 
-          onClick={onAdd}
-          className="bg-black text-white hover:bg-zinc-800 rounded-2xl px-4 sm:px-5 h-10 sm:h-11 font-semibold flex items-center gap-2 text-[11px] sm:text-xs uppercase tracking-wider shadow-lg shadow-black/10 active:scale-95 transition-all"
-        >
-          <Plus size={16} strokeWidth={2.5} />
-          <span className="hidden xs:inline">Yeni Ürün Ekle</span>
-          <span className="xs:hidden">Ekle</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button 
+            onClick={() => {
+              if (window.confirm('Tüm kataloğu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.')) {
+                onClearAll();
+              }
+            }}
+            variant="ghost"
+            className="text-rose-500 hover:bg-rose-50 rounded-2xl px-4 sm:px-5 h-10 sm:h-11 font-semibold flex items-center gap-2 text-[11px] sm:text-xs uppercase tracking-wider active:scale-95 transition-all"
+          >
+            <Trash2 size={16} strokeWidth={2.5} />
+            <span className="hidden xs:inline">Temizle</span>
+          </Button>
+          <Button 
+            onClick={onBulkImport}
+            variant="outline"
+            className="border-zinc-200 text-zinc-600 hover:bg-zinc-50 rounded-2xl px-4 sm:px-5 h-10 sm:h-11 font-semibold flex items-center gap-2 text-[11px] sm:text-xs uppercase tracking-wider active:scale-95 transition-all"
+          >
+            <FileSpreadsheet size={16} strokeWidth={2.5} className="text-emerald-600" />
+            <span className="hidden xs:inline">Toplu Yükle</span>
+            <span className="xs:hidden">Excel</span>
+          </Button>
+          <Button 
+            onClick={onAdd}
+            className="bg-black text-white hover:bg-zinc-800 rounded-2xl px-4 sm:px-5 h-10 sm:h-11 font-semibold flex items-center gap-2 text-[11px] sm:text-xs uppercase tracking-wider shadow-lg shadow-black/10 active:scale-95 transition-all"
+          >
+            <Plus size={16} strokeWidth={2.5} />
+            <span className="hidden xs:inline">Yeni Ürün Ekle</span>
+            <span className="xs:hidden">Ekle</span>
+          </Button>
+        </div>
       </div>
 
       <div className="apple-card overflow-hidden">
