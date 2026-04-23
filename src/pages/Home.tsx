@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUpRight, ArrowRight } from 'lucide-react';
@@ -19,8 +20,8 @@ export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
   const [slides, setSlides] = useState<any[]>([]);
   const [loadingSlides, setLoadingSlides] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('All');
-  const [availableCats, setAvailableCats] = useState<string[]>(['All']);
+  const [activeCollection, setActiveCollection] = useState('All');
+  const [availableColls, setAvailableColls] = useState<string[]>(['All']);
 
   const currentSlides = slides;
   const slide = currentSlides[activeSlide] || null;
@@ -30,12 +31,12 @@ export default function Home() {
       // Fetch Products with selective columns for performance
       let query = supabase
         .from('products')
-        .select('id, name, price, image_url, category, discount_price, description, images, features, sizes')
+        .select('id, name, price, image_url, category, collection, discount_price, description, images, features, sizes')
         .limit(8)
         .order('created_at', { ascending: false });
 
-      if (activeCategory !== 'All') {
-        query = query.eq('category', activeCategory);
+      if (activeCollection !== 'All') {
+        query = query.eq('collection', activeCollection);
       }
 
       const { data: pData } = await query;
@@ -47,14 +48,15 @@ export default function Home() {
           image: p.image_url,
           images: p.images || [],
           category: p.category,
+          collection: p.collection,
           discount_price: p.discount_price
         })));
       }
 
-      // Fetch Categories for Filter
-      const { data: catData } = await supabase.from('categories').select('name');
-      if (catData) {
-        setAvailableCats(['All', ...catData.map(c => c.name)]);
+      // Fetch Collections for Filter
+      const { data: collData } = await supabase.from('collections').select('name');
+      if (collData) {
+        setAvailableColls(['All', ...collData.map(c => c.name)]);
       }
 
       // Fetch Hero Slides from CMS
@@ -71,7 +73,7 @@ export default function Home() {
           headline: (s.title || '').split('\n'),
           sub: s.subtitle,
           image: s.image_url,
-          link: s.button_link === 'all' || !s.button_link ? '/shop' : `/shop?category=${s.button_link}`,
+          link: s.button_link === 'all' || !s.button_link ? '/shop' : `/shop?collection=${s.button_link}`,
           buttonText: s.button_text || 'ARŞİVİ KEŞFET'
         })));
       }
@@ -86,7 +88,7 @@ export default function Home() {
     }, 6000);
 
     return () => clearInterval(interval);
-  }, [currentSlides.length, activeCategory]);
+  }, [currentSlides.length, activeCollection]);
 
   return (
     <div className="bg-white text-foreground transition-colors duration-500 overflow-x-hidden">
@@ -199,18 +201,17 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Home Category Filter */}
         <div className="flex items-center gap-8 mb-16 overflow-x-auto hide-scrollbar pb-4 border-b border-zinc-100">
-          {availableCats.map(cat => (
+          {availableColls.map(coll => (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
+              key={coll}
+              onClick={() => setActiveCollection(coll)}
               className={`text-[12px] font-black uppercase tracking-[0.2em] transition-all relative
-                ${activeCategory === cat ? 'text-black' : 'text-zinc-300 hover:text-zinc-500'}`}
+                ${activeCollection === coll ? 'text-black' : 'text-zinc-300 hover:text-zinc-500'}`}
             >
-              {cat === 'All' ? 'TÜMÜ' : cat}
-              {activeCategory === cat && (
-                <motion.div layoutId="catUnderline" className="absolute -bottom-4 left-0 right-0 h-[2px] bg-black" />
+              {coll === 'All' ? t('shop.all_categories') : coll}
+              {activeCollection === coll && (
+                <motion.div layoutId="collUnderline" className="absolute -bottom-4 left-0 right-0 h-[2px] bg-black" />
               )}
             </button>
           ))}

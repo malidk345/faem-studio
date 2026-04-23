@@ -15,10 +15,10 @@ import {
 } from 'lucide-react';
 
 interface CmsTabProps {
-  categories: any[];
+  collections: any[];
 }
 
-export function CmsTab({ categories }: CmsTabProps) {
+export function CmsTab({ collections }: CmsTabProps) {
   const [heroSlides, setHeroSlides] = useState<any[]>([]);
   const [promotions, setPromotions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -210,9 +210,9 @@ export function CmsTab({ categories }: CmsTabProps) {
                       </SelectTrigger>
                       <SelectContent className="rounded-2xl border-zinc-100 shadow-xl p-2">
                         <SelectItem value="all" className="rounded-xl font-medium py-2">Tüm Ürünler</SelectItem>
-                        {categories.map((cat, i) => (
-                          <SelectItem key={i} value={cat.name || cat} className="rounded-xl font-medium py-2">
-                            {cat.name || cat}
+                        {collections.map((coll, i) => (
+                          <SelectItem key={i} value={coll.name || coll} className="rounded-xl font-medium py-2">
+                            {coll.name || coll}
                           </SelectItem>
                         ))}
                       </SelectContent>

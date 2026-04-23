@@ -125,9 +125,11 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
       price: formData.price.toString().includes('₺') ? formData.price : `${formData.price} ₺`,
       category: formData.category,
       collection: formData.collection,
+      color: formData.color,
       image_url: formData.image_url,
       images: formData.images,
       features: formData.features,
+      sizes: formData.sizes || [],
       stock_count: parseInt(formData.stock_count) || 0,
       description: formData.description,
       discount_price: formData.discount_price ? (formData.discount_price.toString().includes('₺') ? formData.discount_price : `${formData.discount_price} ₺`) : null,
@@ -399,13 +401,13 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Sector (Category)</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Category</Label>
                 <div className="flex gap-2">
                   <Select value={formData.category} onValueChange={(val) => setFormData((prev: any) => ({ ...prev, category: val }))}>
                     <SelectTrigger className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-none flex-1">
-                      <SelectValue placeholder="SELECT" />
+                      <SelectValue placeholder="SELECT CATEGORY" />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
                       {categories.map((cat, i) => (
@@ -415,27 +417,14 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      const newCat = window.prompt('Yeni kategori adını girin:');
-                      if (newCat && onAddCategory) {
-                        onAddCategory(newCat);
-                        setFormData((prev: any) => ({ ...prev, category: newCat }));
-                      }
-                    }}
-                    className="h-11 sm:h-12 w-11 sm:w-12 p-0 bg-zinc-50/50 border-zinc-100 rounded-xl hover:bg-zinc-100"
-                  >
-                    <Plus size={16} />
-                  </Button>
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Archive (Collection)</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Collection</Label>
                 <div className="flex gap-2">
                   <Select value={formData.collection} onValueChange={(val) => setFormData((prev: any) => ({ ...prev, collection: val }))}>
                     <SelectTrigger className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-none flex-1">
-                      <SelectValue placeholder="SELECT" />
+                      <SelectValue placeholder="SELECT COLLECTION" />
                     </SelectTrigger>
                     <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
                       {collections.map((coll, i) => (
@@ -445,19 +434,6 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
                       ))}
                     </SelectContent>
                   </Select>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => {
-                      const newColl = window.prompt('Yeni koleksiyon adını girin:');
-                      if (newColl && onAddCollection) {
-                        onAddCollection(newColl);
-                        setFormData((prev: any) => ({ ...prev, collection: newColl }));
-                      }
-                    }}
-                    className="h-11 sm:h-12 w-11 sm:w-12 p-0 bg-zinc-50/50 border-zinc-100 rounded-xl hover:bg-zinc-100"
-                  >
-                    <Plus size={16} />
-                  </Button>
                 </div>
               </div>
             </div>

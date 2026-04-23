@@ -9,6 +9,7 @@ interface Product {
   price: string;
   image: string;
   category: string;
+  collection?: string;
   images?: any[];
   discount_price?: string;
 }
@@ -67,7 +68,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
              </span>
           )}
           <span className="text-[9px] font-normal uppercase tracking-[0.15em] px-2 py-0.5 glass-nav border-0 text-white/40 rounded-[1px] font-['Handjet',sans-serif] backdrop-blur-md">
-             {product.category}
+             {product.collection || 'ARCHIVE'}
           </span>
         </div>
 

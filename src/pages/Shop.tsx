@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import ProductCard from '../components/ProductCard';
 import { supabase } from '../lib/supabase';
@@ -12,6 +13,7 @@ interface Product {
   price: string;
   image: string;
   category: string;
+  collection?: string;
   description: string;
   images?: string[];
   sizes?: string[];
@@ -21,6 +23,8 @@ interface Product {
 
 export default function Shop() {
   const { t } = useLanguage();
+  const [searchParams] = useSearchParams();
+  const initialCollection = searchParams.get('collection') || 'All';
 
   useSEO({
     title: `${t('shop.title')} | Faem Studio`,
@@ -28,25 +32,25 @@ export default function Shop() {
   });
 
   const ITEMS_PER_PAGE = 12;
-  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [activeCollection, setActiveCollection] = useState<string>(initialCollection);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
 
-  const loadProducts = async (pageNum: number, category: string, isInitial = false) => {
+  const loadProducts = async (pageNum: number, collection: string, isInitial = false) => {
     try {
       const from = pageNum * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
 
       let query = supabase
         .from('products')
-        .select('id, name, price, image_url, category, discount_price, description, images, features, sizes', { count: 'exact' })
+        .select('id, name, price, image_url, category, collection, discount_price, description, images, features, sizes', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(from, to);
 
-      if (category !== 'All') {
-        query = query.eq('category', category);
+      if (collection !== 'All') {
+        query = query.eq('collection', collection);
       }
 
       const { data, error, count } = await query;
@@ -77,6 +81,7 @@ export default function Shop() {
     image: p.image_url,
     images: p.images || [],
     category: p.category,
+    collection: p.collection,
     sizes: p.sizes || ['One Size'],
     description: p.description,
     features: p.features || [],
@@ -85,23 +90,23 @@ export default function Shop() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    loadProducts(0, activeCategory, true);
-  }, [activeCategory]);
+    loadProducts(0, activeCollection, true);
+  }, [activeCollection]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    loadProducts(nextPage, activeCategory);
+    loadProducts(nextPage, activeCollection);
   };
 
-  // Extract categories from a separate query or first batch
-  const [availableCategories, setAvailableCategories] = useState<string[]>(['All']);
+  // Extract collections from a separate query or first batch
+  const [availableCollections, setAvailableCollections] = useState<string[]>(['All']);
   useEffect(() => {
-    const fetchCats = async () => {
-      const { data } = await supabase.from('categories').select('name');
-      if (data) setAvailableCategories(['All', ...data.map(c => c.name)]);
+    const fetchColls = async () => {
+      const { data } = await supabase.from('collections').select('name');
+      if (data) setAvailableCollections(['All', ...data.map(c => c.name)]);
     };
-    fetchCats();
+    fetchColls();
   }, []);
 
   if (isLoading && products.length === 0) return <GlobalPageLoader isLoading={true} />;
@@ -113,26 +118,25 @@ export default function Shop() {
         <div className="flex flex-col items-center justify-center text-center gap-6 mb-16 md:mb-24">
           <span className="text-[10px] font-normal tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">Technical Archive</span>
           <h1 className="text-[clamp(1.5rem,5vw,2.8rem)] font-bold tracking-tighter leading-none text-black">
-            {activeCategory === 'All' ? t('shop.title') : activeCategory}
+            {activeCollection === 'All' ? t('shop.title') : activeCollection}
           </h1>
           
-          {/* Minimal Filter Row */}
           <div className="flex items-center gap-6 md:gap-10 mt-4 overflow-x-auto hide-scrollbar pb-2">
-            {availableCategories.map(cat => (
+            {availableCollections.map(coll => (
               <button
-                key={cat}
+                key={coll}
                 onClick={() => {
-                  setActiveCategory(cat);
+                  setActiveCollection(coll);
                   setPage(0);
                   setIsLoading(true);
                 }}
                 className={`text-[12px] font-semibold tracking-[0.2em] whitespace-nowrap transition-all duration-300 relative pb-1
-                  ${activeCategory === cat
+                  ${activeCollection === coll
                     ? 'text-neutral-900 border-b border-neutral-900'
                     : 'text-neutral-400 hover:text-neutral-600 border-b border-transparent'
                   }`}
               >
-                {cat === 'All' ? t('shop.all_categories') : cat}
+                {coll === 'All' ? t('shop.all_categories') : coll}
               </button>
             ))}
           </div>

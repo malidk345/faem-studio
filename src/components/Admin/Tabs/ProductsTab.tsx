@@ -37,11 +37,11 @@ export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, o
       )
     },
     {
-      accessorKey: "category",
-      header: "Kategori",
+      accessorKey: "collection",
+      header: "Koleksiyon",
       cell: ({ row }: any) => (
         <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 border-none font-semibold text-[10px] uppercase tracking-widest px-2 group-hover:bg-white">
-          {row.getValue("category")}
+          {row.getValue("collection") || '-'}
         </Badge>
       )
     },

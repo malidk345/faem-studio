@@ -217,6 +217,7 @@ export default function ProductDetail() {
           image: data.image_url || '',
           images: galleryImages,
           category: data.category || 'Archive',
+          collection: data.collection || '',
           sizes: Array.isArray(data.sizes) && data.sizes.length > 0 ? data.sizes : ['S', 'M', 'L'],
           description: data.description || 'Minimalist design from Faem studio.',
           features: Array.isArray(data.features) ? data.features : [],
@@ -363,10 +364,10 @@ export default function ProductDetail() {
               transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
               className="flex flex-col gap-4"
             >
-              {/* Category */}
+              {/* Category / Collection */}
               <div className="flex items-center gap-3 mb-2">
                 <span className="px-3 py-1 bg-zinc-100 text-zinc-600 rounded-lg text-[10px] font-bold tracking-widest uppercase">
-                  {product.category}
+                  {product.collection || 'ARCHIVE'}
                 </span>
                 <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">
                   REF. {product.id?.substring(0, 6).toUpperCase()}

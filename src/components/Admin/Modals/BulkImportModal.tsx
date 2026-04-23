@@ -100,7 +100,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess, refreshData }: Bul
                 name: getVal(['urun adi', 'isim', 'title', 'name']) || `Ürün #${index + 1}`,
                 price: formatPrice(getVal(['trendyol\'da satilacak fiyat (kdv dahil)', 'fiyat', 'price', 'tutar', 'satis'])),
                 category: getVal(['kategori ismi', 'kategori', 'category', 'tur', 'segment']) || 'Genel',
-                collection: getVal(['marka', 'model kodu', 'koleksiyon', 'collection', 'brand']) || '',
+                collection: getVal(['koleksiyon', 'collection', 'marka', 'brand']) || '',
                 description: getVal(['urun aciklamasi', 'aciklama', 'description', 'detay']) || '',
                 image_url: imageCols.length > 0 ? row[imageCols[0]] : '',
                 images: imageCols.slice(1).map(col => row[col]).filter(url => url && url.toString().startsWith('http')),
