@@ -94,7 +94,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-300 font-['Handjet',sans-serif] mb-1.5">E-Posta</h3>
-                  <p className="text-[16px] font-medium text-neutral-800">hello@nivisgear.com</p>
+                  <p className="text-[16px] font-medium text-neutral-800">faembutik@gmail.com</p>
                 </div>
               </motion.div>
 
@@ -104,7 +104,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-300 font-['Handjet',sans-serif] mb-1.5">Telefon</h3>
-                  <p className="text-[16px] font-medium text-neutral-800">+90 (212) 555 0100</p>
+                  <p className="text-[16px] font-medium text-neutral-800">0535 646 44 54</p>
                 </div>
               </motion.div>
 
