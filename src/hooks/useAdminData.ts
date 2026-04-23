@@ -32,34 +32,31 @@ export function useAdminData() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      // Products
-      const { data: pData } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      // Run queries in parallel for maximum speed
+      const [
+        { data: pData },
+        { data: cData },
+        { data: mData },
+        { data: custData },
+        { data: setData },
+        { data: oData, error: oError }
+      ] = await Promise.all([
+        // Only fetch necessary columns for products list to reduce payload size
+        supabase.from('products')
+          .select('id, name, price, category, image_url, stock_count, created_at, description, images, features, discount_price')
+          .order('created_at', { ascending: false }),
+        supabase.from('categories').select('*'),
+        supabase.from('contact_messages').select('*').order('created_at', { ascending: false }),
+        supabase.from('profiles').select('*').order('created_at', { ascending: false }),
+        supabase.from('store_settings').select('*').limit(1).single(),
+        supabase.from('orders').select('*, profiles(name, email)').order('created_at', { ascending: false })
+      ]);
+
       if (pData) setProducts(pData);
-
-      // Categories
-      const { data: cData } = await supabase.from('categories').select('*');
       if (cData) setCategories(cData.map(c => c.name));
-
-      // Messages
-      const { data: mData } = await supabase
-        .from('contact_messages')
-        .select('*')
-        .order('created_at', { ascending: false })
       if (mData) setMessages(mData);
-
-      // Customers
-      const { data: custData } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
       if (custData) setCustomers(custData);
-
-      // Settings
-      const { data: setData } = await supabase.from('store_settings').select('*').limit(1).single();
       if (setData) setSettings(setData);
-
-      // Orders — fetch ALL columns, join with profiles for customer name
-      const { data: oData, error: oError } = await supabase
-        .from('orders')
-        .select('*, profiles(name, email)')
-        .order('created_at', { ascending: false });
 
       if (oError) {
         console.error('Error fetching orders:', oError);
@@ -67,20 +64,15 @@ export function useAdminData() {
 
       if (oData) {
         const mapped: AdminOrder[] = oData.map(o => {
-          // Parse numeric total from string like "$123.45" or "123.45 ₺" or just "123.45"
           const numericTotal = parseFloat(String(o.total).replace(/[^0-9.]/g, '')) || 0;
-          
-          // Get customer info from shipping_address or profiles join
           const shippingAddr = o.shipping_address || {};
           const customerName = [shippingAddr.first_name, shippingAddr.last_name]
             .filter(Boolean).join(' ') || (o.profiles as any)?.name || 'Müşteri';
           const customerEmail = shippingAddr.email || (o.profiles as any)?.email || '';
-
-          // Parse items safely
           const items = Array.isArray(o.items) ? o.items : [];
 
           return {
-            id: o.id,                       // FULL UUID — critical for updates
+            id: o.id,
             shortId: o.id.slice(0, 8),
             user: customerName,
             email: customerEmail,

@@ -36,8 +36,12 @@ export default function Home() {
 
   useEffect(() => {
     const fetchContent = async () => {
-      // Fetch Products
-      const { data: pData } = await supabase.from('products').select('*').limit(4);
+      // Fetch Products with selective columns for performance
+      const { data: pData } = await supabase
+        .from('products')
+        .select('id, name, price, image_url, category, discount_price, description, images, features, sizes')
+        .limit(4)
+        .order('created_at', { ascending: false });
       if (pData) {
         setProducts(pData.map(p => ({
           id: p.id,

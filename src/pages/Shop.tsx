@@ -27,50 +27,84 @@ export default function Shop() {
     description: t('shop.desc')
   });
 
+  const ITEMS_PER_PAGE = 12;
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+
+  const loadProducts = async (pageNum: number, category: string, isInitial = false) => {
+    try {
+      const from = pageNum * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+
+      let query = supabase
+        .from('products')
+        .select('id, name, price, image_url, category, discount_price, description, images, features, sizes', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (category !== 'All') {
+        query = query.eq('category', category);
+      }
+
+      const { data, error, count } = await query;
+
+      if (error || !data) {
+        if (isInitial) setProducts([]);
+        setHasMore(false);
+      } else {
+        if (isInitial) {
+          setProducts(data.map(mapProduct));
+        } else {
+          setProducts(prev => [...prev, ...data.map(mapProduct)]);
+        }
+        
+        setHasMore(count ? (from + data.length < count) : data.length === ITEMS_PER_PAGE);
+      }
+    } catch (error) {
+      console.error('Error loading products:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const mapProduct = (p: any) => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    image: p.image_url,
+    images: p.images || [],
+    category: p.category,
+    sizes: p.sizes || ['One Size'],
+    description: p.description,
+    features: p.features || [],
+    discount_price: p.discount_price
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    
-    const loadProducts = async () => {
-      try {
-        const { data, error } = await supabase.from('products').select('*');
-        if (error || !data || data.length === 0) {
-          setProducts([]);
-        } else {
-          const mapped = data.map(p => ({
-            id: p.id,
-            name: p.name,
-            price: p.price,
-            image: p.image_url,
-            images: p.images || [],
-            category: p.category,
-            sizes: p.sizes || ['One Size'],
-            description: p.description,
-            features: p.features || [],
-            discount_price: p.discount_price
-          }));
-          setProducts(mapped);
-        }
-      } catch {
-         setProducts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    loadProducts(0, activeCategory, true);
+  }, [activeCategory]);
 
-    loadProducts();
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    loadProducts(nextPage, activeCategory);
+  };
+
+  // Extract categories from a separate query or first batch
+  const [availableCategories, setAvailableCategories] = useState<string[]>(['All']);
+  useEffect(() => {
+    const fetchCats = async () => {
+      const { data } = await supabase.from('categories').select('name');
+      if (data) setAvailableCategories(['All', ...data.map(c => c.name)]);
+    };
+    fetchCats();
   }, []);
 
-  const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
-
-  const filteredProducts = activeCategory === 'All'
-    ? products
-    : products.filter(p => p.category === activeCategory);
-
-  if (isLoading) return <GlobalPageLoader isLoading={true} />;
+  if (isLoading && products.length === 0) return <GlobalPageLoader isLoading={true} />;
 
   return (
     <div className="min-h-screen pt-24 pb-32">
@@ -84,10 +118,14 @@ export default function Shop() {
           
           {/* Minimal Filter Row */}
           <div className="flex items-center gap-6 md:gap-10 mt-4 overflow-x-auto hide-scrollbar pb-2">
-            {categories.map(cat => (
+            {availableCategories.map(cat => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => {
+                  setActiveCategory(cat);
+                  setPage(0);
+                  setIsLoading(true);
+                }}
                 className={`text-[12px] font-semibold tracking-[0.2em] whitespace-nowrap transition-all duration-300 relative pb-1
                   ${activeCategory === cat
                     ? 'text-neutral-900 border-b border-neutral-900'
@@ -107,16 +145,15 @@ export default function Shop() {
               layout
               className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-10 md:gap-y-20"
             >
-              {filteredProducts.map((product, i) => (
+              {products.map((product, i) => (
                 <motion.div
                   key={product.id}
                   layout
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ 
-                    duration: 0.7, 
-                    delay: i * 0.04,
+                    duration: 0.5, 
+                    delay: (i % ITEMS_PER_PAGE) * 0.05,
                     ease: [0.16, 1, 0.3, 1]
                   }}
                 >
@@ -124,7 +161,7 @@ export default function Shop() {
                 </motion.div>
               ))}
 
-              {filteredProducts.length === 0 && (
+              {products.length === 0 && !isLoading && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -135,6 +172,21 @@ export default function Shop() {
               )}
             </motion.div>
           </AnimatePresence>
+
+          {/* Load More Button */}
+          {hasMore && (
+            <div className="flex justify-center mt-24">
+              <button
+                onClick={handleLoadMore}
+                disabled={isLoading}
+                className="group relative overflow-hidden bg-black text-white px-12 py-4 rounded-full transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
+              >
+                <span className="relative z-10 text-[12px] font-black uppercase tracking-[0.2em]">
+                  {isLoading ? 'Yükleniyor...' : 'Daha Fazla Keşfet'}
+                </span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
