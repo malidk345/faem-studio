@@ -85,7 +85,7 @@ export function useThemeManager() {
     const root = document.documentElement
 
     Object.entries(styles).forEach(([key, value]) => {
-      root.style.setProperty(`--${key}`, value)
+      root.style.setProperty(`--${key}`, value as string)
     })
 
     // Update brand colors values when theme changes
@@ -99,7 +99,7 @@ export function useThemeManager() {
     const root = document.documentElement
 
     Object.entries(styles).forEach(([key, value]) => {
-      root.style.setProperty(`--${key}`, value)
+      root.style.setProperty(`--${key}`, value as string)
     })
 
     // Update brand colors values when theme changes
@@ -112,7 +112,7 @@ export function useThemeManager() {
     
     // Apply all variables from the theme
     Object.entries(themeVars).forEach(([variable, value]) => {
-      root.style.setProperty(`--${variable}`, value)
+      root.style.setProperty(`--${variable}`, value as string)
     })
     
     // Update brand colors values for the customizer UI

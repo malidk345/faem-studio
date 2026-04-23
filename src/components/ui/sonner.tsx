@@ -1,8 +1,9 @@
-import { useTheme } from "next-themes"
+import React from "react"
+import { useTheme } from "@/hooks/use-theme"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  const { theme } = useTheme()
 
   return (
     <Sonner

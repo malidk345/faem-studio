@@ -1,5 +1,4 @@
-"use client"
-
+import * as React from "react"
 import type { Column } from "@tanstack/react-table"
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react"
 
@@ -10,6 +9,7 @@ interface DataTableColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>
   title: string
+  className?: string
 }
 
 export function DataTableColumnHeader<TData, TValue>({

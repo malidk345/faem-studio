@@ -52,7 +52,12 @@ export function ImportModal({ open, onOpenChange, onImport }: ImportModalProps) 
       }
       
       // Store the imported theme
-      const importedThemeData = { light: lightTheme, dark: darkTheme }
+      const importedThemeData: ImportedTheme = { 
+        name: "Custom Import",
+        colors: {},
+        light: lightTheme, 
+        dark: darkTheme 
+      }
       onImport(importedThemeData)
       
       onOpenChange(false)

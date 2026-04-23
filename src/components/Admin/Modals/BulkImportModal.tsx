@@ -46,126 +46,133 @@ export function BulkImportModal({ isOpen, onClose, onSuccess, refreshData }: Bul
 
   const handleImport = async () => {
     if (!file) return;
-
     setLoading(true);
+
     try {
       const reader = new FileReader();
-      reader.onload = async (event) => {
-        const data = new Uint8Array(event.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const json: any[] = XLSX.utils.sheet_to_json(worksheet);
+      reader.onload = async (e) => {
+        try {
+          const data = new Uint8Array(e.target?.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const json: any[] = XLSX.utils.sheet_to_json(worksheet);
 
-        // Helper to find a value by checking multiple possible column names (case-insensitive)
-        const findValue = (row: any, keys: string[]) => {
-          const rowKeys = Object.keys(row);
-          for (const key of keys) {
-            const foundKey = rowKeys.find(rk => 
-              rk.toLowerCase().trim().replace(/ı/g, 'i').replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c') === 
-              key.toLowerCase().trim().replace(/ı/g, 'i').replace(/ğ/g, 'g').replace(/ü/g, 'u').replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c')
-            );
-            if (foundKey) return row[foundKey];
-          }
-          return null;
-        };
+          if (!json || json.length === 0) throw new Error("Excel dosyası boş veya okunamadı.");
 
-        const formatPrice = (val: any) => {
-          if (!val) return '0 ₺';
-          const str = val.toString().replace(/[^\d.,]/g, '').replace(',', '.');
-          return `${str} ₺`;
-        };
+          const normalize = (str: string) => str?.toString().toLowerCase().trim()
+            .replace(/ı/g, 'i').replace(/ğ/g, 'g').replace(/ü/g, 'u')
+            .replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c') || '';
 
-        // Map data to match Supabase schema with improved detection
-        const productsToInsert = json.map((row, index) => {
-          try {
+          const findValue = (row: any, keys: string[]) => {
             const rowKeys = Object.keys(row);
+            const normalizedKeys = keys.map(normalize);
+            const foundKey = rowKeys.find(rk => normalizedKeys.includes(normalize(rk)));
+            return foundKey ? row[foundKey] : null;
+          };
+
+          const formatPrice = (val: any) => {
+            if (!val) return '0 ₺';
+            const str = val.toString().replace(/[^\d.,]/g, '').replace(',', '.');
+            return `${str} ₺`;
+          };
+
+          const groupedProducts: Record<string, any> = {};
+
+          json.forEach((row: any, index: number) => {
             const getVal = (keys: string[]) => findValue(row, keys);
+            const modelCode = getVal(['model kodu', 'urun grubu', 'stok kodu', 'product id']) || getVal(['urun adi']);
+            const color = getVal(['urun rengi', 'renk', 'color', 'colour']) || '';
+            if (!modelCode) return;
 
-            // Normalize function for flexible key matching
-            const normalize = (str: string) => str.toLowerCase().trim()
-              .replace(/ı/g, 'i').replace(/ğ/g, 'g').replace(/ü/g, 'u')
-              .replace(/ş/g, 's').replace(/ö/g, 'o').replace(/ç/g, 'c');
+            const groupingKey = `${modelCode}_${color}`;
+            const size = getVal(['beden', 'boyut', 'size']) || '';
+            const stock = parseInt(getVal(['urun stok adedi', 'stok', 'stock', 'adet', 'inventory']) || '0');
 
-            // 1. Handle Images with full normalization
-            const imageCols = rowKeys.filter(rk => {
-              const n = normalize(rk);
-              return n.includes('gorsel') || n.includes('resim') || n.includes('image') || n.includes('foto');
-            }).sort((a, b) => {
-              const numA = parseInt(a.match(/\d+/)?.[0] || '999');
-              const numB = parseInt(b.match(/\d+/)?.[0] || '999');
-              return numA - numB;
-            });
+            if (!groupedProducts[groupingKey]) {
+              const rowKeys = Object.keys(row);
+              const imageCols = rowKeys.filter(rk => {
+                const n = normalize(rk);
+                return n.includes('gorsel') || n.includes('resim') || n.includes('image');
+              }).sort((a, b) => (parseInt(a.match(/\d+/)?.[0] || '999') - parseInt(b.match(/\d+/)?.[0] || '999')));
 
-            const primaryImage = imageCols.length > 0 ? row[imageCols[0]] : '';
-            const galleryImages = imageCols.slice(1)
-              .map(col => ({ 
-                id: Math.random().toString(36).substring(2, 11), 
-                url: row[col] 
-              }))
-              .filter(img => img.url && img.url.toString().startsWith('http'));
+              groupedProducts[groupingKey] = {
+                name: getVal(['urun adi', 'isim', 'title', 'name']) || `Ürün #${index + 1}`,
+                price: formatPrice(getVal(['trendyol\'da satilacak fiyat (kdv dahil)', 'fiyat', 'price', 'tutar', 'satis'])),
+                category: getVal(['kategori ismi', 'kategori', 'category', 'tur', 'segment']) || 'Genel',
+                collection: getVal(['marka', 'model kodu', 'koleksiyon', 'collection', 'brand']) || '',
+                description: getVal(['urun aciklamasi', 'aciklama', 'description', 'detay']) || '',
+                image_url: imageCols.length > 0 ? row[imageCols[0]] : '',
+                images: imageCols.slice(1).map(col => row[col]).filter(url => url && url.toString().startsWith('http')),
+                color,
+                stock_count: 0,
+                sizes: [],
+                features: [],
+                metadata: row
+              };
+            }
 
-            const name = getVal(['urun adi', 'ad', 'isim', 'name', 'title']);
-            if (!name) console.warn(`Satır ${index + 1}: İsim bulunamadı.`);
+            if (size && !groupedProducts[groupingKey].sizes.includes(size)) {
+              groupedProducts[groupingKey].sizes.push(size);
+            }
+            groupedProducts[groupingKey].stock_count += stock;
+          });
 
+          const productsToInsert = Object.values(groupedProducts).map(p => {
+            const finalFeatures = [...(p.features || [])];
+            if (p.color && !finalFeatures.includes(`Renk: ${p.color}`)) {
+              finalFeatures.push(`Renk: ${p.color}`);
+            }
             return {
-              name: name || `Ürün #${index + 1}`,
-              price: formatPrice(getVal(['trendyol\'da satilacak fiyat (kdv dahil)', 'fiyat', 'price', 'tutar', 'satis'])),
-              category: getVal(['kategori ismi', 'kategori', 'category', 'tur', 'segment']) || 'Genel',
-              description: getVal(['urun aciklamasi', 'aciklama', 'description', 'detay']) || '',
-              image_url: primaryImage || '',
-              images: galleryImages,
-              stock_count: parseInt(getVal(['urun stok adedi', 'stok', 'stock', 'adet', 'inventory']) || '24'),
-              features: [],
-              sizes: ["XS", "S", "M", "L", "XL"]
+              name: p.name,
+              price: p.price,
+              category: p.category,
+              collection: p.collection,
+              description: p.description,
+              image_url: p.image_url,
+              images: p.images,
+              sizes: p.sizes,
+              stock_count: isNaN(p.stock_count) ? 0 : p.stock_count,
+              features: finalFeatures
+              // Omit color and metadata to prevent Supabase schema errors
             };
-          } catch (e) {
-            console.error(`Satır ${index} işlenirken hata:`, e);
-            return null;
-          }
-        }).filter(Boolean); // Hatalı satırları temizle
+          });
 
-        if (productsToInsert.length === 0) {
-          throw new Error("İçe aktarılacak geçerli veri bulunamadı. Lütfen Excel dosyasını kontrol edin.");
-        }
+          if (productsToInsert.length === 0) throw new Error("Geçerli ürün bulunamadı.");
 
-        // 2. Identify and Insert New Categories
-        const uniqueCategories = [...new Set(productsToInsert.map(p => p.category))].filter(Boolean);
-        
-        if (uniqueCategories.length > 0) {
-          // Get existing categories to avoid duplicates
-          const { data: existingCats } = await supabase.from('categories').select('name');
-          const existingNames = existingCats?.map(c => c.name) || [];
+          const uniqueCats = [...new Set(productsToInsert.map(p => p.category))].filter(Boolean);
+          const uniqueColls = [...new Set(productsToInsert.map(p => p.collection))].filter(Boolean);
           
-          const newCategories = uniqueCategories
-            .filter(cat => !existingNames.includes(cat))
-            .map(name => ({ name }));
+          const { data: exCats } = await supabase.from('categories').select('name');
+          const exCatNames = exCats?.map(c => c.name) || [];
+          const newCats = uniqueCats.filter(c => !exCatNames.includes(c)).map(name => ({ name }));
+          if (newCats.length > 0) await supabase.from('categories').insert(newCats);
 
-          if (newCategories.length > 0) {
-            await supabase.from('categories').insert(newCategories);
-          }
+          const { data: exColls } = await supabase.from('collections').select('name');
+          const exCollNames = exColls?.map(c => c.name) || [];
+          const newColls = uniqueColls.filter(c => !exCollNames.includes(c)).map(name => ({ name }));
+          if (newColls.length > 0) await supabase.from('collections').insert(newColls);
+
+          const { error } = await supabase.from('products').insert(productsToInsert);
+          if (error) throw error;
+
+          toast.success(`${productsToInsert.length} ürün işlendi.`);
+          refreshData();
+          onSuccess();
+          onClose();
+        } catch (err: any) {
+          console.error("Supabase Import Error:", err);
+          const errMsg = err.message || JSON.stringify(err);
+          toast.error("Hata: " + errMsg, { duration: 10000 });
+        } finally {
+          setLoading(false);
         }
-
-        // 3. Insert Products
-        const { error } = await supabase
-          .from('products')
-          .insert(productsToInsert);
-
-        if (error) {
-          console.error("Supabase Error:", error);
-          throw new Error(`Veritabanı hatası: ${error.message}`);
-        }
-
-        toast.success(`${productsToInsert.length} ürün ve ${uniqueCategories.length} kategori başarıyla işlendi.`);
-        refreshData();
-        onSuccess();
-        onClose();
       };
       reader.readAsArrayBuffer(file);
     } catch (error: any) {
-      console.error('Import error:', error);
-      toast.error('İçe aktarma sırasında bir hata oluştu: ' + error.message);
-    } finally {
+      console.error("General Import Error:", error);
+      const errMsg = error.message || JSON.stringify(error);
+      toast.error('Genel Hata: ' + errMsg, { duration: 10000 });
       setLoading(false);
     }
   };

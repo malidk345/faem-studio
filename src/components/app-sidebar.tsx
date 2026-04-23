@@ -56,8 +56,13 @@ const data = {
         },
         {
           title: "Koleksiyonlar",
-          url: "categories",
+          url: "collections",
           icon: LayoutTemplate,
+        },
+        {
+          title: "Kategoriler",
+          url: "categories",
+          icon: LayoutPanelLeft,
         },
         {
           title: "Mesajlar",
@@ -125,8 +130,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent className="px-2">
-        {data.navGroups.map((group) => (
-          <NavMain key={group.label} label={group.label} items={group.items} />
+        {data.navGroups.map((group, index) => (
+          <NavMain key={index} label={group.label} items={group.items} />
         ))}
       </SidebarContent>
       <SidebarFooter>

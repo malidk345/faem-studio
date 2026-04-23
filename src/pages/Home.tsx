@@ -15,8 +15,26 @@ export default function Home() {
     description: t('shop.desc')
   });
 
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [products, setProducts] = useState<any[]>([]);
+  const [slides, setSlides] = useState<any[]>([]);
+  const [loadingSlides, setLoadingSlides] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
   const [availableCats, setAvailableCats] = useState<string[]>(['All']);
+
+  const fallbackSlides = [
+    {
+      id: 1,
+      tag: 'ARCHIVE_001 // CORE',
+      headline: t('home.hero_1_title').split('\n'),
+      sub: t('home.hero_1_sub'),
+      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600&auto=format&fit=crop',
+      link: '/shop'
+    }
+  ];
+
+  const currentSlides = slides.length > 0 ? slides : fallbackSlides;
+  const slide = currentSlides[activeSlide] || fallbackSlides[0];
 
   useEffect(() => {
     const fetchContent = async () => {

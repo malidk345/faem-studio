@@ -1,4 +1,5 @@
 import { BaseLayout } from "@/components/layouts/base-layout"
+import { useAdminData } from "@/hooks/useAdminData"
 import { MetricsOverview } from "./components/metrics-overview"
 import { SalesChart } from "./components/sales-chart"
 import { RecentTransactions } from "./components/recent-transactions"
@@ -8,6 +9,18 @@ import { QuickActions } from "./components/quick-actions"
 import { RevenueBreakdown } from "./components/revenue-breakdown"
 
 export default function Dashboard2() {
+  const { orders, products, loading } = useAdminData()
+
+  if (loading) {
+    return (
+      <BaseLayout>
+        <div className="flex items-center justify-center h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </BaseLayout>
+    )
+  }
+
   return (
     <BaseLayout>
       <div className="flex-1 space-y-6 px-6 pt-0">
@@ -27,17 +40,17 @@ export default function Dashboard2() {
         <div className="@container/main space-y-6">
           {/* Top Row - Key Metrics */}
 
-          <MetricsOverview />
+          <MetricsOverview orders={orders} products={products} />
 
           {/* Second Row - Charts in 6-6 columns */}
           <div className="grid gap-6 grid-cols-1 @5xl:grid-cols-2">
-            <SalesChart />
-            <RevenueBreakdown />
+            <SalesChart orders={orders} />
+            <RevenueBreakdown orders={orders} />
           </div>
 
           {/* Third Row - Two Column Layout */}
           <div className="grid gap-6 grid-cols-1 @5xl:grid-cols-2">
-            <RecentTransactions />
+            <RecentTransactions orders={orders} />
             <TopProducts />
           </div>
 

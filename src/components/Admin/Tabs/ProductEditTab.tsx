@@ -16,17 +16,21 @@ import { motion, AnimatePresence } from 'motion/react';
 interface ProductEditTabProps {
   product: any;
   categories: any[];
+  collections: any[];
   onSave: (data: any) => void;
   onAddCategory?: (name: string) => void;
+  onAddCollection?: (name: string) => void;
   onCancel: () => void;
   onDelete?: (id: string) => void;
 }
 
-export function ProductEditTab({ product, categories, onSave, onAddCategory, onCancel, onDelete }: ProductEditTabProps) {
+export function ProductEditTab({ product, categories, collections, onSave, onAddCategory, onAddCollection, onCancel, onDelete }: ProductEditTabProps) {
   const [formData, setFormData] = useState<any>({
     name: '',
     price: '',
     category: '',
+    collection: '',
+    color: '',
     image_url: '',
     images: [],
     features: [],
@@ -47,8 +51,10 @@ export function ProductEditTab({ product, categories, onSave, onAddCategory, onC
     if (product) {
       setFormData({
         name: product.name || '',
-        price: product.price?.toString().replace(/[^\d]/g, '') || '', // Keep only numbers for raw state
+        price: product.price?.toString().replace(/[^\d]/g, '') || '',
         category: product.category || '',
+        collection: product.collection || '',
+        color: product.color || '',
         image_url: product.image_url || product.image || '',
         images: Array.isArray(product.images) ? product.images : [],
         features: Array.isArray(product.features) ? product.features : [],
@@ -65,7 +71,7 @@ export function ProductEditTab({ product, categories, onSave, onAddCategory, onC
 
     setUploading(isGallery ? 'gallery' : 'primary');
     try {
-      const uploadPromises = Array.from(files).map(async (file) => {
+      const uploadPromises = Array.from(files).map(async (file: File) => {
         const fileExt = file.name.split('.').pop();
         const fileName = `${crypto.randomUUID()}.${fileExt}`;
         const filePath = `products/${fileName}`;
@@ -342,8 +348,8 @@ export function ProductEditTab({ product, categories, onSave, onAddCategory, onC
           <div className="bg-white lg:border border-zinc-100 lg:rounded-3xl p-0 lg:p-8 space-y-6 sm:space-y-8">
             
             {/* Core Identification */}
-            <div className="grid grid-cols-2 md:grid-cols-2 gap-4 sm:gap-6">
-              <div className="col-span-2 md:col-span-1 space-y-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              <div className="space-y-2">
                 <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Name</Label>
                 <Input 
                   placeholder="e.g., ARCHIVE TEE"
@@ -352,6 +358,18 @@ export function ProductEditTab({ product, categories, onSave, onAddCategory, onC
                   className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-bold text-xs sm:text-sm transition-all shadow-none" 
                 />
               </div>
+              <div className="space-y-2">
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Tone (Color)</Label>
+                <Input 
+                  placeholder="e.g., PITCH BLACK"
+                  value={formData.color} 
+                  onChange={(e) => setFormData((prev: any) => ({ ...prev, color: e.target.value }))}
+                  className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-bold text-xs sm:text-sm transition-all shadow-none" 
+                />
+              </div>
+            </div>
+            {/* Valuation Details */}
+            <div className="grid grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
                 <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Valuation (₺)</Label>
                 <div className="relative">
@@ -412,13 +430,95 @@ export function ProductEditTab({ product, categories, onSave, onAddCategory, onC
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Inventory</Label>
-                <Input 
-                  type="number" 
-                  value={formData.stock_count} 
-                  onChange={(e) => setFormData((prev: any) => ({ ...prev, stock_count: parseInt(e.target.value) }))}
-                  className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-black text-xs sm:text-sm transition-all shadow-none" 
-                />
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Archive (Collection)</Label>
+                <div className="flex gap-2">
+                  <Select value={formData.collection} onValueChange={(val) => setFormData((prev: any) => ({ ...prev, collection: val }))}>
+                    <SelectTrigger className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-none flex-1">
+                      <SelectValue placeholder="SELECT" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
+                      {collections.map((coll, i) => (
+                        <SelectItem key={i} value={coll.name || coll} className="rounded-xl font-bold py-2 sm:py-3 text-xs">
+                          {coll.name || coll}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      const newColl = window.prompt('Yeni koleksiyon adını girin:');
+                      if (newColl && onAddCollection) {
+                        onAddCollection(newColl);
+                        setFormData((prev: any) => ({ ...prev, collection: newColl }));
+                      }
+                    }}
+                    className="h-11 sm:h-12 w-11 sm:w-12 p-0 bg-zinc-50/50 border-zinc-100 rounded-xl hover:bg-zinc-100"
+                  >
+                    <Plus size={16} />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Inventory</Label>
+              <Input 
+                type="number" 
+                value={formData.stock_count} 
+                onChange={(e) => setFormData((prev: any) => ({ ...prev, stock_count: parseInt(e.target.value) }))}
+                className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl font-black text-xs sm:text-sm transition-all shadow-none" 
+              />
+            </div>
+
+            <div className="space-y-3 sm:space-y-4 pt-4 border-t border-zinc-50">
+              <div className="flex items-center justify-between">
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Size Management</Label>
+                <span className="text-[9px] font-bold text-zinc-300 italic">{formData.sizes?.length || 0} Sizes Available</span>
+              </div>
+              <div className="flex flex-wrap gap-2 p-2 bg-zinc-50/50 rounded-2xl border border-zinc-100">
+                <AnimatePresence mode="popLayout">
+                  {formData.sizes?.map((size: string, idx: number) => (
+                    <motion.div
+                      key={size + idx}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      className="group relative flex items-center bg-white border border-zinc-200 px-3 py-1.5 rounded-xl gap-2 hover:border-black transition-all"
+                    >
+                      <span className="text-[10px] font-black tracking-tight text-zinc-900 uppercase">{size}</span>
+                      <button 
+                        onClick={() => setFormData((prev: any) => ({
+                          ...prev,
+                          sizes: prev.sizes.filter((_: any, i: number) => i !== idx)
+                        }))}
+                        className="w-4 h-4 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 hover:bg-rose-500 hover:text-white transition-all"
+                      >
+                        <X size={10} />
+                      </button>
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+                
+                <div className="flex-1 min-w-[120px] relative">
+                  <Input 
+                    placeholder="Add Size (e.g. XL, 42)"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const val = (e.target as HTMLInputElement).value.trim().toUpperCase();
+                        if (val && !formData.sizes?.includes(val)) {
+                          setFormData((prev: any) => ({
+                            ...prev,
+                            sizes: [...(prev.sizes || []), val]
+                          }));
+                          (e.target as HTMLInputElement).value = '';
+                        }
+                      }
+                    }}
+                    className="h-8 bg-transparent border-none text-[10px] font-bold uppercase tracking-widest focus-visible:ring-0 shadow-none"
+                  />
+                </div>
               </div>
             </div>
 

@@ -16,6 +16,7 @@ export interface AdminOrder {
   itemCount: number;   // Number of unique items
   isGuest: boolean;    // True if order was placed without login
   userId: string | null; // Profile UUID if registered
+  shippingAddress: any; // Full address object
 }
 
 export function useAdminData() {
@@ -24,6 +25,7 @@ export function useAdminData() {
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [collections, setCollections] = useState<string[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
   const [customers, setCustomers] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
@@ -36,6 +38,7 @@ export function useAdminData() {
       const [
         { data: pData },
         { data: cData },
+        { data: collData },
         { data: mData },
         { data: custData },
         { data: setData },
@@ -43,9 +46,10 @@ export function useAdminData() {
       ] = await Promise.all([
         // Only fetch necessary columns for products list to reduce payload size
         supabase.from('products')
-          .select('id, name, price, category, image_url, stock_count, created_at, description, images, features, discount_price')
+          .select('id, name, price, category, collection, image_url, stock_count, created_at, description, images, features, discount_price')
           .order('created_at', { ascending: false }),
         supabase.from('categories').select('*'),
+        supabase.from('collections').select('*'),
         supabase.from('contact_messages').select('*').order('created_at', { ascending: false }),
         supabase.from('profiles').select('*').order('created_at', { ascending: false }),
         supabase.from('store_settings').select('*').limit(1).single(),
@@ -54,6 +58,7 @@ export function useAdminData() {
 
       if (pData) setProducts(pData);
       if (cData) setCategories(cData.map(c => c.name));
+      if (collData) setCollections(collData.map(c => c.name));
       if (mData) setMessages(mData);
       if (custData) setCustomers(custData);
       if (setData) setSettings(setData);
@@ -148,8 +153,26 @@ export function useAdminData() {
     return { error };
   };
 
+  const deleteCategory = async (name: string) => {
+    const { error } = await supabase.from('categories').delete().eq('name', name);
+    if (!error) fetchData();
+    return { error };
+  };
+
   const addCategory = async (name: string) => {
     const { error } = await supabase.from('categories').insert([{ name }]);
+    if (!error) fetchData();
+    return { error };
+  };
+
+  const deleteCollection = async (name: string) => {
+    const { error } = await supabase.from('collections').delete().eq('name', name);
+    if (!error) fetchData();
+    return { error };
+  };
+
+  const addCollection = async (name: string) => {
+    const { error } = await supabase.from('collections').insert([{ name }]);
     if (!error) fetchData();
     return { error };
   };
@@ -203,6 +226,7 @@ export function useAdminData() {
     products,
     orders,
     categories,
+    collections,
     messages,
     customers,
     settings,
@@ -211,6 +235,9 @@ export function useAdminData() {
     deleteProduct,
     clearAllProducts,
     addCategory,
+    deleteCategory,
+    addCollection,
+    deleteCollection,
     publishProduct,
     updateProduct,
     updateOrderStatus,

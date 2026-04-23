@@ -29,8 +29,9 @@ import { useSearchParams } from 'react-router-dom';
 
 export default function Admin() {
   const { 
-    isAdmin, products, orders, categories, messages, customers, settings, loading, 
-    deleteProduct, publishProduct, addCategory, updateProduct, updateOrderStatus,
+    isAdmin, products, orders, categories, collections, messages, customers, settings, loading, 
+    deleteProduct, publishProduct, addCategory, deleteCategory, addCollection, deleteCollection,
+    updateProduct, updateOrderStatus,
     toggleMessageRead, deleteMessage, updateSettings, refreshData, clearAllProducts 
   } = useAdminData();
   
@@ -117,6 +118,7 @@ export default function Admin() {
                   <ProductEditTab 
                     product={editingProduct} 
                     categories={categories}
+                    collections={collections}
                     onSave={(data) => {
                       if (editingProduct) updateProduct(editingProduct.id, data);
                       else publishProduct(data);
@@ -124,6 +126,7 @@ export default function Admin() {
                       setEditingProduct(null);
                     }}
                     onAddCategory={addCategory}
+                    onAddCollection={addCollection}
                     onCancel={() => { setIsEditing(false); setEditingProduct(null); }}
                     onDelete={deleteProduct}
                   />
@@ -139,7 +142,8 @@ export default function Admin() {
                 )
               )}
 
-              {activeTab === 'categories' && <CategoriesTab categories={categories} onAdd={addCategory} />}
+              {activeTab === 'categories' && <CategoriesTab categories={categories} onAdd={addCategory} onDelete={deleteCategory} />}
+              {activeTab === 'collections' && <CategoriesTab categories={collections} onAdd={addCollection} onDelete={deleteCollection} isCollection />}
               {activeTab === 'orders' && <OrdersTab orders={orders} onUpdateStatus={updateOrderStatus} />}
               {activeTab === 'customers' && <CustomersTab customers={customers} orders={orders} />}
               {activeTab === 'journal' && <JournalTab />}

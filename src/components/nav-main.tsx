@@ -33,6 +33,7 @@ export function NavMain({
       isActive?: boolean
     }[]
   }[]
+  key?: string | number
 }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const currentTab = searchParams.get('tab') || 'dashboard'
