@@ -7,7 +7,9 @@ import ProductSelectionCard from '../components/ProductSelectionCard';
 import ProductInfoSections from '../components/ProductInfoSections';
 import { GlobalPageLoader } from '../components/GlobalPageLoader';
 import ReviewList from '../components/ReviewList';
-import { ChevronLeft, ChevronRight, Heart, Loader2, Share2, MessageSquare, Ruler } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, Loader2, Share2, MessageSquare, Ruler, X } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { AnimatePresence } from 'motion/react';
 import { useSEO } from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
@@ -166,6 +168,12 @@ export default function ProductDetail() {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
+  
+  // Size Recommender State
+  const [showRecommender, setShowRecommender] = useState(false);
+  const [userHeight, setUserHeight] = useState('');
+  const [userWeight, setUserWeight] = useState('');
+  const [recommendedSize, setRecommendedSize] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -277,6 +285,47 @@ export default function ProductDetail() {
       console.error(err);
     } finally {
       setWishlistLoading(false);
+    }
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: product?.name || 'Faem Studio',
+      text: product?.description || 'Check out this piece from Faem Studio',
+      url: window.location.href
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error('Sharing failed', err);
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert('Link panoya kopyalandı.');
+    }
+  };
+
+  const calculateSize = () => {
+    const h = parseInt(userHeight);
+    const w = parseInt(userWeight);
+    if (!h || !w) return;
+
+    let size = 'M';
+    if (h < 165) {
+      size = w < 60 ? 'S' : 'M';
+    } else if (h < 178) {
+      size = w < 75 ? 'M' : 'L';
+    } else if (h < 188) {
+      size = w < 88 ? 'L' : 'XL';
+    } else {
+      size = 'XL';
+    }
+    
+    setRecommendedSize(size);
+    if (product?.sizes?.includes(size)) {
+      setSelectedSize(size);
     }
   };
 
@@ -401,9 +450,9 @@ export default function ProductDetail() {
               <div className="grid grid-cols-4 gap-2 mt-4">
                 {[
                   { icon: Heart, label: 'Kaydet', action: toggleWishlist, loading: wishlistLoading, active: isWishlisted },
-                  { icon: Share2, label: 'Paylaş', action: () => navigator.clipboard.writeText(window.location.href) },
+                  { icon: Share2, label: 'Paylaş', action: handleShare },
                   { icon: MessageSquare, label: 'Yorum', action: () => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' }) },
-                  { icon: Ruler, label: 'Beden' }
+                  { icon: Ruler, label: 'Beden', action: () => setShowRecommender(true) }
                 ].map((item, idx) => (
                   <button
                     key={idx}
@@ -506,6 +555,80 @@ export default function ProductDetail() {
         handleIncrease={() => setQuantity(q => q + 1)}
         handleAddToCart={handleAddToCart}
       />
+
+      {/* Size Recommender Modal */}
+      <AnimatePresence>
+        {showRecommender && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowRecommender(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200]"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px] bg-white z-[201] p-10 rounded-[32px] shadow-2xl"
+            >
+              <div className="flex flex-col gap-8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold tracking-tighter uppercase">Beden Önerisi</h3>
+                    <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Size Assistant</p>
+                  </div>
+                  <button onClick={() => setShowRecommender(false)} className="p-2 hover:bg-zinc-50 rounded-full transition-colors">
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300 ml-1">Boy (cm)</label>
+                    <input 
+                      type="number"
+                      placeholder="Örn: 180"
+                      value={userHeight}
+                      onChange={(e) => setUserHeight(e.target.value)}
+                      className="w-full h-14 bg-zinc-50 border border-zinc-100 rounded-2xl px-6 text-sm font-bold focus:outline-none focus:border-black transition-all"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300 ml-1">Kilo (kg)</label>
+                    <input 
+                      type="number"
+                      placeholder="Örn: 75"
+                      value={userWeight}
+                      onChange={(e) => setUserWeight(e.target.value)}
+                      className="w-full h-14 bg-zinc-50 border border-zinc-100 rounded-2xl px-6 text-sm font-bold focus:outline-none focus:border-black transition-all"
+                    />
+                  </div>
+                </div>
+
+                {recommendedSize && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-6 bg-zinc-900 rounded-2xl text-center"
+                  >
+                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.4em]">Önerilen Beden</span>
+                    <p className="text-4xl font-black text-white mt-2 tracking-tighter">{recommendedSize}</p>
+                  </motion.div>
+                )}
+
+                <Button 
+                  onClick={calculateSize}
+                  className="w-full h-14 bg-black text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em]"
+                >
+                  Hesapla
+                </Button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
