@@ -196,8 +196,8 @@ export default function Home() {
             <span className="text-[14px] font-normal uppercase tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">
               {t('home.current')}
             </span>
-            <h2 className="text-[clamp(1.8rem,4vw,3rem)] font-bold tracking-tighter text-black leading-none">
-              Öne Çıkan Arşiv
+            <h2 className="text-[clamp(1.5rem,5vw,2.5rem)] font-bold tracking-tighter leading-none text-black">
+              {activeCollection !== 'All' ? activeCollection : (activeCategory === 'All' ? 'STÜDYO ARŞİVİ' : activeCategory)}
             </h2>
           </div>
           <Link

@@ -99,7 +99,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess, refreshData }: Bul
               groupedProducts[groupingKey] = {
                 name: getVal(['urun adi', 'isim', 'title', 'name']) || `Ürün #${index + 1}`,
                 price: formatPrice(getVal(['trendyol\'da satilacak fiyat (kdv dahil)', 'fiyat', 'price', 'tutar', 'satis'])),
-                category: getVal(['kategori ismi', 'kategori', 'category', 'tur', 'segment']) || 'Genel',
+                category: getVal(['kategori ismi', 'kategori', 'category', 'tur', 'segment']) || '',
                 collection: getVal(['koleksiyon', 'collection', 'marka', 'brand']) || '',
                 description: getVal(['urun aciklamasi', 'aciklama', 'description', 'detay']) || '',
                 image_url: imageCols.length > 0 ? row[imageCols[0]] : '',
@@ -258,7 +258,9 @@ export function BulkImportModal({ isOpen, onClose, onSuccess, refreshData }: Bul
               {previewData.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-400">Veri Önizleme (İlk 5 Satır)</p>
+                    <span className="text-[9px] font-normal uppercase tracking-[0.15em] px-2 py-0.5 glass-nav border-0 text-white/40 rounded-[1px] font-['Handjet',sans-serif] backdrop-blur-md">
+                      {product.collection || (product.category !== 'Genel' ? product.category : '')}
+                    </span>
                     <span className="text-[9px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">
                       {Object.keys(previewData[0]).length} Sütun Tespit Edildi
                     </span>
