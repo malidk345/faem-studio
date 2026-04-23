@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowUpRight, ArrowRight } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, X, SlidersHorizontal, ChevronRight } from 'lucide-react';
+import { Button } from '../components/ui/button';
 import { supabase } from '../lib/supabase';
 import ProductCard from '../components/ProductCard';
 import { useSEO } from '../hooks/useSEO';
@@ -24,6 +25,7 @@ export default function Home() {
   const [activeCollection, setActiveCollection] = useState('All');
   const [availableCats, setAvailableCats] = useState<string[]>(['All']);
   const [availableColls, setAvailableColls] = useState<string[]>(['All']);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const currentSlides = slides;
   const slide = currentSlides[activeSlide] || null;
@@ -196,9 +198,17 @@ export default function Home() {
             <span className="text-[14px] font-normal uppercase tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">
               {t('home.current')}
             </span>
-            <h2 className="text-[clamp(1.5rem,5vw,2.5rem)] font-bold tracking-tighter leading-none text-black">
-              {activeCollection !== 'All' ? activeCollection : (activeCategory === 'All' ? 'STÜDYO ARŞİVİ' : activeCategory)}
-            </h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-[clamp(1.5rem,5vw,2.5rem)] font-bold tracking-tighter leading-none text-black">
+                {activeCollection !== 'All' ? activeCollection : (activeCategory === 'All' ? 'STÜDYO ARŞİVİ' : activeCategory)}
+              </h2>
+              <button 
+                onClick={() => setIsFilterOpen(true)}
+                className="p-2 hover:bg-zinc-50 rounded-full transition-colors text-zinc-300 hover:text-black"
+              >
+                <SlidersHorizontal size={20} />
+              </button>
+            </div>
           </div>
           <Link
             to="/shop"
@@ -207,7 +217,101 @@ export default function Home() {
             TÜM KOLEKSİYON <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
           </Link>
         </div>
+        {/* Filter Drawer Overlay (Same as Shop for consistency) */}
+        <AnimatePresence>
+          {isFilterOpen && (
+            <>
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsFilterOpen(false)}
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]"
+              />
+              <motion.div 
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed right-0 top-0 bottom-0 w-full max-w-[400px] bg-white z-[101] shadow-2xl overflow-y-auto p-10 flex flex-col gap-12"
+              >
+                <div className="flex items-center justify-between">
+                  <h3 className="text-2xl font-bold tracking-tighter uppercase">Filtreler</h3>
+                  <button onClick={() => setIsFilterOpen(false)} className="p-2 hover:bg-zinc-50 rounded-full transition-colors">
+                    <X size={20} />
+                  </button>
+                </div>
 
+                {/* Categories Filter */}
+                <div className="space-y-6">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Kategoriler</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    {availableCats.map(cat => (
+                      <button
+                        key={cat}
+                        onClick={() => {
+                          setActiveCategory(cat);
+                          setActiveCollection('All');
+                          setIsFilterOpen(false);
+                        }}
+                        className={`px-4 py-3 text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all border
+                          ${activeCategory === cat 
+                            ? 'bg-black text-white border-black' 
+                            : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:border-zinc-300'}`}
+                      >
+                        {cat === 'All' ? 'TÜMÜ' : cat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Collections Filter */}
+                <div className="space-y-6">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Koleksiyonlar</h4>
+                  <div className="flex flex-col gap-2">
+                    {availableColls.map(coll => (
+                      <button
+                        key={coll}
+                        onClick={() => {
+                          setActiveCollection(coll);
+                          setActiveCategory('All');
+                          setIsFilterOpen(false);
+                        }}
+                        className={`flex items-center justify-between px-6 py-4 rounded-2xl transition-all border
+                          ${activeCollection === coll 
+                            ? 'bg-zinc-50 border-zinc-900 text-zinc-900' 
+                            : 'bg-white border-zinc-100 text-zinc-400 hover:border-zinc-300'}`}
+                      >
+                        <span className="text-xs font-bold uppercase tracking-widest">{coll === 'All' ? 'TÜM KOLEKSİYONLAR' : coll}</span>
+                        <ChevronRight size={14} className={activeCollection === coll ? 'opacity-100' : 'opacity-20'} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-auto pt-10 border-t border-zinc-100 flex flex-col gap-4">
+                  <Button 
+                    onClick={() => {
+                      setActiveCategory('All');
+                      setActiveCollection('All');
+                      setIsFilterOpen(false);
+                    }}
+                    variant="outline"
+                    className="w-full h-14 rounded-2xl border-zinc-200 text-[10px] font-black uppercase tracking-[0.2em]"
+                  >
+                    Sıfırla
+                  </Button>
+                  <Button 
+                    onClick={() => setIsFilterOpen(false)}
+                    className="w-full h-14 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.2em]"
+                  >
+                    Sonuçları Gör
+                  </Button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
         <div className="flex flex-col gap-6 mb-16">
           <div className="flex items-center gap-8 overflow-x-auto hide-scrollbar pb-4 border-b border-zinc-100">
             <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-300 shrink-0">Kategori</span>

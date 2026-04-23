@@ -6,6 +6,8 @@ import { supabase } from '../lib/supabase';
 import { GlobalPageLoader } from '../components/GlobalPageLoader';
 import { useSEO } from '../hooks/useSEO';
 import { useLanguage } from '../context/LanguageContext';
+import { X, SlidersHorizontal, ChevronRight, Filter } from 'lucide-react';
+import { Button } from '../components/ui/button';
 
 interface Product {
   id: string;
@@ -37,6 +39,7 @@ export default function Shop() {
   const [activeCollection, setActiveCollection] = useState<string>(initialCollection);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
 
@@ -127,56 +130,123 @@ export default function Shop() {
         {/* Editorial Heading Section */}
         <div className="flex flex-col items-center justify-center text-center gap-6 mb-16 md:mb-24">
           <span className="text-[10px] font-normal tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">Technical Archive</span>
-          <h1 className="text-[clamp(1.5rem,5vw,2.8rem)] font-bold tracking-tighter leading-none text-black">
-            {activeCollection !== 'All' ? activeCollection : (activeCategory === 'All' ? t('shop.title') : activeCategory)}
-          </h1>
-          
-          {/* Multi-Filter Row */}
-          <div className="flex flex-col gap-4 w-full">
-            <div className="flex items-center gap-6 md:gap-10 overflow-x-auto hide-scrollbar pb-2 border-b border-zinc-50">
-              <span className="text-[9px] font-black uppercase tracking-widest text-zinc-300 shrink-0">Kategori</span>
-              {availableCategories.map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => {
-                    setActiveCategory(cat);
-                    setActiveCollection('All'); // Reset collection when changing category? Or keep both?
-                    setPage(0);
-                    setIsLoading(true);
-                  }}
-                  className={`text-[12px] font-semibold tracking-[0.2em] whitespace-nowrap transition-all duration-300 relative pb-1
-                    ${activeCategory === cat
-                      ? 'text-neutral-900'
-                      : 'text-neutral-400 hover:text-neutral-600'
-                    }`}
-                >
-                  {cat === 'All' ? 'TÜMÜ' : cat}
-                </button>
-              ))}
+          {/* Filter Trigger Button */}
+          <div className="flex items-center justify-between w-full border-b border-zinc-100 pb-8">
+            <div className="flex flex-col items-start gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">Arşiv Filtresi</span>
+              <p className="text-[11px] text-zinc-500">
+                {activeCollection !== 'All' ? activeCollection : (activeCategory === 'All' ? 'Tüm Parçalar' : activeCategory)}
+              </p>
             </div>
-
-            <div className="flex items-center gap-6 md:gap-10 overflow-x-auto hide-scrollbar pb-2">
-              <span className="text-[9px] font-black uppercase tracking-widest text-zinc-300 shrink-0">Koleksiyon</span>
-              {availableCollections.map(coll => (
-                <button
-                  key={coll}
-                  onClick={() => {
-                    setActiveCollection(coll);
-                    setActiveCategory('All');
-                    setPage(0);
-                    setIsLoading(true);
-                  }}
-                  className={`text-[12px] font-semibold tracking-[0.2em] whitespace-nowrap transition-all duration-300 relative pb-1
-                    ${activeCollection === coll
-                      ? 'text-neutral-900'
-                      : 'text-neutral-400 hover:text-neutral-600'
-                    }`}
-                >
-                  {coll === 'All' ? 'TÜMÜ' : coll}
-                </button>
-              ))}
-            </div>
+            
+            <button 
+              onClick={() => setIsFilterOpen(true)}
+              className="flex items-center gap-3 px-6 py-3 bg-zinc-50 hover:bg-zinc-100 transition-colors rounded-full group"
+            >
+              <SlidersHorizontal size={14} className="text-zinc-400 group-hover:text-black transition-colors" />
+              <span className="text-[10px] font-black uppercase tracking-widest">Filtrele</span>
+            </button>
           </div>
+
+          {/* Filter Drawer / Sidebar Overlay */}
+          <AnimatePresence>
+            {isFilterOpen && (
+              <>
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setIsFilterOpen(false)}
+                  className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]"
+                />
+                <motion.div 
+                  initial={{ x: '100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '100%' }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                  className="fixed right-0 top-0 bottom-0 w-full max-w-[400px] bg-white z-[101] shadow-2xl overflow-y-auto p-10 flex flex-col gap-12"
+                >
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-bold tracking-tighter uppercase">Filtreler</h3>
+                    <button onClick={() => setIsFilterOpen(false)} className="p-2 hover:bg-zinc-50 rounded-full transition-colors">
+                      <X size={20} />
+                    </button>
+                  </div>
+
+                  {/* Categories Filter */}
+                  <div className="space-y-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Kategoriler</h4>
+                    <div className="grid grid-cols-2 gap-3">
+                      {availableCategories.map(cat => (
+                        <button
+                          key={cat}
+                          onClick={() => {
+                            setActiveCategory(cat);
+                            setActiveCollection('All');
+                            setPage(0);
+                            setIsLoading(true);
+                            setIsFilterOpen(false);
+                          }}
+                          className={`px-4 py-3 text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all border
+                            ${activeCategory === cat 
+                              ? 'bg-black text-white border-black' 
+                              : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:border-zinc-300'}`}
+                        >
+                          {cat === 'All' ? 'TÜMÜ' : cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Collections Filter */}
+                  <div className="space-y-6">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Koleksiyonlar</h4>
+                    <div className="flex flex-col gap-2">
+                      {availableCollections.map(coll => (
+                        <button
+                          key={coll}
+                          onClick={() => {
+                            setActiveCollection(coll);
+                            setActiveCategory('All');
+                            setPage(0);
+                            setIsLoading(true);
+                            setIsFilterOpen(false);
+                          }}
+                          className={`flex items-center justify-between px-6 py-4 rounded-2xl transition-all border
+                            ${activeCollection === coll 
+                              ? 'bg-zinc-50 border-zinc-900 text-zinc-900' 
+                              : 'bg-white border-zinc-100 text-zinc-400 hover:border-zinc-300'}`}
+                        >
+                          <span className="text-xs font-bold uppercase tracking-widest">{coll === 'All' ? 'TÜM KOLEKSİYONLAR' : coll}</span>
+                          <ChevronRight size={14} className={activeCollection === coll ? 'opacity-100' : 'opacity-20'} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mt-auto pt-10 border-t border-zinc-100 flex flex-col gap-4">
+                    <Button 
+                      onClick={() => {
+                        setActiveCategory('All');
+                        setActiveCollection('All');
+                        setIsFilterOpen(false);
+                      }}
+                      variant="outline"
+                      className="w-full h-14 rounded-2xl border-zinc-200 text-[10px] font-black uppercase tracking-[0.2em]"
+                    >
+                      Sıfırla
+                    </Button>
+                    <Button 
+                      onClick={() => setIsFilterOpen(false)}
+                      className="w-full h-14 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.2em]"
+                    >
+                      Sonuçları Gör
+                    </Button>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Spacious Product Grid */}
