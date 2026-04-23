@@ -80,7 +80,7 @@ function ImageGallery({ images, productName }: GalleryProps) {
         >
           {images.map((img, i) => (
             <div key={img.id} className="flex-shrink-0 w-full snap-center">
-              <div className="w-full relative rounded-lg overflow-hidden" style={{ paddingBottom: '133.33%', backgroundColor: '#E8E5E0' }}>
+              <div className="w-full relative rounded-lg overflow-hidden" style={{ paddingBottom: '133.33%', backgroundColor: '#FFFFFF' }}>
                 <img
                   src={img.url}
                   alt={`${productName} — view ${i + 1}`}
@@ -336,7 +336,7 @@ export default function ProductDetail() {
   const related: any[] = []; // We'll handle related products via query later
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-white min-h-screen">
 
       {/* ─── GALLERY + INFO LAYOUT ─── */}
       <div className="max-w-[1100px] mx-auto px-4 md:px-10 pt-24 md:pt-28 pb-12">
@@ -418,23 +418,23 @@ export default function ProductDetail() {
                 ))}
               </div>
 
-              {/* Description & Technical Specs — Apple Card Style */}
-              <div className="flex flex-col gap-4 mt-6">
-                <div className="p-6 md:p-8 rounded-[2rem] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group">
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 block mb-4">Açıklama</span>
-                  <p className="text-sm leading-relaxed text-zinc-600 font-medium">
+              {/* Description & Technical Specs — Flat & Compact Style */}
+              <div className="flex flex-col gap-8 mt-10">
+                <div className="relative">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 block mb-4 border-b border-zinc-50 pb-2">Ürün Açıklaması</span>
+                  <p className="text-[13px] leading-relaxed text-zinc-600 font-medium whitespace-pre-wrap">
                     {product.description}
                   </p>
                 </div>
 
                 {product.features && product.features.length > 0 && (
-                  <div className="p-6 md:p-8 rounded-[2rem] bg-white border border-zinc-100 shadow-sm relative overflow-hidden group">
-                    <span className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 block mb-4">Özellikler</span>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                  <div className="relative">
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300 block mb-4 border-b border-zinc-50 pb-2">Teknik Detaylar</span>
+                    <div className="grid grid-cols-1 gap-y-3">
                       {product.features.map((f: string, i: number) => (
                         <div key={i} className="flex items-center gap-3">
-                          <div className="w-1.5 h-1.5 rounded-full bg-zinc-300" />
-                          <span className="text-xs font-bold text-zinc-600 uppercase tracking-widest">{f}</span>
+                          <div className="w-1 h-1 rounded-full bg-zinc-200" />
+                          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">{f}</span>
                         </div>
                       ))}
                     </div>
