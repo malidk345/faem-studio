@@ -290,26 +290,41 @@ export default function ProductDetail() {
   };
 
   const handleShare = async () => {
+    console.log("🔗 [Share] Triggered");
     const shareData = {
       title: product?.name || 'Faem Studio',
       text: product?.description || 'Check out this piece from Faem Studio',
       url: window.location.href
     };
 
-    if (navigator.share) {
-      try {
+    try {
+      if (navigator.share) {
+        console.log("🔗 [Share] Using Navigator API");
         await navigator.share(shareData);
-      } catch (err) {
-        console.error('Sharing failed', err);
-        // Fallback for failed share attempt
-        navigator.clipboard.writeText(window.location.href);
+      } else {
+        throw new Error('Navigator share not supported');
+      }
+    } catch (err) {
+      console.log("🔗 [Share] Falling back to clipboard", err);
+      try {
+        await navigator.clipboard.writeText(window.location.href);
         setShareToast(true);
         setTimeout(() => setShareToast(false), 2000);
+      } catch (clipErr) {
+        console.error("🔗 [Share] Clipboard API failed, using execCommand", clipErr);
+        const textArea = document.createElement("textarea");
+        textArea.value = window.location.href;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          setShareToast(true);
+          setTimeout(() => setShareToast(false), 2000);
+        } catch (execErr) {
+          console.error("🔗 [Share] All share methods failed", execErr);
+        }
+        document.body.removeChild(textArea);
       }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
-      setShareToast(true);
-      setTimeout(() => setShareToast(false), 2000);
     }
   };
 
