@@ -129,6 +129,24 @@ export function BulkImportModal({ isOpen, onClose, onSuccess, refreshData }: Bul
           throw new Error("İçe aktarılacak geçerli veri bulunamadı. Lütfen Excel dosyasını kontrol edin.");
         }
 
+        // 2. Identify and Insert New Categories
+        const uniqueCategories = [...new Set(productsToInsert.map(p => p.category))].filter(Boolean);
+        
+        if (uniqueCategories.length > 0) {
+          // Get existing categories to avoid duplicates
+          const { data: existingCats } = await supabase.from('categories').select('name');
+          const existingNames = existingCats?.map(c => c.name) || [];
+          
+          const newCategories = uniqueCategories
+            .filter(cat => !existingNames.includes(cat))
+            .map(name => ({ name }));
+
+          if (newCategories.length > 0) {
+            await supabase.from('categories').insert(newCategories);
+          }
+        }
+
+        // 3. Insert Products
         const { error } = await supabase
           .from('products')
           .insert(productsToInsert);
@@ -138,7 +156,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess, refreshData }: Bul
           throw new Error(`Veritabanı hatası: ${error.message}`);
         }
 
-        toast.success(`${productsToInsert.length} ürün başarıyla eklendi.`);
+        toast.success(`${productsToInsert.length} ürün ve ${uniqueCategories.length} kategori başarıyla işlendi.`);
         refreshData();
         onSuccess();
         onClose();

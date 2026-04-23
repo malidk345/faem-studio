@@ -17,11 +17,12 @@ interface ProductEditTabProps {
   product: any;
   categories: any[];
   onSave: (data: any) => void;
+  onAddCategory?: (name: string) => void;
   onCancel: () => void;
   onDelete?: (id: string) => void;
 }
 
-export function ProductEditTab({ product, categories, onSave, onCancel, onDelete }: ProductEditTabProps) {
+export function ProductEditTab({ product, categories, onSave, onAddCategory, onCancel, onDelete }: ProductEditTabProps) {
   const [formData, setFormData] = useState<any>({
     name: '',
     price: '',
@@ -381,19 +382,34 @@ export function ProductEditTab({ product, categories, onSave, onCancel, onDelete
 
             <div className="grid grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Sector</Label>
-                <Select value={formData.category} onValueChange={(val) => setFormData((prev: any) => ({ ...prev, category: val }))}>
-                  <SelectTrigger className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-none">
-                    <SelectValue placeholder="SELECT" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
-                    {categories.map((cat, i) => (
-                      <SelectItem key={i} value={cat.name || cat} className="rounded-xl font-bold py-2 sm:py-3 text-xs">
-                        {cat.name || cat}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Sector (Category)</Label>
+                <div className="flex gap-2">
+                  <Select value={formData.category} onValueChange={(val) => setFormData((prev: any) => ({ ...prev, category: val }))}>
+                    <SelectTrigger className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-none flex-1">
+                      <SelectValue placeholder="SELECT" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-2xl border-none shadow-2xl p-2">
+                      {categories.map((cat, i) => (
+                        <SelectItem key={i} value={cat.name || cat} className="rounded-xl font-bold py-2 sm:py-3 text-xs">
+                          {cat.name || cat}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => {
+                      const newCat = window.prompt('Yeni kategori adını girin:');
+                      if (newCat && onAddCategory) {
+                        onAddCategory(newCat);
+                        setFormData((prev: any) => ({ ...prev, category: newCat }));
+                      }
+                    }}
+                    className="h-11 sm:h-12 w-11 sm:w-12 p-0 bg-zinc-50/50 border-zinc-100 rounded-xl hover:bg-zinc-100"
+                  >
+                    <Plus size={16} />
+                  </Button>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Inventory</Label>

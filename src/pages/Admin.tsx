@@ -123,6 +123,7 @@ export default function Admin() {
                       setIsEditing(false);
                       setEditingProduct(null);
                     }}
+                    onAddCategory={addCategory}
                     onCancel={() => { setIsEditing(false); setEditingProduct(null); }}
                     onDelete={deleteProduct}
                   />

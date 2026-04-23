@@ -15,33 +15,23 @@ export default function Home() {
     description: t('shop.desc')
   });
 
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [products, setProducts] = useState<any[]>([]);
-  const [slides, setSlides] = useState<any[]>([]);
-  const [loadingSlides, setLoadingSlides] = useState(true);
-
-  const fallbackSlides = [
-    {
-      id: 1,
-      tag: 'ARCHIVE_001 // CORE',
-      headline: t('home.hero_1_title').split('\n'),
-      sub: t('home.hero_1_sub'),
-      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=1600&auto=format&fit=crop',
-      link: '/shop'
-    }
-  ];
-
-  const currentSlides = slides.length > 0 ? slides : fallbackSlides;
-  const slide = currentSlides[activeSlide] || fallbackSlides[0];
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [availableCats, setAvailableCats] = useState<string[]>(['All']);
 
   useEffect(() => {
     const fetchContent = async () => {
       // Fetch Products with selective columns for performance
-      const { data: pData } = await supabase
+      let query = supabase
         .from('products')
         .select('id, name, price, image_url, category, discount_price, description, images, features, sizes')
-        .limit(4)
+        .limit(8)
         .order('created_at', { ascending: false });
+
+      if (activeCategory !== 'All') {
+        query = query.eq('category', activeCategory);
+      }
+
+      const { data: pData } = await query;
       if (pData) {
         setProducts(pData.map(p => ({
           id: p.id,
@@ -52,6 +42,12 @@ export default function Home() {
           category: p.category,
           discount_price: p.discount_price
         })));
+      }
+
+      // Fetch Categories for Filter
+      const { data: catData } = await supabase.from('categories').select('name');
+      if (catData) {
+        setAvailableCats(['All', ...catData.map(c => c.name)]);
       }
 
       // Fetch Hero Slides from CMS
@@ -83,7 +79,7 @@ export default function Home() {
     }, 6000);
 
     return () => clearInterval(interval);
-  }, [currentSlides.length]);
+  }, [currentSlides.length, activeCategory]);
 
   return (
     <div className="bg-white text-foreground transition-colors duration-500 overflow-x-hidden">
@@ -175,7 +171,7 @@ export default function Home() {
 
       {/* ─── FEATURED ARCHIVE ─── */}
       <section className="py-32 md:py-48 px-6 lg:px-12 max-w-[1400px] mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-24">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-16">
           <div className="flex flex-col gap-4">
             <span className="text-[14px] font-normal uppercase tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">
               {t('home.current')}
@@ -192,13 +188,38 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-24">
-          {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-            />
+        {/* Home Category Filter */}
+        <div className="flex items-center gap-8 mb-16 overflow-x-auto hide-scrollbar pb-4 border-b border-zinc-100">
+          {availableCats.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`text-[12px] font-black uppercase tracking-[0.2em] transition-all relative
+                ${activeCategory === cat ? 'text-black' : 'text-zinc-300 hover:text-zinc-500'}`}
+            >
+              {cat === 'All' ? 'TÜMÜ' : cat}
+              {activeCategory === cat && (
+                <motion.div layoutId="catUnderline" className="absolute -bottom-4 left-0 right-0 h-[2px] bg-black" />
+              )}
+            </button>
           ))}
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-24">
+          <AnimatePresence mode="popLayout">
+            {products.map((product) => (
+              <motion.div
+                key={product.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.5 }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
       </section>
 
