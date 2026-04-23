@@ -174,6 +174,7 @@ export default function ProductDetail() {
   const [userHeight, setUserHeight] = useState('');
   const [userWeight, setUserWeight] = useState('');
   const [recommendedSize, setRecommendedSize] = useState<string | null>(null);
+  const [shareToast, setShareToast] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -300,10 +301,15 @@ export default function ProductDetail() {
         await navigator.share(shareData);
       } catch (err) {
         console.error('Sharing failed', err);
+        // Fallback for failed share attempt
+        navigator.clipboard.writeText(window.location.href);
+        setShareToast(true);
+        setTimeout(() => setShareToast(false), 2000);
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert('Link panoya kopyalandı.');
+      setShareToast(true);
+      setTimeout(() => setShareToast(false), 2000);
     }
   };
 
@@ -556,7 +562,7 @@ export default function ProductDetail() {
         handleAddToCart={handleAddToCart}
       />
 
-      {/* Size Recommender Modal */}
+      {/* Size Recommender Modal — Compact & Mobile Optimized */}
       <AnimatePresence>
         {showRecommender && (
           <>
@@ -565,68 +571,83 @@ export default function ProductDetail() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowRecommender(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[200]"
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200]"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[400px] bg-white z-[201] p-10 rounded-[32px] shadow-2xl"
+              initial={{ opacity: 0, y: '100%' }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: '100%' }}
+              className="fixed bottom-0 left-0 right-0 md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:bottom-auto w-full md:max-w-[360px] bg-white z-[201] p-6 md:p-8 rounded-t-[32px] md:rounded-[32px] shadow-2xl"
             >
-              <div className="flex flex-col gap-8">
+              <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-2xl font-bold tracking-tighter uppercase">Beden Önerisi</h3>
-                    <p className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Size Assistant</p>
+                    <h3 className="text-xl font-bold tracking-tighter uppercase">Beden Önerisi</h3>
                   </div>
                   <button onClick={() => setShowRecommender(false)} className="p-2 hover:bg-zinc-50 rounded-full transition-colors">
-                    <X size={20} />
+                    <X size={18} />
                   </button>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300 ml-1">Boy (cm)</label>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-300 ml-1">Boy (cm)</label>
                     <input 
                       type="number"
-                      placeholder="Örn: 180"
+                      inputMode="numeric"
+                      placeholder="180"
                       value={userHeight}
                       onChange={(e) => setUserHeight(e.target.value)}
-                      className="w-full h-14 bg-zinc-50 border border-zinc-100 rounded-2xl px-6 text-sm font-bold focus:outline-none focus:border-black transition-all"
+                      className="w-full h-12 bg-zinc-50 border border-zinc-100 rounded-xl px-4 text-[16px] font-bold focus:outline-none focus:border-black transition-all"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-300 ml-1">Kilo (kg)</label>
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-300 ml-1">Kilo (kg)</label>
                     <input 
                       type="number"
-                      placeholder="Örn: 75"
+                      inputMode="numeric"
+                      placeholder="75"
                       value={userWeight}
                       onChange={(e) => setUserWeight(e.target.value)}
-                      className="w-full h-14 bg-zinc-50 border border-zinc-100 rounded-2xl px-6 text-sm font-bold focus:outline-none focus:border-black transition-all"
+                      className="w-full h-12 bg-zinc-50 border border-zinc-100 rounded-xl px-4 text-[16px] font-bold focus:outline-none focus:border-black transition-all"
                     />
                   </div>
                 </div>
 
                 {recommendedSize && (
                   <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="p-6 bg-zinc-900 rounded-2xl text-center"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="py-4 bg-zinc-900 rounded-xl text-center"
                   >
-                    <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.4em]">Önerilen Beden</span>
-                    <p className="text-4xl font-black text-white mt-2 tracking-tighter">{recommendedSize}</p>
+                    <span className="text-[9px] font-bold text-white/30 uppercase tracking-[0.4em]">Önerilen</span>
+                    <p className="text-2xl font-black text-white mt-1 tracking-tighter">{recommendedSize}</p>
                   </motion.div>
                 )}
 
                 <Button 
                   onClick={calculateSize}
-                  className="w-full h-14 bg-black text-white rounded-2xl text-[11px] font-black uppercase tracking-[0.2em]"
+                  className="w-full h-12 bg-black text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em]"
                 >
                   Hesapla
                 </Button>
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Share Toast */}
+      <AnimatePresence>
+        {shareToast && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 px-6 py-3 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-xl z-[300] backdrop-blur-xl"
+          >
+            Bağlantı Panoya Kopyalandı
+          </motion.div>
         )}
       </AnimatePresence>
     </div>
