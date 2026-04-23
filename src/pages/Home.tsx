@@ -20,7 +20,9 @@ export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
   const [slides, setSlides] = useState<any[]>([]);
   const [loadingSlides, setLoadingSlides] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('All');
   const [activeCollection, setActiveCollection] = useState('All');
+  const [availableCats, setAvailableCats] = useState<string[]>(['All']);
   const [availableColls, setAvailableColls] = useState<string[]>(['All']);
 
   const currentSlides = slides;
@@ -35,6 +37,9 @@ export default function Home() {
         .limit(8)
         .order('created_at', { ascending: false });
 
+      if (activeCategory !== 'All') {
+        query = query.eq('category', activeCategory);
+      }
       if (activeCollection !== 'All') {
         query = query.eq('collection', activeCollection);
       }
@@ -53,11 +58,13 @@ export default function Home() {
         })));
       }
 
-      // Fetch Collections for Filter
-      const { data: collData } = await supabase.from('collections').select('name');
-      if (collData) {
-        setAvailableColls(['All', ...collData.map(c => c.name)]);
-      }
+      // Fetch Meta for Filter
+      const [catRes, collRes] = await Promise.all([
+        supabase.from('categories').select('name'),
+        supabase.from('collections').select('name')
+      ]);
+      if (catRes.data) setAvailableCats(['All', ...catRes.data.map(c => c.name)]);
+      if (collRes.data) setAvailableColls(['All', ...collRes.data.map(c => c.name)]);
 
       // Fetch Hero Slides from CMS
       const { data: sData } = await supabase
@@ -88,7 +95,7 @@ export default function Home() {
     }, 6000);
 
     return () => clearInterval(interval);
-  }, [currentSlides.length, activeCollection]);
+  }, [currentSlides.length, activeCategory, activeCollection]);
 
   return (
     <div className="bg-white text-foreground transition-colors duration-500 overflow-x-hidden">
@@ -201,20 +208,46 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="flex items-center gap-8 mb-16 overflow-x-auto hide-scrollbar pb-4 border-b border-zinc-100">
-          {availableColls.map(coll => (
-            <button
-              key={coll}
-              onClick={() => setActiveCollection(coll)}
-              className={`text-[12px] font-black uppercase tracking-[0.2em] transition-all relative
-                ${activeCollection === coll ? 'text-black' : 'text-zinc-300 hover:text-zinc-500'}`}
-            >
-              {coll === 'All' ? t('shop.all_categories') : coll}
-              {activeCollection === coll && (
-                <motion.div layoutId="collUnderline" className="absolute -bottom-4 left-0 right-0 h-[2px] bg-black" />
-              )}
-            </button>
-          ))}
+        <div className="flex flex-col gap-6 mb-16">
+          <div className="flex items-center gap-8 overflow-x-auto hide-scrollbar pb-4 border-b border-zinc-100">
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-300 shrink-0">Kategori</span>
+            {availableCats.map(cat => (
+              <button
+                key={cat}
+                onClick={() => {
+                  setActiveCategory(cat);
+                  setActiveCollection('All');
+                }}
+                className={`text-[12px] font-black uppercase tracking-[0.2em] transition-all relative
+                  ${activeCategory === cat ? 'text-black' : 'text-zinc-300 hover:text-zinc-500'}`}
+              >
+                {cat === 'All' ? 'TÜMÜ' : cat}
+                {activeCategory === cat && (
+                  <motion.div layoutId="catUnderline" className="absolute -bottom-4 left-0 right-0 h-[2px] bg-black" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-8 overflow-x-auto hide-scrollbar pb-4">
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-300 shrink-0">Koleksiyon</span>
+            {availableColls.map(coll => (
+              <button
+                key={coll}
+                onClick={() => {
+                  setActiveCollection(coll);
+                  setActiveCategory('All');
+                }}
+                className={`text-[12px] font-black uppercase tracking-[0.2em] transition-all relative
+                  ${activeCollection === coll ? 'text-black' : 'text-zinc-300 hover:text-zinc-500'}`}
+              >
+                {coll === 'All' ? 'TÜMÜ' : coll}
+                {activeCollection === coll && (
+                  <motion.div layoutId="collUnderline" className="absolute -bottom-4 left-0 right-0 h-[2px] bg-black" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-24">

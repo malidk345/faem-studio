@@ -24,6 +24,7 @@ interface Product {
 export default function Shop() {
   const { t } = useLanguage();
   const [searchParams] = useSearchParams();
+  const initialCategory = searchParams.get('category') || 'All';
   const initialCollection = searchParams.get('collection') || 'All';
 
   useSEO({
@@ -32,13 +33,14 @@ export default function Shop() {
   });
 
   const ITEMS_PER_PAGE = 12;
+  const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
   const [activeCollection, setActiveCollection] = useState<string>(initialCollection);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
 
-  const loadProducts = async (pageNum: number, collection: string, isInitial = false) => {
+  const loadProducts = async (pageNum: number, category: string, collection: string, isInitial = false) => {
     try {
       const from = pageNum * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
@@ -49,6 +51,9 @@ export default function Shop() {
         .order('created_at', { ascending: false })
         .range(from, to);
 
+      if (category !== 'All') {
+        query = query.eq('category', category);
+      }
       if (collection !== 'All') {
         query = query.eq('collection', collection);
       }
@@ -90,23 +95,28 @@ export default function Shop() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    loadProducts(0, activeCollection, true);
-  }, [activeCollection]);
+    loadProducts(0, activeCategory, activeCollection, true);
+  }, [activeCategory, activeCollection]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    loadProducts(nextPage, activeCollection);
+    loadProducts(nextPage, activeCategory, activeCollection);
   };
 
-  // Extract collections from a separate query or first batch
+  const [availableCategories, setAvailableCategories] = useState<string[]>(['All']);
   const [availableCollections, setAvailableCollections] = useState<string[]>(['All']);
+
   useEffect(() => {
-    const fetchColls = async () => {
-      const { data } = await supabase.from('collections').select('name');
-      if (data) setAvailableCollections(['All', ...data.map(c => c.name)]);
+    const fetchMeta = async () => {
+      const [catRes, collRes] = await Promise.all([
+        supabase.from('categories').select('name'),
+        supabase.from('collections').select('name')
+      ]);
+      if (catRes.data) setAvailableCategories(['All', ...catRes.data.map(c => c.name)]);
+      if (collRes.data) setAvailableCollections(['All', ...collRes.data.map(c => c.name)]);
     };
-    fetchColls();
+    fetchMeta();
   }, []);
 
   if (isLoading && products.length === 0) return <GlobalPageLoader isLoading={true} />;
@@ -118,27 +128,54 @@ export default function Shop() {
         <div className="flex flex-col items-center justify-center text-center gap-6 mb-16 md:mb-24">
           <span className="text-[10px] font-normal tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">Technical Archive</span>
           <h1 className="text-[clamp(1.5rem,5vw,2.8rem)] font-bold tracking-tighter leading-none text-black">
-            {activeCollection === 'All' ? t('shop.title') : activeCollection}
+            {activeCollection !== 'All' ? activeCollection : (activeCategory === 'All' ? t('shop.title') : activeCategory)}
           </h1>
           
-          <div className="flex items-center gap-6 md:gap-10 mt-4 overflow-x-auto hide-scrollbar pb-2">
-            {availableCollections.map(coll => (
-              <button
-                key={coll}
-                onClick={() => {
-                  setActiveCollection(coll);
-                  setPage(0);
-                  setIsLoading(true);
-                }}
-                className={`text-[12px] font-semibold tracking-[0.2em] whitespace-nowrap transition-all duration-300 relative pb-1
-                  ${activeCollection === coll
-                    ? 'text-neutral-900 border-b border-neutral-900'
-                    : 'text-neutral-400 hover:text-neutral-600 border-b border-transparent'
-                  }`}
-              >
-                {coll === 'All' ? t('shop.all_categories') : coll}
-              </button>
-            ))}
+          {/* Multi-Filter Row */}
+          <div className="flex flex-col gap-4 w-full">
+            <div className="flex items-center gap-6 md:gap-10 overflow-x-auto hide-scrollbar pb-2 border-b border-zinc-50">
+              <span className="text-[9px] font-black uppercase tracking-widest text-zinc-300 shrink-0">Kategori</span>
+              {availableCategories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => {
+                    setActiveCategory(cat);
+                    setActiveCollection('All'); // Reset collection when changing category? Or keep both?
+                    setPage(0);
+                    setIsLoading(true);
+                  }}
+                  className={`text-[12px] font-semibold tracking-[0.2em] whitespace-nowrap transition-all duration-300 relative pb-1
+                    ${activeCategory === cat
+                      ? 'text-neutral-900'
+                      : 'text-neutral-400 hover:text-neutral-600'
+                    }`}
+                >
+                  {cat === 'All' ? 'TÜMÜ' : cat}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-6 md:gap-10 overflow-x-auto hide-scrollbar pb-2">
+              <span className="text-[9px] font-black uppercase tracking-widest text-zinc-300 shrink-0">Koleksiyon</span>
+              {availableCollections.map(coll => (
+                <button
+                  key={coll}
+                  onClick={() => {
+                    setActiveCollection(coll);
+                    setActiveCategory('All');
+                    setPage(0);
+                    setIsLoading(true);
+                  }}
+                  className={`text-[12px] font-semibold tracking-[0.2em] whitespace-nowrap transition-all duration-300 relative pb-1
+                    ${activeCollection === coll
+                      ? 'text-neutral-900'
+                      : 'text-neutral-400 hover:text-neutral-600'
+                    }`}
+                >
+                  {coll === 'All' ? 'TÜMÜ' : coll}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
