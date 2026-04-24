@@ -177,6 +177,7 @@ export default function ProductDetail() {
   const [recommendedSize, setRecommendedSize] = useState<string | null>(null);
   const [shareToast, setShareToast] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -215,7 +216,7 @@ export default function ProductDetail() {
           galleryImages = [{ id: 'main', url: data.image_url }];
         }
 
-        setProduct({
+        const formatted = {
           id: data.id,
           name: data.name || 'Faem Piece',
           price: data.price || 'Fiyat sorunuz',
@@ -228,13 +229,18 @@ export default function ProductDetail() {
           features: Array.isArray(data.features) ? data.features : [],
           discount_price: data.discount_price || null,
           stock_count: data.stock_count ?? null
-        });
+        };
+
+        setProduct(formatted);
 
         if (Array.isArray(data.sizes) && data.sizes.length > 0) {
           setSelectedSize(data.sizes[0]);
         }
+
+        return formatted;
       } catch (e: any) {
         setProduct({ error: `Sistem Hatası: ${e.message || 'Bilinmeyen Hata'}` });
+        return null;
       } finally {
         setLoading(false);
       }
@@ -259,7 +265,43 @@ export default function ProductDetail() {
       }
     };
 
-    fetchProduct();
+    const fetchRelated = async (category: string, collection: string) => {
+      try {
+        let query = supabase
+          .from('products')
+          .select('id, name, price, image_url, discount_price, category, collection')
+          .neq('id', currentId)
+          .limit(4);
+        
+        if (collection) {
+          query = query.eq('collection', collection);
+        } else if (category) {
+          query = query.eq('category', category);
+        }
+
+        const { data } = await query;
+        if (data) {
+          setRelatedProducts(data.map(p => ({
+            id: p.id,
+            name: p.name,
+            price: p.price,
+            image: p.image_url,
+            discount_price: p.discount_price
+          })));
+        }
+      } catch (e) {
+        console.error("Related fetch error:", e);
+      }
+    };
+
+    const fetchProductFlow = async () => {
+      const productData = await fetchProduct();
+      if (productData) {
+        fetchRelated(productData.category, productData.collection);
+      }
+    };
+
+    fetchProductFlow();
     fetchWishlistStatus();
     fetchReviews();
   }, [id, user]);
@@ -391,8 +433,6 @@ export default function ProductDetail() {
     product.images && product.images.length > 0
       ? product.images
       : [{ id: 'thumb', url: product.image }];
-
-  const related: any[] = []; // We'll handle related products via query later
 
   return (
     <div className="bg-white min-h-screen">
@@ -538,7 +578,7 @@ export default function ProductDetail() {
             {t('product.also_like')}
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {related.map(p => (
+            {relatedProducts.map(p => (
               <button
                 key={p.id}
                 onClick={() => navigate(`/product/${p.id}`)}
@@ -559,9 +599,22 @@ export default function ProductDetail() {
                   <h4 className="text-sm font-bold tracking-tight text-zinc-900 line-clamp-1">
                     {p.name}
                   </h4>
-                  <p className="text-xs font-bold text-zinc-500 mt-1">
-                    {p.price}
-                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    {p.discount_price ? (
+                      <>
+                        <p className="text-xs font-bold text-zinc-400 line-through">
+                          {p.price}
+                        </p>
+                        <p className="text-sm font-bold text-rose-600">
+                          {p.discount_price}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-sm font-bold text-zinc-900">
+                        {p.price}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </button>
             ))}
