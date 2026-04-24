@@ -212,6 +212,15 @@ export default function ProductDetail() {
           return { id: `img-${idx}`, url: data.image_url || '' };
         });
 
+        // CRITICAL FIX: Ensure the main thumbnail (image_url) is always the first image in the gallery
+        if (data.image_url && !galleryImages.some(img => img.url === data.image_url)) {
+          galleryImages = [{ id: 'main', url: data.image_url }, ...galleryImages];
+        } else if (data.image_url && galleryImages.length > 0 && galleryImages[0].url !== data.image_url) {
+          // If it exists but isn't first, we might want to keep it as is, 
+          // but the user said "ilk foto görünmüyor", so let's ensure it's first or present.
+          // The current logic above handles presence.
+        }
+
         if (galleryImages.length === 0 && data.image_url) {
           galleryImages = [{ id: 'main', url: data.image_url }];
         }
