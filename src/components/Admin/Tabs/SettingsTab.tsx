@@ -9,7 +9,7 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
   const [settings, setSettings] = useState({
     store_name: dbSettings?.store_name || 'FAEM Studio',
     contact_email: dbSettings?.contact_email || 'admin@faem.studio',
-    currency: dbSettings?.currency || 'USD',
+    currency: dbSettings?.currency || 'TRY',
     tax_rate: dbSettings?.tax_rate || '18',
     shipping_fee: dbSettings?.shipping_fee || '25.00',
     free_shipping_threshold: dbSettings?.free_shipping_threshold || '500.00',
@@ -123,7 +123,7 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
             <div className="flex-1 space-y-4">
               <div>
                 <h3 className="font-semibold text-lg text-zinc-900 leading-none">Ödeme Altyapısı</h3>
-                <p className="text-xs text-zinc-500 font-medium mt-1">Stripe / İyzico API anahtarları.</p>
+                <p className="text-xs text-zinc-500 font-medium mt-1">iyzico API anahtarları.</p>
               </div>
               <div className="space-y-3 pt-2">
                 <div className="space-y-1.5">
@@ -135,22 +135,22 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Stripe Publishable Key</Label>
+                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">iyzico API Key</Label>
                   <Input 
                     type="password"
                     value={settings.stripe_public_key}
                     onChange={(e) => setSettings({...settings, stripe_public_key: e.target.value})}
-                    placeholder="pk_test_..."
+                    placeholder="sandbox-..."
                     className="h-11 border-zinc-200 focus:border-zinc-400 rounded-xl font-medium"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Stripe Secret Key</Label>
+                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">iyzico Secret Key</Label>
                   <Input 
                     type="password"
                     value={settings.stripe_secret_key}
                     onChange={(e) => setSettings({...settings, stripe_secret_key: e.target.value})}
-                    placeholder="sk_test_..."
+                    placeholder="sandbox-..."
                     className="h-11 border-zinc-200 focus:border-zinc-400 rounded-xl font-medium"
                   />
                 </div>

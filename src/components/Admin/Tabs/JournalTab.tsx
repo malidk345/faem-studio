@@ -29,8 +29,8 @@ export function JournalTab() {
     fetchPosts();
   }, []);
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     const postData = {
       title: editingPost.title,
       excerpt: editingPost.excerpt,

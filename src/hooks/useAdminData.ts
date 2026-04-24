@@ -47,7 +47,7 @@ export function useAdminData() {
       ] = await Promise.all([
         // Only fetch necessary columns for products list to reduce payload size
         supabase.from('products')
-          .select('id, name, price, category, collection, image_url, stock_count, created_at, description, images, features, discount_price')
+          .select('id, name, price, category, collection, image_url, stock_count, created_at, description, images, features, discount_price, sizes, color')
           .order('created_at', { ascending: false }),
         supabase.from('categories').select('*'),
         supabase.from('collections').select('*'),
