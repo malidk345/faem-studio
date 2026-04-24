@@ -11,6 +11,7 @@ interface Product {
   sizes: string[];
   discount_price?: string;
   category?: string;
+  stock_count?: number;
 }
 
 interface ProductSelectionCardProps {
@@ -33,6 +34,10 @@ export default function ProductSelectionCard({
   const [isAdding, setIsAdding] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
   const [sizeOpen, setSizeOpen] = useState(false);
+
+  const stockCount = product.stock_count ?? 999;
+  const isOutOfStock = stockCount <= 0;
+  const isLowStock = stockCount > 0 && stockCount <= 3;
 
   useEffect(() => {
     let ticking = false;
@@ -58,13 +63,14 @@ export default function ProductSelectionCard({
 
   const handleAdd = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isOutOfStock) return;
     if (!selectedSize) { setSizeOpen(true); return; }
     if (isAdding) return;
     setIsAdding(true);
     await new Promise(r => setTimeout(r, 1200));
     handleAddToCart(e);
     setTimeout(() => setIsAdding(false), 600);
-  }, [selectedSize, isAdding, handleAddToCart]);
+  }, [selectedSize, isAdding, handleAddToCart, isOutOfStock]);
 
   return (
     <div className="fixed bottom-6 left-4 right-4 z-50 flex flex-col items-center pointer-events-none md:right-10 md:bottom-10 md:left-auto md:w-[440px]">
@@ -105,7 +111,7 @@ export default function ProductSelectionCard({
                         {product.discount_price || product.price}
                       </p>
                       <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] font-bold mt-2 font-['Handjet',sans-serif]">
-                        {product.category} / ARCHIVE PIECE
+                        {product.category} {isOutOfStock ? '/ TÜKENDI' : isLowStock ? `/ SON ${stockCount} ADET` : '/ ARCHIVE PIECE'}
                       </p>
                     </div>
                     <button onClick={() => setIsWishlisted(!isWishlisted)} className="active:scale-90 transition-transform mt-1">
@@ -122,10 +128,16 @@ export default function ProductSelectionCard({
         <div className={`flex items-center gap-2 px-3 pb-3 ${collapsed ? 'h-full pt-3' : 'pt-2'}`}>
           <button
             onClick={handleAdd}
-            className="flex-1 h-[48px] bg-white hover:bg-white/90 text-black rounded-[4px] transition-all active:scale-[0.97] flex items-center justify-center shadow-lg"
+            disabled={isOutOfStock}
+            className={`flex-1 h-[48px] rounded-[4px] transition-all flex items-center justify-center shadow-lg
+              ${isOutOfStock 
+                ? 'bg-white/20 text-white/40 cursor-not-allowed' 
+                : 'bg-white hover:bg-white/90 text-black active:scale-[0.97]'}`}
           >
             {isAdding ? (
               <Check size={20} className="text-emerald-600 animate-in fade-in zoom-in duration-300" />
+            ) : isOutOfStock ? (
+              <span className="text-[16px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif] text-rose-400">TÜKENDI</span>
             ) : (
               <span className="text-[18px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">SEPETE EKLE</span>
             )}

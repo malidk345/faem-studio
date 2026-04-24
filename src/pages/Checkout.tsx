@@ -148,6 +148,17 @@ export default function Checkout() {
       
       if (dbError) throw dbError;
 
+      // Decrement stock for each ordered item
+      for (const item of cartItems) {
+        const { error: stockError } = await supabase.rpc('decrement_stock', {
+          p_product_id: item.productId,
+          p_amount: item.quantity
+        });
+        if (stockError) {
+          console.warn('Stock decrement failed for', item.productId, stockError.message);
+        }
+      }
+
       // Simulate a small delay for premium feel
       await new Promise(r => setTimeout(r, 1500));
       

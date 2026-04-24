@@ -13,6 +13,7 @@ import { AnimatePresence } from 'motion/react';
 import { useSEO } from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
+import { toast } from 'sonner';
 
 interface ProductImage {
   id: string;
@@ -180,22 +181,18 @@ export default function ProductDetail() {
   useEffect(() => {
     window.scrollTo(0, 0);
     const currentId = id || '';
-    console.log("🔍 [ProductDetail] Initializing with ID:", currentId);
 
     if (!currentId) {
-      console.warn("❌ [ProductDetail] No ID provided in URL.");
       setLoading(false);
       return;
     }
 
     const fetchProduct = async () => {
-      console.log("🛰️ [ProductDetail] Starting Supabase fetch...");
       setLoading(true);
       try {
         const { data, error: fetchError } = await supabase.from('products').select('*').eq('id', currentId).single();
 
         if (fetchError) {
-          console.error("📋 [ProductDetail] Supabase Error:", fetchError);
           setProduct({ error: `Connection Error: ${fetchError.message} (${fetchError.details || 'No details'})` });
           return;
         }
@@ -366,6 +363,13 @@ export default function ProductDetail() {
       e.stopPropagation();
       if (!product) return;
 
+      // Stock validation
+      const stockCount = product.stock_count ?? 999;
+      if (stockCount <= 0) {
+        toast.error('Bu ürün tükenmiştir.');
+        return;
+      }
+
       addToCart({
         productId: product.id,
         name: product.name,
@@ -374,10 +378,12 @@ export default function ProductDetail() {
         size: selectedSize,
         quantity,
       });
+      toast.success(`${product.name} sepete eklendi.`);
       setIsExpanded(false);
       setQuantity(1);
     } catch (err) {
       console.error("Add to Cart Error:", err);
+      toast.error('Sepete eklenirken bir hata oluştu.');
     }
   };
 
@@ -450,6 +456,22 @@ export default function ProductDetail() {
                     </p>
                   )}
                 </div>
+                {/* Stock Indicator */}
+                {product.stock_count !== undefined && product.stock_count !== null && (
+                  <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg ${
+                    product.stock_count <= 0 
+                      ? 'bg-rose-50 text-rose-500' 
+                      : product.stock_count <= 3 
+                        ? 'bg-amber-50 text-amber-600' 
+                        : 'bg-emerald-50 text-emerald-600'
+                  }`}>
+                    {product.stock_count <= 0 
+                      ? 'Tükendi' 
+                      : product.stock_count <= 3 
+                        ? `Son ${product.stock_count} Adet` 
+                        : 'Stokta'}
+                  </span>
+                )}
               </div>
 
               {/* Utility Grid - Refined Layout */}
