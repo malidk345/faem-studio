@@ -55,13 +55,26 @@ const MenuPanel: React.FC<MenuPanelProps> = ({ onClose }) => {
               Kurumsal // DIR.02
             </motion.h3>
             <motion.ul variants={itemVariants} className="flex flex-col gap-0.5">
-              {['Hakkımızda', 'Gizlilik Politikası', 'İptal & İade'].map((item) => (
-                <li key={item}>
-                  <Link to={`/legal/${item.toLowerCase().replace(/ /g, '-')}`} onClick={onClose} className="group flex items-center px-4 py-2 rounded-[4px] hover:bg-white/5 transition-all text-[13px] font-medium text-white/50 hover:text-white">
-                    {item}
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <Link to="/legal/about" onClick={onClose} className="group flex items-center px-4 py-2 rounded-[4px] hover:bg-white/5 transition-all text-[13px] font-medium text-white/50 hover:text-white">
+                  Hakkımızda
+                </Link>
+              </li>
+              <li>
+                <Link to="/legal/privacy" onClick={onClose} className="group flex items-center px-4 py-2 rounded-[4px] hover:bg-white/5 transition-all text-[13px] font-medium text-white/50 hover:text-white">
+                  Gizlilik Politikası
+                </Link>
+              </li>
+              <li>
+                <Link to="/legal/returns" onClick={onClose} className="group flex items-center px-4 py-2 rounded-[4px] hover:bg-white/5 transition-all text-[13px] font-medium text-white/50 hover:text-white">
+                  İptal & İade
+                </Link>
+              </li>
+              <li>
+                <Link to="/legal/distance-sales" onClick={onClose} className="group flex items-center px-4 py-2 rounded-[4px] hover:bg-white/5 transition-all text-[13px] font-medium text-white/50 hover:text-white">
+                  Mesafeli Satış Sözleşmesi
+                </Link>
+              </li>
             </motion.ul>
           </div>
 
@@ -71,13 +84,16 @@ const MenuPanel: React.FC<MenuPanelProps> = ({ onClose }) => {
               {t('nav.socials')} // EXT.03
             </motion.h3>
             <motion.ul variants={itemVariants} className="flex gap-2 px-4 mt-1">
-              {['X', 'INSTAGRAM'].map((social) => (
-                <li key={social}>
-                  <a href="#" className="text-[11px] font-normal uppercase tracking-[0.2em] px-3 py-1.5 border border-white/5 rounded-[4px] hover:bg-[#ddff34] hover:text-black transition-all font-['Handjet',sans-serif] text-white/40">
-                    {social}
-                  </a>
-                </li>
-              ))}
+              <li>
+                <a href="https://twitter.com/faemstudio" target="_blank" rel="noopener noreferrer" className="text-[11px] font-normal uppercase tracking-[0.2em] px-3 py-1.5 border border-white/5 rounded-[4px] hover:bg-[#ddff34] hover:text-black transition-all font-['Handjet',sans-serif] text-white/40">
+                  X
+                </a>
+              </li>
+              <li>
+                <a href="https://instagram.com/faemstudio" target="_blank" rel="noopener noreferrer" className="text-[11px] font-normal uppercase tracking-[0.2em] px-3 py-1.5 border border-white/5 rounded-[4px] hover:bg-[#ddff34] hover:text-black transition-all font-['Handjet',sans-serif] text-white/40">
+                  INSTAGRAM
+                </a>
+              </li>
             </motion.ul>
           </div>
 
