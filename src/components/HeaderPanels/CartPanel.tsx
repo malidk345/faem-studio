@@ -27,7 +27,9 @@ const CartPanel: React.FC<CartPanelProps> = ({ onClose }) => {
       <div className="flex-1 overflow-y-auto p-6 pt-4 flex flex-col gap-8 max-h-[50vh] custom-scrollbar">
         {cartItems.length === 0 ? (
           <div className="py-16 text-center">
-             <span className="text-[14px] font-normal uppercase tracking-[0.4em] text-white/10 font-['Handjet',sans-serif]">SEPETİNİZ BOŞ // NULL.00</span>
+             <span className="text-[14px] font-normal uppercase tracking-[0.4em] text-white/10 font-['Handjet',sans-serif]">
+               {t('cart.empty_msg')} // NULL.00
+             </span>
           </div>
         ) : (
           cartItems.map(item => (
@@ -65,24 +67,24 @@ const CartPanel: React.FC<CartPanelProps> = ({ onClose }) => {
       {/* Footer / Total */}
       <div className="p-6 pt-4 border-t border-white/5">
         <div className="flex justify-between items-baseline mb-2">
-          <span className="text-3xl font-bold tracking-tighter text-white">Toplam</span>
+          <span className="text-3xl font-bold tracking-tighter text-white">{t('cart.total')}</span>
           <span className="text-3xl font-bold tracking-tighter text-white">₺{cartTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
         </div>
-        <p className="text-[10px] text-white/20 font-medium mb-8">Vergiler, indirimler ve kargo ödeme aşamasında hesaplanır.</p>
+        <p className="text-[10px] text-white/20 font-medium mb-8">{t('cart.notice')}</p>
 
         <div className="grid grid-cols-2 gap-2 pb-2">
           <button 
             onClick={() => { if(onClose) onClose(); navigate('/cart'); }}
             className="flex items-center justify-between px-5 py-4 bg-white/10 hover:bg-white/15 text-white border border-white/5 rounded-[2px] group transition-all active:scale-[0.98]"
           >
-            <span className="text-[18px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">SEPETİ GÖR</span>
+            <span className="text-[18px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">{t('cart.view_cart')}</span>
             <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform opacity-30 group-hover:opacity-100" />
           </button>
           <button 
             onClick={() => { if(onClose) onClose(); navigate('/checkout'); }}
             className="flex items-center justify-between px-5 py-4 bg-[#ddff34] text-black rounded-[2px] group transition-all active:scale-[0.98]"
           >
-            <span className="text-[18px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">ÖDEMEYE GEÇ</span>
+            <span className="text-[18px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">{t('cart.checkout')}</span>
             <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" strokeWidth={2.5} />
           </button>
         </div>
