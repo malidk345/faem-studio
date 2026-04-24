@@ -308,7 +308,10 @@ const translations = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguage] = useState<Language>('tr');
+  const [language, setLanguage] = useState<Language>(() => {
+    const saved = localStorage.getItem('language');
+    return (saved === 'tr' || saved === 'en') ? saved : 'tr';
+  });
 
   useEffect(() => {
     localStorage.setItem('language', language);

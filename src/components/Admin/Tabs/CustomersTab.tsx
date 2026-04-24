@@ -47,14 +47,14 @@ export function CustomersTab({ customers, orders }: CustomersTabProps) {
         ...user,
         orderCount: userOrders.length,
         totalSpent,
-        formattedTotalSpent: new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalSpent),
+        formattedTotalSpent: new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(totalSpent),
         lastOrderDate: lastOrder ? new Date(lastOrder.rawDate).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short', year: 'numeric' }) : '-',
       };
     }).sort((a, b) => b.totalSpent - a.totalSpent);
   }, [customers, orders]);
 
   const totalRevenue = enrichedCustomers.reduce((sum, c) => sum + c.totalSpent, 0);
-  const formattedRevenue = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalRevenue);
+  const formattedRevenue = new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(totalRevenue);
   const activeCustomers = enrichedCustomers.filter(c => c.orderCount > 0).length;
 
   const columns = [
@@ -138,7 +138,7 @@ export function CustomersTab({ customers, orders }: CustomersTabProps) {
              <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-500">Müşteri Başı Ortalama (AOV)</span>
              <div className="flex items-end gap-3">
                 <span className="text-2xl sm:text-3xl font-semibold tracking-tight">{
-                  new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+                  new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 })
                     .format(activeCustomers > 0 ? totalRevenue / activeCustomers : 0)
                 }</span>
              </div>

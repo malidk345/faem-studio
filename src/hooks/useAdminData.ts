@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 
 export interface AdminOrder {
   id: string;          // Full UUID — needed for DB operations
@@ -149,7 +150,8 @@ export function useAdminData() {
 
   const deleteProduct = async (id: string) => {
     const { error } = await supabase.from('products').delete().eq('id', id);
-    if (!error) fetchData();
+    if (error) { toast.error('Ürün silinemedi: ' + error.message); }
+    else { toast.success('Ürün başarıyla silindi.'); fetchData(); }
     return { error };
   };
 
@@ -161,7 +163,8 @@ export function useAdminData() {
 
   const addCategory = async (name: string) => {
     const { error } = await supabase.from('categories').insert([{ name }]);
-    if (!error) fetchData();
+    if (error) { toast.error('Kategori eklenemedi: ' + error.message); }
+    else { fetchData(); }
     return { error };
   };
 
@@ -173,26 +176,29 @@ export function useAdminData() {
 
   const addCollection = async (name: string) => {
     const { error } = await supabase.from('collections').insert([{ name }]);
-    if (!error) fetchData();
+    if (error) { toast.error('Koleksiyon eklenemedi: ' + error.message); }
+    else { fetchData(); }
     return { error };
   };
 
   const publishProduct = async (newProduct: any) => {
     const { error } = await supabase.from('products').insert([newProduct]);
-    if (!error) fetchData();
+    if (error) { toast.error('Ürün yayınlanamadı: ' + error.message); }
+    else { toast.success('Ürün başarıyla yayınlandı.'); fetchData(); }
     return { error };
   };
 
   const updateProduct = async (id: string, updates: any) => {
     const { error } = await supabase.from('products').update(updates).eq('id', id);
-    if (!error) fetchData();
+    if (error) { toast.error('Ürün güncellenemedi: ' + error.message); }
+    else { toast.success('Ürün başarıyla güncellendi.'); fetchData(); }
     return { error };
   };
 
   const updateOrderStatus = async (id: string, status: string) => {
-    // Uses FULL UUID, not truncated shortId
     const { error } = await supabase.from('orders').update({ status }).eq('id', id);
-    if (!error) fetchData();
+    if (error) { toast.error('Sipariş durumu güncellenemedi: ' + error.message); }
+    else { toast.success('Sipariş durumu güncellendi.'); fetchData(); }
     return { error };
   };
 
@@ -211,7 +217,8 @@ export function useAdminData() {
   const updateSettings = async (updates: any) => {
     if (!settings?.id) return { error: new Error("No settings record found") };
     const { error } = await supabase.from('store_settings').update(updates).eq('id', settings.id);
-    if (!error) fetchData();
+    if (error) { toast.error('Ayarlar kaydedilemedi: ' + error.message); }
+    else { toast.success('Ayarlar başarıyla kaydedildi.'); fetchData(); }
     return { error };
   };
 

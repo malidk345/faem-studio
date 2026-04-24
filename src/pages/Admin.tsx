@@ -61,7 +61,7 @@ export default function Admin() {
           transition={{ repeat: Infinity, duration: 1.5 }}
           className="w-10 h-10 border-4 border-black rounded-full border-t-transparent animate-spin"
         />
-        <p className="mt-4 text-[10px] uppercase font-black tracking-[0.4em] text-black">Authenticating...</p>
+        <p className="mt-4 text-[10px] uppercase font-black tracking-[0.4em] text-black">Doğrulanıyor...</p>
       </div>
     );
   }
@@ -72,9 +72,9 @@ export default function Admin() {
         <div className="w-20 h-20 bg-black rounded-3xl flex items-center justify-center shadow-2xl">
           <span className="text-3xl text-white font-black">F</span>
         </div>
-        <h2 className="text-3xl font-black tracking-tighter">Studio Access Required</h2>
+        <h2 className="text-3xl font-black tracking-tighter">Yönetici Girişi Gerekli</h2>
         <Link to="/signin" className="bg-black text-white px-10 py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-xl shadow-black/20">
-          Sign In Account
+          Giriş Yap
         </Link>
       </div>
     );
@@ -92,8 +92,8 @@ export default function Admin() {
                 <div className="h-5 w-px bg-black/10 mx-1" />
               </div>
               <div className="flex flex-col">
-                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-400 leading-none mb-0.5">Curation Hub</span>
-                <span className="text-sm font-semibold text-zinc-900 capitalize tracking-tight">{isEditing ? 'Editing Asset' : activeTab.replace('-', ' ')}</span>
+                <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-400 leading-none mb-0.5">Yönetim Merkezi</span>
+                <span className="text-sm font-semibold text-zinc-900 capitalize tracking-tight">{isEditing ? 'Ürün Düzenleniyor' : activeTab.replace('-', ' ')}</span>
               </div>
             </div>
             <div className="flex items-center gap-2">

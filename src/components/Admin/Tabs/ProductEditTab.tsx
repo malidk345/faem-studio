@@ -157,7 +157,11 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
               <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={() => onDelete(product.id)}
+                onClick={() => {
+                  if (window.confirm('Bu ürünü kalıcı olarak silmek istediğinize emin misiniz?')) {
+                    onDelete(product.id);
+                  }
+                }}
                 className="w-9 h-9 sm:w-10 sm:h-10 text-rose-500 hover:bg-rose-50 rounded-xl sm:rounded-2xl transition-all active:scale-95"
               >
                 <Trash2 size={16} />
@@ -179,7 +183,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
         <div className="lg:col-span-5 space-y-8">
           <section className="space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between px-1">
-              <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Master Source</Label>
+              <Label className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Ana Görsel</Label>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setShowImageUrlInput(!showImageUrlInput)}
@@ -221,7 +225,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
                   <img src={formData.image_url} className="w-full h-full object-cover" alt="Primary" />
                   <div className="absolute inset-x-0 bottom-0 bg-black/60 backdrop-blur-sm p-3 sm:p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 flex items-center justify-center gap-2 text-white">
                     <ImageIcon size={12} />
-                    <span className="text-[9px] font-black uppercase tracking-widest">Swap Master</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest">Görseli Değiştir</span>
                   </div>
                 </>
               ) : (
@@ -241,7 +245,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
 
           <section className="space-y-4">
             <div className="flex items-center justify-between px-1">
-              <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">Studio Gallery</Label>
+              <Label className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">Ürün Galerisi</Label>
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setShowGalleryUrlInput(!showGalleryUrlInput)}
@@ -250,7 +254,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
                 >
                   <LinkIcon size={12} />
                 </button>
-                <span className="text-[10px] font-bold text-zinc-300 italic">{formData.images.length} Loaded</span>
+                <span className="text-[10px] font-bold text-zinc-300 italic">{formData.images.length} Yüklendi</span>
               </div>
             </div>
 
@@ -353,7 +357,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
             {/* Core Identification */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Name</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Ürün Adı</Label>
                 <Input 
                   placeholder="e.g., ARCHIVE TEE"
                   value={formData.name} 
@@ -362,7 +366,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Tone (Color)</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Renk Tonu</Label>
                 <Input 
                   placeholder="e.g., PITCH BLACK"
                   value={formData.color} 
@@ -374,7 +378,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
             {/* Valuation Details */}
             <div className="grid grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Valuation (₺)</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Fiyat (₺)</Label>
                 <div className="relative">
                   <Input 
                     type="number"
@@ -387,7 +391,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-rose-400 ml-1">Discount (₺)</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-rose-400 ml-1">İndirimli Fiyat (₺)</Label>
                 <div className="relative">
                   <Input 
                     type="number"
@@ -403,7 +407,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Category</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Ürün Kategorisi</Label>
                 <div className="flex gap-2">
                   <Select value={formData.category} onValueChange={(val) => setFormData((prev: any) => ({ ...prev, category: val }))}>
                     <SelectTrigger className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-none flex-1">
@@ -420,7 +424,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
                 </div>
               </div>
               <div className="space-y-2">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Asset Collection</Label>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Ürün Koleksiyonu</Label>
                 <div className="flex gap-2">
                   <Select value={formData.collection} onValueChange={(val) => setFormData((prev: any) => ({ ...prev, collection: val }))}>
                     <SelectTrigger className="h-11 sm:h-12 bg-zinc-50/50 border-zinc-100 focus:border-black rounded-xl text-[10px] font-black uppercase tracking-wider shadow-none flex-1">
@@ -439,7 +443,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Inventory</Label>
+              <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Stok Adedi</Label>
               <Input 
                 type="number" 
                 value={formData.stock_count} 
@@ -450,8 +454,8 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
 
             <div className="space-y-3 sm:space-y-4 pt-4 border-t border-zinc-50">
               <div className="flex items-center justify-between">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Size Management</Label>
-                <span className="text-[9px] font-bold text-zinc-300 italic">{formData.sizes?.length || 0} Sizes Available</span>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Beden Yönetimi</Label>
+                <span className="text-[9px] font-bold text-zinc-300 italic">{formData.sizes?.length || 0} Beden Mevcut</span>
               </div>
               <div className="flex flex-wrap gap-2 p-2 bg-zinc-50/50 rounded-2xl border border-zinc-100">
                 <AnimatePresence mode="popLayout">
@@ -479,7 +483,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
                 
                 <div className="flex-1 min-w-[120px] relative">
                   <Input 
-                    placeholder="Add Size (e.g. XL, 42)"
+                    placeholder="Beden Ekle (Örn. XL, 42)"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -500,7 +504,7 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
             </div>
 
             <div className="space-y-2">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Narrative Description</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Ürün Açıklaması</Label>
               <Textarea 
                 placeholder="Describe the essence of this piece..."
                 value={formData.description} 
@@ -512,8 +516,8 @@ export function ProductEditTab({ product, categories, collections, onSave, onAdd
             {/* Peculiarities (Features) */}
             <div className="space-y-3 sm:space-y-4 pt-4 border-t border-zinc-50">
               <div className="flex items-center justify-between">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Peculiarities</Label>
-                <span className="text-[9px] font-bold text-zinc-300 italic">{formData.features.length}/8 Max</span>
+                <Label className="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Özellikler</Label>
+                <span className="text-[9px] font-bold text-zinc-300 italic">{formData.features.length}/8 Maks</span>
               </div>
               <div className="flex gap-2 p-1 bg-zinc-50 rounded-xl sm:rounded-2xl border border-zinc-100 focus-within:border-black transition-colors">
                 <Input 

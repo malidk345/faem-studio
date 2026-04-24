@@ -258,8 +258,8 @@ export function BulkImportModal({ isOpen, onClose, onSuccess, refreshData }: Bul
               {previewData.length > 0 && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-[9px] font-normal uppercase tracking-[0.15em] px-2 py-0.5 glass-nav border-0 text-white/40 rounded-[1px] font-['Handjet',sans-serif] backdrop-blur-md">
-                      {product.collection || (product.category !== 'Genel' ? product.category : '')}
+                    <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">
+                      Ön İzleme
                     </span>
                     <span className="text-[9px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold">
                       {Object.keys(previewData[0]).length} Sütun Tespit Edildi

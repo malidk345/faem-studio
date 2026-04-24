@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS public.categories (
                           </div>
                           <div className="flex flex-col">
                             <span className="font-bold tracking-tight text-zinc-900 text-lg leading-none">{c.name || c}</span>
-                            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em] mt-2">Active Sector</span>
+                            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em] mt-2">Aktif</span>
                           </div>
                         </div>
                         <Button 

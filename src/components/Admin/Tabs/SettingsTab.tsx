@@ -86,7 +86,7 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
               </div>
               <div className="space-y-3 pt-2">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Standart Kargo Ücreti ($)</Label>
+                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Standart Kargo Ücreti (₺)</Label>
                   <Input 
                     value={settings.shipping_fee}
                     onChange={(e) => setSettings({...settings, shipping_fee: e.target.value})}
@@ -94,7 +94,7 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Ücretsiz Kargo Limiti ($)</Label>
+                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Ücretsiz Kargo Limiti (₺)</Label>
                   <Input 
                     value={settings.free_shipping_threshold}
                     onChange={(e) => setSettings({...settings, free_shipping_threshold: e.target.value})}

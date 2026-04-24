@@ -41,7 +41,7 @@ export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
 
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalNumeric, 0);
   const formattedRevenue = new Intl.NumberFormat('tr-TR', { 
-    style: 'currency', currency: 'USD', maximumFractionDigits: 0 
+    style: 'currency', currency: 'TRY', maximumFractionDigits: 0 
   }).format(totalRevenue);
   const pendingCount = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
   const deliveredCount = orders.filter(o => o.status === 'delivered').length;
