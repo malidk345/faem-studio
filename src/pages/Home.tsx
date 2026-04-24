@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import ProductCard from '../components/ProductCard';
 import { useSEO } from '../hooks/useSEO';
 import { useLanguage } from '../context/LanguageContext';
+import { GlobalPageLoader } from '../components/GlobalPageLoader';
 
 export default function Home() {
   const { t } = useLanguage();
@@ -76,7 +77,7 @@ export default function Home() {
         .order('priority', { ascending: true });
         
       if (sData && sData.length > 0) {
-        setSlides(sData.map(s => ({
+        const mappedSlides = sData.map(s => ({
           id: s.id,
           tag: s.subtitle || 'FAEM STUDIO',
           headline: (s.title || '').split('\n'),
@@ -84,7 +85,24 @@ export default function Home() {
           image: s.image_url,
           link: s.button_link === 'all' || !s.button_link ? '/shop' : `/shop?collection=${s.button_link}`,
           buttonText: s.button_text || 'ARŞİVİ KEŞFET'
-        })));
+        }));
+        setSlides(mappedSlides);
+
+        // ── Preload First Image Before Dismissing Loader ──
+        if (mappedSlides.length > 0) {
+          const firstImg = new Image();
+          firstImg.src = mappedSlides[0].image;
+          await new Promise((resolve) => {
+            firstImg.onload = resolve;
+            firstImg.onerror = resolve;
+          });
+        }
+
+        // Preload others in background
+        mappedSlides.slice(1).forEach((s: any) => {
+          const img = new Image();
+          img.src = s.image;
+        });
       }
       setLoadingSlides(false);
     };
@@ -99,12 +117,16 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [currentSlides.length, activeCategory, activeCollection]);
 
+  if (loadingSlides && slides.length === 0) {
+    return <GlobalPageLoader isLoading={true} />;
+  }
+
   return (
     <div className="bg-white text-foreground transition-colors duration-500 overflow-x-hidden">
 
       {/* ─── SINEMATIK HERO ─── */}
-      <section className="relative h-screen overflow-hidden">
-        <AnimatePresence mode="wait">
+      <section className="relative h-screen overflow-hidden bg-zinc-950">
+        <AnimatePresence initial={false}>
           {slide && (
             <motion.div
               key={slide.id}
@@ -112,19 +134,19 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
             >
               <motion.img
                 src={slide.image}
                 alt={slide.headline.join(' ')}
-                className="w-full h-full object-cover grayscale-[0.1]"
+                className="w-full h-full object-cover grayscale-[0.05]"
                 style={{ willChange: "transform" }}
-                initial={{ scale: 1.1 }}
+                initial={{ scale: 1.05 }}
                 animate={{ scale: 1 }}
-                transition={{ duration: 10, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 8, ease: "linear" }}
               />
-              <div className="absolute inset-0 bg-black/5" />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/10" />
+              <div className="absolute inset-0 bg-black/10" />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/20" />
             </motion.div>
           )}
         </AnimatePresence>
