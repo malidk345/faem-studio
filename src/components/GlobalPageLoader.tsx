@@ -68,7 +68,7 @@ export const GlobalPageLoader: React.FC<GlobalPageLoaderProps> = ({ isLoading })
               animate={{ opacity: 1, letterSpacing: "0.6em" }}
               className="text-[12px] font-black uppercase text-black"
             >
-              FAEM
+              <span className="text-[#ddff34]">F</span>A<span className="text-[#ddff34]">E</span>M
             </motion.span>
           </div>
         </motion.div>

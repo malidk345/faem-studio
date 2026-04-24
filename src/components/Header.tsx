@@ -48,7 +48,9 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
           <motion.div layout="position" className="flex items-center justify-between h-[52px] px-2 shrink-0 w-full">
             {/* Logo */}
             <Link to="/" onClick={() => setActivePanel(null)} className="pl-3 flex items-center hover:opacity-60 transition-opacity">
-              <span className="text-[20px] font-bold tracking-tighter lowercase leading-none">faem</span>
+              <span className="text-[20px] font-bold tracking-tighter lowercase leading-none">
+                <span className="text-[#ddff34]">f</span>a<span className="text-[#ddff34]">e</span>m
+              </span>
             </Link>
 
             {/* Action Icons */}

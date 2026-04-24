@@ -52,7 +52,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link to="/" className="text-xl font-bold tracking-tighter lowercase leading-none mb-3 block text-neutral-800">
-              faem
+              <span className="text-[#ddff34]">f</span>a<span className="text-[#ddff34]">e</span>m
             </Link>
             <p className="text-neutral-400 text-[12px] leading-relaxed max-w-[220px]">
               Arşivlik parçalar, tasarım objeleri ve stüdyo seçkileri.
