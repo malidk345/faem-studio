@@ -4,7 +4,7 @@ export interface CartItem {
   id: string;         // `${productId}-${size}` 
   productId: string | number;
   name: string;
-  price: string;      // formatted: "$12.00"
+  price: string;      // formatted: "₺12.00"
   image: string;
   size: string;
   quantity: number;
@@ -48,7 +48,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const num = parseFloat(item.price.replace(/[^0-9.]/g, ''));
       return acc + (isNaN(num) ? 0 : num * item.quantity);
     }, 0);
-    return `$${total.toFixed(2)}`;
+    return `₺${total.toFixed(2)}`;
   })();
 
   const addToCart = useCallback(async (item: Omit<CartItem, 'id'>) => {

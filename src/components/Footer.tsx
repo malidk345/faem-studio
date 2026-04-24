@@ -83,8 +83,12 @@ export default function Footer() {
               <Mail size={12} /> faembutik@gmail.com
             </a>
             <div className="flex gap-3 mt-1">
-              <Instagram size={15} className="text-neutral-300 hover:text-neutral-800 cursor-pointer transition-colors" />
-              <Twitter size={15} className="text-neutral-300 hover:text-neutral-800 cursor-pointer transition-colors" />
+              <a href="https://instagram.com/faemstudio" target="_blank" rel="noopener noreferrer">
+                <Instagram size={15} className="text-neutral-300 hover:text-neutral-800 cursor-pointer transition-colors" />
+              </a>
+              <a href="https://twitter.com/faemstudio" target="_blank" rel="noopener noreferrer">
+                <Twitter size={15} className="text-neutral-300 hover:text-neutral-800 cursor-pointer transition-colors" />
+              </a>
             </div>
           </div>
 

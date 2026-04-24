@@ -50,7 +50,7 @@ function AppRoutes() {
         <Route path="/legal/privacy" element={<MainLayout><Legal /></MainLayout>} />
         <Route path="/legal/about" element={<MainLayout><Legal /></MainLayout>} />
         <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<MainLayout><NotFound /></MainLayout>} />
       </Routes>
     </>
   );

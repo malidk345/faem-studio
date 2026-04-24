@@ -61,7 +61,7 @@ export default function Checkout() {
     const subtotalAfterDiscount = rawTotal - discountAmount;
 
     const shipping = selectedShipping === '1' ? 45 : 0; // Express 45 TL
-    const tax = subtotalAfterDiscount * 0.20; // 20% VAT included approach
+    const tax = subtotalAfterDiscount * 0.10; // %10 KDV (giyim)
     
     return {
       subtotal: rawTotal - tax,
@@ -358,7 +358,7 @@ export default function Checkout() {
                </div>
              )}
              <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-zinc-400">
-                <span>KDV (20%)</span>
+                <span>KDV (10%)</span>
                 <span>₺{prices.tax.toFixed(2)}</span>
              </div>
              <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-zinc-400">
