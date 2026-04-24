@@ -129,7 +129,7 @@ export default function Shop() {
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Editorial Heading Section */}
         <div className="flex flex-col items-center justify-center text-center gap-6 mb-16 md:mb-24">
-          <span className="text-[10px] font-normal tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">Technical Archive</span>
+          <span className="text-[10px] font-normal tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">Faem Studio Collection</span>
           {/* Filter Trigger Button */}
           <div className="flex items-center justify-between w-full border-b border-zinc-100 pb-8">
             <div className="flex flex-col items-start gap-1">

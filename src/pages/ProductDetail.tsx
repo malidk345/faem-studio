@@ -198,12 +198,10 @@ export default function ProductDetail() {
         }
 
         if (!data) {
-          console.warn("⚠️ [ProductDetail] Product not found for ID:", currentId);
-          setProduct({ error: "Archive Asset not found in database." });
+          setProduct({ error: 'Ürün veritabanında bulunamadı.' });
           return;
         }
 
-        console.log("✅ [ProductDetail] Data retrieved:", data.name);
 
         let galleryImages: ProductImage[] = [];
         const rawImages = Array.isArray(data.images) ? data.images : [];
@@ -220,23 +218,23 @@ export default function ProductDetail() {
         setProduct({
           id: data.id,
           name: data.name || 'Faem Piece',
-          price: data.price || 'Price on request',
+          price: data.price || 'Fiyat sorunuz',
           image: data.image_url || '',
           images: galleryImages,
           category: data.category || 'Archive',
           collection: data.collection || '',
           sizes: Array.isArray(data.sizes) && data.sizes.length > 0 ? data.sizes : ['S', 'M', 'L'],
-          description: data.description || 'Minimalist design from Faem studio.',
+          description: data.description || 'Faem Studio tasarım parçası.',
           features: Array.isArray(data.features) ? data.features : [],
-          discount_price: data.discount_price || null
+          discount_price: data.discount_price || null,
+          stock_count: data.stock_count ?? null
         });
 
         if (Array.isArray(data.sizes) && data.sizes.length > 0) {
           setSelectedSize(data.sizes[0]);
         }
       } catch (e: any) {
-        console.error("🔥 [ProductDetail] Critical Component Crash:", e);
-        setProduct({ error: `System Crash: ${e.message || 'Unknown Error'}` });
+        setProduct({ error: `Sistem Hatası: ${e.message || 'Bilinmeyen Hata'}` });
       } finally {
         setLoading(false);
       }
@@ -248,7 +246,7 @@ export default function ProductDetail() {
         const { data } = await supabase.from('wishlist').select('id').eq('user_id', user.id).eq('product_id', id).maybeSingle();
         setIsWishlisted(!!data);
       } catch (e) {
-        console.error("📋 [ProductDetail] Wishlist Check Error:", e);
+        // Wishlist check failed silently
       }
     };
 
@@ -257,7 +255,7 @@ export default function ProductDetail() {
         const { data } = await supabase.from('reviews').select('*').eq('product_id', id).order('created_at', { ascending: false });
         if (data) setReviews(data);
       } catch (e) {
-        console.error("📋 [ProductDetail] Reviews Error:", e);
+        // Reviews fetch failed silently
       }
     };
 
