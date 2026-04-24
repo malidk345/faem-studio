@@ -25,8 +25,8 @@ export function MetricsOverview({ orders, products }: MetricsOverviewProps) {
   const totalOrders = orders.length;
 
   const formattedRevenue = totalRevenue > 0 
-    ? new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(totalRevenue)
-    : '$0';
+    ? new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(totalRevenue)
+    : '₺0';
 
   const metrics = [
     {

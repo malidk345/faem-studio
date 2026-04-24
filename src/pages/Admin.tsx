@@ -18,6 +18,7 @@ import { ProductEditTab } from '../components/Admin/Tabs/ProductEditTab';
 import { JournalTab } from '../components/Admin/Tabs/JournalTab';
 import { CustomersTab } from '../components/Admin/Tabs/CustomersTab';
 import { SettingsTab } from '../components/Admin/Tabs/SettingsTab';
+import { PromotionsTab } from '../components/Admin/Tabs/PromotionsTab';
 import { CmsTab } from '../components/Admin/Tabs/CmsTab';
 import { MessagesTab } from '../components/Admin/Tabs/MessagesTab';
 import { HeaderNotifications } from '../components/Admin/HeaderNotifications';
@@ -147,6 +148,7 @@ export default function Admin() {
                 {activeTab === 'customers' && <CustomersTab customers={customers} orders={orders} />}
                 {activeTab === 'journal' && <JournalTab />}
                 {activeTab === 'settings' && <SettingsTab settings={settings} onUpdateSettings={updateSettings} />}
+                {activeTab === 'promotions' && <PromotionsTab />}
                 {activeTab === 'messages' && <MessagesTab messages={messages} onToggleRead={toggleMessageRead} onDelete={deleteMessage} />}
                 {activeTab === 'cms' && <CmsTab collections={collections} />}
               </motion.div>

@@ -65,6 +65,13 @@ export const MessagesTab: React.FC<MessagesTabProps> = ({ messages, onToggleRead
               </div>
 
               <div className="flex items-center gap-2 md:self-start">
+                <a
+                  href={`mailto:${msg.email}?subject=${encodeURIComponent('Re: ' + (msg.subject || 'İletişim'))}&body=${encodeURIComponent(`Sayın ${msg.name},\n\nMesajınız için teşekkür ederiz.\n\n---\nOrijinal Mesaj: "${msg.message}"\n\nSaygılarımızla,\nFaem Studio`)}`}
+                  className="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100 hover:text-blue-700 transition-all"
+                  title="E-posta ile yanıtla"
+                >
+                  <Mail size={18} />
+                </a>
                 <button
                   onClick={() => onToggleRead(msg.id, !msg.is_read)}
                   className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${

@@ -18,6 +18,8 @@ export interface AdminOrder {
   isGuest: boolean;    // True if order was placed without login
   userId: string | null; // Profile UUID if registered
   shippingAddress: any; // Full address object
+  tracking_number: string | null;
+  admin_note: string | null;
 }
 
 export function useAdminData() {
@@ -94,6 +96,8 @@ export function useAdminData() {
             shippingAddress: shippingAddr,
             isGuest: !o.user_id,
             userId: o.user_id || null,
+            tracking_number: o.tracking_number || null,
+            admin_note: o.admin_note || null,
           };
         });
         setOrders(mapped);

@@ -9,9 +9,12 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Clock, Package, Truck, CheckCircle2, XCircle, MapPin, Mail,
   User, ShoppingBag, Hash, Calendar, CreditCard, Send, 
-  ChevronRight, Copy, Check
+  ChevronRight, Copy, Check, Save
 } from 'lucide-react';
+import { Input } from "@/components/ui/input";
 import type { AdminOrder } from "@/hooks/useAdminData";
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 interface OrderDetailSheetProps {
   order: AdminOrder | null;
@@ -38,8 +41,19 @@ function getStatusIndex(status: string) {
 
 export function OrderDetailSheet({ order, open, onOpenChange, onUpdateStatus }: OrderDetailSheetProps) {
   const [adminNote, setAdminNote] = useState('');
+  const [trackingNumber, setTrackingNumber] = useState('');
   const [copiedId, setCopiedId] = useState(false);
   const [statusChanging, setStatusChanging] = useState(false);
+  const [savingNote, setSavingNote] = useState(false);
+  const [savingTracking, setSavingTracking] = useState(false);
+
+  // Load existing data when order changes
+  React.useEffect(() => {
+    if (order) {
+      setAdminNote((order as any).admin_note || '');
+      setTrackingNumber((order as any).tracking_number || '');
+    }
+  }, [order?.id]);
 
   if (!order) return null;
 
@@ -273,6 +287,33 @@ export function OrderDetailSheet({ order, open, onOpenChange, onUpdateStatus }: 
             </div>
           </div>
 
+          {/* ── Kargo Takip No ── */}
+          <div>
+            <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-3">Kargo Takip Numarası</h4>
+            <div className="flex gap-2">
+              <Input 
+                placeholder="Kargo takip numarasını girin..."
+                value={trackingNumber}
+                onChange={(e) => setTrackingNumber(e.target.value)}
+                className="rounded-xl border-zinc-200 text-sm font-medium flex-1"
+              />
+              <Button
+                variant="outline"
+                className="rounded-xl px-4 font-bold text-[10px] uppercase tracking-wider"
+                disabled={savingTracking}
+                onClick={async () => {
+                  setSavingTracking(true);
+                  const { error } = await supabase.from('orders').update({ tracking_number: trackingNumber }).eq('id', order.id);
+                  setSavingTracking(false);
+                  if (error) toast.error('Takip no kaydedilemedi.');
+                  else toast.success('Kargo takip numarası kaydedildi.');
+                }}
+              >
+                <Save className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          </div>
+
           {/* ── Admin Note ── */}
           <div>
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-3">Admin Notu</h4>
@@ -283,6 +324,20 @@ export function OrderDetailSheet({ order, open, onOpenChange, onUpdateStatus }: 
               className="rounded-xl border-zinc-200 text-sm resize-none"
               rows={3}
             />
+            <Button
+              variant="outline"
+              className="mt-2 w-full rounded-xl font-bold text-[10px] uppercase tracking-wider"
+              disabled={savingNote}
+              onClick={async () => {
+                setSavingNote(true);
+                const { error } = await supabase.from('orders').update({ admin_note: adminNote }).eq('id', order.id);
+                setSavingNote(false);
+                if (error) toast.error('Not kaydedilemedi.');
+                else toast.success('Admin notu kaydedildi.');
+              }}
+            >
+              <Save className="h-3.5 w-3.5 mr-2" /> Notu Kaydet
+            </Button>
           </div>
         </div>
       </SheetContent>

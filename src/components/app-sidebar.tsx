@@ -11,6 +11,7 @@ import {
   BookOpen,
   Monitor,
   Mail,
+  Tag,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Logo } from "@/components/logo"
@@ -67,6 +68,11 @@ const data = {
           title: "Mesajlar",
           url: "messages",
           icon: Mail,
+        },
+        {
+          title: "İndirim Kodları",
+          url: "promotions",
+          icon: Tag,
         },
       ],
     },
