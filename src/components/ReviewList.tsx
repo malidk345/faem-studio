@@ -61,18 +61,30 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
           }
 
           if (reviewsData && reviewsData.length > 0) {
-            // Fetch profiles separately
-            const userIds = [...new Set(reviewsData.map(r => r.user_id))];
-            const { data: profilesData } = await supabase
+            // Ensure we only have valid, unique user IDs
+            const userIds = [...new Set(reviewsData.map(r => r.user_id))].filter(id => id && typeof id === 'string');
+            
+            const { data: profilesData, error: profilesError } = await supabase
               .from('profiles')
-              .select('id, name')
+              .select('id, name, full_name')
               .in('id', userIds);
               
-            const profileMap = new Map(profilesData?.map(p => [p.id, p.name]) || []);
+            if (profilesError) {
+              console.error("Profiles fetch error:", profilesError);
+            }
+
+            // Create a robust map with multiple fallback fields
+            const profileMap = new Map();
+            if (profilesData) {
+              profilesData.forEach(p => {
+                const displayName = p.name || p.full_name || p.display_name || "";
+                profileMap.set(p.id, displayName);
+              });
+            }
 
             setLocalReviews(reviewsData.map((r: any) => ({
               id: r.id,
-              user: (r.author_name && r.author_name.trim()) || (profileMap.get(r.user_id) && profileMap.get(r.user_id).trim()) || 'İsimsiz Kullanıcı',
+              user: r.author_name || profileMap.get(r.user_id) || "",
               rating: r.rating,
               comment: r.comment,
               date: new Date(r.created_at).toLocaleDateString('tr-TR'),
@@ -295,7 +307,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                         className="text-[14px] font-semibold uppercase tracking-tight leading-none"
                         style={{ color: '#000000', display: 'inline-block' }}
                       >
-                        {review.user || 'Kullanıcı'}
+                        {review.user}
                       </span>
                     </div>
                     {review.isVerified && (
