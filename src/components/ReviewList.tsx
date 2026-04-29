@@ -72,7 +72,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
 
             setLocalReviews(reviewsData.map((r: any) => ({
               id: r.id,
-              user: r.author_name || profileMap.get(r.user_id) || '',
+              user: (r.author_name && r.author_name.trim()) || (profileMap.get(r.user_id) && profileMap.get(r.user_id).trim()) || 'İsimsiz Kullanıcı',
               rating: r.rating,
               comment: r.comment,
               date: new Date(r.created_at).toLocaleDateString('tr-TR'),
@@ -289,10 +289,13 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
               <div className="flex justify-between items-start mb-6">
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 text-black">
-                      <User size={14} className="text-zinc-400" />
-                      <span className="text-[13px] font-medium uppercase tracking-tight leading-none">
-                        {review.user || ''}
+                    <div className="flex items-center gap-2">
+                      <User size={14} className="text-zinc-400 shrink-0" />
+                      <span 
+                        className="text-[14px] font-semibold uppercase tracking-tight leading-none"
+                        style={{ color: '#000000', display: 'inline-block' }}
+                      >
+                        {review.user || 'Kullanıcı'}
                       </span>
                     </div>
                     {review.isVerified && (
