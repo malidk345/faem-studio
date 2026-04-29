@@ -76,7 +76,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-4">
       <DataTableToolbar table={table} onAddTask={onAddTask} searchKey={searchKey} />
-      <div className="rounded-2xl border border-zinc-100 shadow-sm bg-white overflow-hidden">
+      <div className="rounded-xl border border-zinc-100 shadow-sm bg-white overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-zinc-50/50">
@@ -87,7 +87,7 @@ export function DataTable<TData, TValue>({
                       <TableHead 
                         key={header.id} 
                         colSpan={header.colSpan} 
-                        className={`text-[10px] font-black uppercase tracking-widest text-zinc-400 py-4 px-6 h-auto whitespace-nowrap ${(header.column.columnDef.meta as any)?.className || ''}`}
+                        className={`text-[10px] font-black uppercase tracking-widest text-zinc-400 py-3 px-4 h-auto whitespace-nowrap ${(header.column.columnDef.meta as any)?.className || ''}`}
                       >
                         {header.isPlaceholder
                           ? null
@@ -112,7 +112,7 @@ export function DataTable<TData, TValue>({
                     {row.getVisibleCells().map((cell) => (
                       <TableCell 
                         key={cell.id} 
-                        className={`py-4 px-6 font-medium text-zinc-900 whitespace-nowrap ${(cell.column.columnDef.meta as any)?.className || ''}`}
+                        className={`py-3 px-4 font-medium text-zinc-900 whitespace-nowrap ${(cell.column.columnDef.meta as any)?.className || ''}`}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

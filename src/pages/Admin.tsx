@@ -120,7 +120,7 @@ export default function Admin() {
             </div>
           </header>
 
-          <main className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 xl:px-12 mx-auto w-full max-w-7xl overflow-x-hidden">
+          <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 mx-auto w-full max-w-7xl overflow-x-hidden">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab + (isEditing ? '_editing' : '_listing')}
