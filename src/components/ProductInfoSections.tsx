@@ -17,7 +17,7 @@ const ProductInfoSections: React.FC = () => {
         <React.Fragment key={i}>
           <div className="flex items-center gap-2 text-zinc-400">
             {item.icon}
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em]">{item.label}</span>
+            <span className="text-[10px] font-medium uppercase tracking-[0.15em]">{item.label}</span>
           </div>
           {i < INFO_ITEMS.length - 1 && <div className="w-px h-4 bg-zinc-200" />}
         </React.Fragment>

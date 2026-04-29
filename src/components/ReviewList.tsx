@@ -207,21 +207,21 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
       {/* ── Summary & Stats (Restored) ── */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr,2fr] gap-10 items-start pb-10 border-b border-zinc-100">
         <div className="flex flex-col gap-4">
-          <p className="text-[10px] uppercase tracking-[0.4em] font-black text-zinc-400">Genel Değerlendirme</p>
+          <p className="text-[10px] uppercase tracking-[0.4em] font-semibold text-zinc-400">Genel Değerlendirme</p>
           <div className="flex items-center gap-6">
-            <div className="text-5xl font-black tracking-tighter text-zinc-900">{stats.avg === 0 ? '-' : stats.avg}</div>
+            <div className="text-5xl font-semibold tracking-tighter text-zinc-900">{stats.avg === 0 ? '-' : stats.avg}</div>
             <div className="flex flex-col gap-1">
               <div className="flex gap-0.5">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} size={14} className={i < Math.round(stats.avg) ? "fill-amber-400 text-amber-400" : "text-zinc-200 fill-transparent"} />
                 ))}
               </div>
-              <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-widest">{stats.total} Yorum</span>
+              <span className="text-[11px] font-medium text-zinc-400 uppercase tracking-widest">{stats.total} Yorum</span>
             </div>
           </div>
           <button
             onClick={() => (!user ? navigate('/signin') : setIsWriting(!isWriting))}
-            className={`mt-4 w-full h-12 text-[11px] font-black uppercase tracking-widest rounded-xl transition-all border ${
+            className={`mt-4 w-full h-12 text-[11px] font-semibold uppercase tracking-widest rounded-xl transition-all border ${
               isWriting ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white text-zinc-900 border-zinc-200 hover:border-zinc-900'
             }`}
           >
@@ -235,7 +235,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
             const percentage = stats.total > 0 ? (count / stats.total) * 100 : 0;
             return (
               <div key={stars} className="flex items-center gap-4 group">
-                <span className="text-[10px] font-black w-3 text-zinc-400">{stars}</span>
+                <span className="text-[10px] font-semibold w-3 text-zinc-400">{stars}</span>
                 <div className="flex-1 h-1.5 bg-zinc-50 rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
@@ -244,7 +244,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                     className="h-full bg-zinc-900" 
                   />
                 </div>
-                <span className="text-[10px] font-bold w-8 text-zinc-300 text-right">{count}</span>
+                <span className="text-[10px] font-medium w-8 text-zinc-300 text-right">{count}</span>
               </div>
             );
           })}
@@ -262,7 +262,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
             <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-100 mb-6">
               <form onSubmit={handleSubmit} className="flex flex-col gap-8">
                 <div className="flex flex-col gap-3">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Puanınız</h4>
+                  <h4 className="text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-400">Puanınız</h4>
                   <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map(i => (
                       <button key={i} type="button" onClick={() => setRating(i)} className="hover:scale-110 transition-transform active:scale-95">
@@ -276,7 +276,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                   <div className="flex flex-col gap-4 p-6 bg-amber-50/50 border border-amber-100 rounded-2xl mb-2">
                     <div className="flex items-center gap-2 mb-2 text-amber-700">
                       <Check size={16} className="text-amber-500" />
-                      <h4 className="text-[11px] font-black uppercase tracking-[0.2em]">Admin Özel: Fake Yorum Ayarları</h4>
+                      <h4 className="text-[11px] font-semibold uppercase tracking-[0.2em]">Admin Özel: Fake Yorum Ayarları</h4>
                     </div>
                     <input 
                       type="text" 
@@ -289,14 +289,14 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                       <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${adminForceVerified ? 'bg-amber-500' : 'bg-white border border-zinc-200'}`}>
                          {adminForceVerified && <Check size={12} className="text-white" />}
                       </div>
-                      <span className="text-[12px] font-bold text-zinc-600 group-hover:text-black transition-colors">Doğrulanmış Alıcı Rozeti Ekle</span>
+                      <span className="text-[12px] font-medium text-zinc-600 group-hover:text-black transition-colors">Doğrulanmış Alıcı Rozeti Ekle</span>
                       <input type="checkbox" className="hidden" checked={adminForceVerified} onChange={e => setAdminForceVerified(e.target.checked)} />
                     </label>
                   </div>
                 )}
 
                 <div className="flex flex-col gap-3">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Yorumunuz</h4>
+                  <h4 className="text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-400">Yorumunuz</h4>
                   <textarea
                     placeholder={t('review.placeholder')}
                     value={comment}
@@ -308,13 +308,13 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                     <ImageUpload onUploadComplete={setImageUrl} currentImage={imageUrl} />
                   </div>
                   
-                  {errorMsg && <p className="text-rose-500 text-[11px] font-black uppercase tracking-widest mt-2">{errorMsg}</p>}
+                  {errorMsg && <p className="text-rose-500 text-[11px] font-semibold uppercase tracking-widest mt-2">{errorMsg}</p>}
                 </div>
 
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="self-end bg-black text-white px-10 h-14 rounded-2xl text-[12px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all flex items-center gap-3 shadow-xl shadow-black/10"
+                  className="self-end bg-black text-white px-10 h-14 rounded-2xl text-[12px] font-semibold uppercase tracking-widest hover:bg-zinc-800 transition-all flex items-center gap-3 shadow-xl shadow-black/10"
                 >
                   {isSubmitting ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : 'Yorumu Yayınla'}
                 </button>
@@ -327,7 +327,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
       {/* ── Compact Review List ── */}
       <div className="flex flex-col gap-4">
         {localReviews.length === 0 ? (
-          <div className="py-12 text-center text-[10px] font-bold uppercase tracking-widest text-zinc-300">
+          <div className="py-12 text-center text-[10px] font-medium uppercase tracking-widest text-zinc-300">
             Henüz yorum yapılmamış.
           </div>
         ) : (
@@ -352,7 +352,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                       </span>
                     </div>
                     {review.isVerified && (
-                      <div className="flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      <div className="flex items-center gap-1 text-[8px] font-semibold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
                         <Check size={10} /> Doğrulanmış Alıcı
                       </div>
                     )}
@@ -363,7 +363,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                     ))}
                   </div>
                 </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-zinc-300">{review.date}</span>
+                <span className="text-[10px] font-medium uppercase tracking-widest text-zinc-300">{review.date}</span>
               </div>
 
               <p className="text-[15px] leading-relaxed font-medium text-zinc-600">
@@ -380,7 +380,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                 <div className="mt-6 p-5 bg-zinc-50 border border-zinc-100 rounded-2xl flex flex-col gap-2">
                   <div className="flex items-center gap-2 text-zinc-900">
                     <Check size={14} className="text-emerald-500" />
-                    <span className="text-[11px] font-black uppercase tracking-widest">Faem Studio Yanıtı</span>
+                    <span className="text-[11px] font-semibold uppercase tracking-widest">Faem Studio Yanıtı</span>
                   </div>
                   <p className="text-[14px] font-medium text-zinc-600 leading-relaxed">
                     {review.admin_reply}
@@ -389,13 +389,13 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
               )}
 
               <div className="flex gap-6 pt-6 mt-6 border-t border-zinc-50 opacity-100 translate-y-0 md:opacity-0 md:group-hover:opacity-100 transition-all md:translate-y-2 md:group-hover:translate-y-0">
-                <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-zinc-300 hover:text-zinc-900 transition-colors">
+                <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-semibold text-zinc-300 hover:text-zinc-900 transition-colors">
                   <Heart size={12} strokeWidth={2.5} /> Faydalı
                 </button>
                 {user?.role === 'admin' && !review.admin_reply && (
                   <button 
                     onClick={() => setReplyingTo(replyingTo === review.id ? null : review.id)}
-                    className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-zinc-300 hover:text-zinc-900 transition-colors"
+                    className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-semibold text-zinc-300 hover:text-zinc-900 transition-colors"
                   >
                     <MessageCircle size={12} strokeWidth={2.5} /> Yanıtla
                   </button>
@@ -413,14 +413,14 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                   <div className="flex justify-end gap-2">
                     <button 
                       onClick={() => setReplyingTo(null)}
-                      className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:bg-zinc-100 rounded-lg"
+                      className="px-4 py-2 text-[10px] font-medium uppercase tracking-widest text-zinc-500 hover:bg-zinc-100 rounded-lg"
                     >
                       İptal
                     </button>
                     <button 
                       disabled={isReplying}
                       onClick={() => handleAdminReply(review.id)}
-                      className="px-6 py-2 bg-black text-white text-[10px] font-bold uppercase tracking-widest rounded-lg flex items-center gap-2 disabled:opacity-50"
+                      className="px-6 py-2 bg-black text-white text-[10px] font-medium uppercase tracking-widest rounded-lg flex items-center gap-2 disabled:opacity-50"
                     >
                       {isReplying ? 'Gönderiliyor...' : <><Send size={12} /> Gönder</>}
                     </button>
