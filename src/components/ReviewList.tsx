@@ -303,7 +303,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                     <div className="flex items-center gap-2">
                       <User size={14} className="text-zinc-400 shrink-0" />
                       <span 
-                        className="text-[14px] font-semibold uppercase tracking-tight leading-none"
+                        className="text-[11px] font-medium lowercase tracking-wide leading-none"
                         style={{ color: '#000000', display: 'inline-block' }}
                       >
                         {review.user}
