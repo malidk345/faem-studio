@@ -36,7 +36,7 @@ const LEGAL_CONTENT: Record<string, { title: string, icon: any, content: React.R
     content: (
       <div className="space-y-6 text-zinc-600 text-sm leading-relaxed">
         <p>Faem Studio, kullanıcıların kişisel verilerini 6698 sayılı Kişisel Verilerin Korunması Kanunu'na (KVKK) uygun olarak işlemektedir.</p>
-        <p>Ödeme aşamasında kullanılan kart bilgileri, iyzico 256-bit SSL korumalı altyapısı ile korunmakta olup, sistemimiz tarafından asla kaydedilmemektedir.</p>
+        <p>Ödeme aşamasında kullanılan kart bilgileri, Tami 256-bit SSL ve 3D Secure korumalı altyapısı ile korunmakta olup, sistemimiz tarafından asla kaydedilmemektedir.</p>
       </div>
     )
   },

@@ -31,7 +31,7 @@ export default function Checkout() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
-  const [identityNumber, setIdentityNumber] = useState(''); // Required for iyzico (Individual)
+  const [identityNumber, setIdentityNumber] = useState(''); // Required for Tami (Compliance)
   const [address, setAddress] = useState('');
   const [city, setCity] = useState('');
   const [postal, setPostal] = useState('');
@@ -98,7 +98,7 @@ export default function Checkout() {
   const handleDetailsSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone || !identityNumber) {
-      setError("Telefon ve T.C. Kimlik numarası iyzico ödeme sistemimiz için zorunludur.");
+      setError("Telefon ve T.C. Kimlik numarası Tami ödeme altyapısı için zorunludur.");
       return;
     }
     setError(null);
@@ -135,7 +135,7 @@ export default function Checkout() {
           shipping_method: selectedShipping === '1' ? 'Express' : 'Standard'
         },
         items: cartItems,
-        payment_provider: 'iyzico',
+        payment_provider: 'Tami',
         payment_status: 'pending',
         applied_discount: appliedDiscount ? `${appliedDiscount.code} (%${appliedDiscount.percent})` : null
       };
@@ -235,7 +235,7 @@ export default function Checkout() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                        <input type="text" placeholder="T.C. Kimlik Numarası (Zorunlu)" value={identityNumber} onChange={e => setIdentityNumber(e.target.value.replace(/\D/g, ''))} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" maxLength={11} />
-                       <p className="text-[9px] text-zinc-400 uppercase tracking-widest ml-2 italic">iyzico altyapısı için gereklidir</p>
+                       <p className="text-[9px] text-zinc-400 uppercase tracking-widest ml-2 italic">Tami altyapısı için gereklidir</p>
                     </div>
                     <input type="tel" placeholder="Telefon (05xx...)" value={phone} onChange={e => setPhone(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
                   </div>
@@ -319,7 +319,7 @@ export default function Checkout() {
                     <div className="flex items-start gap-4 text-emerald-600 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
                        <ShieldCheck size={18} className="mt-0.5 flex-shrink-0" />
                        <p className="text-[11px] font-bold leading-relaxed tracking-tight">
-                         Ödemeniz iyzico 256-bit SSL korumalı altyapısı ile gerçekleşecektir. Kart bilgileriniz asla sisteme kaydedilmez.
+                         Ödemeniz Tami 256-bit SSL ve 3D Secure korumalı altyapısı ile gerçekleşecektir. Kart bilgileriniz asla sisteme kaydedilmez.
                        </p>
                     </div>
                   </div>

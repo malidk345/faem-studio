@@ -98,7 +98,7 @@ export const generateInvoiceHTML = (order: AdminOrder) => {
       <div class="totals">
         <div class="total-row">
           <span style="color: #999; text-transform: uppercase; font-size: 10px; letter-spacing: 1px;">Ödeme Yöntemi</span>
-          <span style="font-weight: bold;">iyzico / Online</span>
+          <span style="font-weight: bold;">Tami / Online</span>
         </div>
         <div class="total-row grand-total">
           <span>Toplam</span>
