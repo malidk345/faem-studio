@@ -77,7 +77,7 @@ export function MetricsOverview({ orders, products }: MetricsOverviewProps) {
         const TrendIcon = metric.trend === "up" ? TrendingUp : TrendingDown
         
         return (
-          <Card key={metric.title} className="apple-card cursor-pointer border-none shadow-none rounded-2xl group">
+          <Card key={metric.title} className="apple-card cursor-pointer rounded-2xl group relative overflow-hidden">
             <CardHeader className="p-5 pb-2">
               <div className="flex items-center justify-between mb-1">
                  <CardDescription className="text-xs font-medium text-zinc-500">{metric.title}</CardDescription>
