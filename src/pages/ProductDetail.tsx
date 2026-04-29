@@ -464,17 +464,17 @@ export default function ProductDetail() {
             >
               {/* Category / Collection */}
               <div className="flex items-center gap-3 mb-2">
-                <span className="px-3 py-1 bg-zinc-100 text-zinc-600 rounded-lg text-[10px] font-bold tracking-widest uppercase">
+                <span className="px-3 py-1 bg-zinc-100 text-zinc-600 rounded-lg text-[9px] font-black tracking-[0.2em] uppercase">
                   {product.collection || 'ARCHIVE'}
                 </span>
-                <span className="text-[10px] font-bold text-zinc-400 tracking-widest uppercase">
+                <span className="text-[9px] font-black text-zinc-400 tracking-[0.2em] uppercase">
                   REF. {product.id?.substring(0, 6).toUpperCase()}
                 </span>
               </div>
 
               {/* Name + Price */}
               <div className="flex flex-col gap-3">
-                <h1 className="text-2xl md:text-3xl font-black tracking-tight text-zinc-900 leading-none">
+                <h1 className="text-3xl md:text-4xl font-black tracking-tighter text-zinc-900 leading-[0.9]">
                   {product.name}
                 </h1>
                 <div className="flex items-center gap-3">
@@ -495,7 +495,7 @@ export default function ProductDetail() {
                 </div>
                 {/* Stock Indicator */}
                 {product.stock_count !== undefined && product.stock_count !== null && (
-                  <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg ${
+                  <span className={`text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg ${
                     product.stock_count <= 0 
                       ? 'bg-rose-50 text-rose-500' 
                       : product.stock_count <= 3 
@@ -527,7 +527,7 @@ export default function ProductDetail() {
                       ${item.active ? 'bg-zinc-900 text-white border-zinc-900' : 'bg-white border-zinc-200 text-zinc-500 hover:border-zinc-400 hover:text-zinc-900'}`}
                   >
                     {item.loading ? <Loader2 size={16} className="animate-spin" /> : <item.icon size={16} className={item.active ? 'fill-current' : ''} />}
-                    <span className="text-[9px] font-bold uppercase tracking-widest">{item.label}</span>
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em]">{item.label}</span>
                   </button>
                 ))}
               </div>
@@ -547,8 +547,8 @@ export default function ProductDetail() {
                     <div className="grid grid-cols-1 gap-y-3">
                       {product.features.map((f: string, i: number) => (
                         <div key={i} className="flex items-center gap-3">
-                          <div className="w-1 h-1 rounded-full bg-zinc-200" />
-                          <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">{f}</span>
+                          <div className="w-1 h-1 rounded-full bg-zinc-300" />
+                          <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.1em]">{f}</span>
                         </div>
                       ))}
                     </div>
@@ -640,7 +640,7 @@ export default function ProductDetail() {
             >
               <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-bold tracking-tighter uppercase">Paylaş</h3>
+                  <h3 className="text-[13px] font-black tracking-[0.2em] uppercase">Paylaş</h3>
                   <button onClick={() => setShowShareModal(false)} className="p-2 hover:bg-zinc-50 rounded-full transition-colors">
                     <X size={18} />
                   </button>
@@ -717,7 +717,7 @@ export default function ProductDetail() {
               <div className="flex flex-col gap-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h3 className="text-xl font-bold tracking-tighter uppercase">Beden Önerisi</h3>
+                    <h3 className="text-[13px] font-black tracking-[0.2em] uppercase">Beden Önerisi</h3>
                   </div>
                   <button onClick={() => setShowRecommender(false)} className="p-2 hover:bg-zinc-50 rounded-full transition-colors">
                     <X size={18} />
