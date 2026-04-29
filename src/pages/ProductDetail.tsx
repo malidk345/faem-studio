@@ -265,15 +265,6 @@ export default function ProductDetail() {
       }
     };
 
-    const fetchReviews = async () => {
-      try {
-        const { data } = await supabase.from('reviews').select('*').eq('product_id', id).order('created_at', { ascending: false });
-        if (data) setReviews(data);
-      } catch (e) {
-        // Reviews fetch failed silently
-      }
-    };
-
     const fetchRelated = async (category: string, collection: string) => {
       try {
         let query = supabase
@@ -312,7 +303,6 @@ export default function ProductDetail() {
 
     fetchProductFlow();
     fetchWishlistStatus();
-    fetchReviews();
   }, [id, user]);
 
   const toggleWishlist = async () => {
@@ -572,7 +562,7 @@ export default function ProductDetail() {
 
       {/* ─── REVIEWS ─── */}
       <div id="reviews-section" className="max-w-[800px] mx-auto px-4 md:px-10 pb-16">
-        <ReviewList productId={product.id} reviews={reviews} />
+        <ReviewList productId={product.id} reviews={[]} />
       </div>
 
       {/* ─── INFO SECTIONS ─── */}
