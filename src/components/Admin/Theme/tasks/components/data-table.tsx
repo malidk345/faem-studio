@@ -75,7 +75,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} onAddTask={onAddTask} />
+      <DataTableToolbar table={table} onAddTask={onAddTask} searchKey={searchKey} />
       <div className="rounded-2xl border border-zinc-100 shadow-sm bg-white overflow-hidden">
         <div className="overflow-x-auto">
           <Table>

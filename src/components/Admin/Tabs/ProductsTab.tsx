@@ -19,8 +19,8 @@ interface ProductsTabProps {
 export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, onArchive, onClearAll }: ProductsTabProps) {
   const columns = [
     {
-      accessorKey: "image",
-      header: "Varlık",
+      accessorKey: "name",
+      header: "Ürün",
       cell: ({ row }: any) => (
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-zinc-100 overflow-hidden border">
