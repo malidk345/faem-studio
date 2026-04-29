@@ -138,6 +138,7 @@ export default function Admin() {
                       onBulkImport={() => setIsBulkImportOpen(true)}
                       onEdit={(p) => { setEditingProduct(p); setIsEditing(true); }}
                       onDelete={deleteProduct}
+                      onArchive={(id, is_archived) => updateProduct(id, { is_archived })}
                       onClearAll={clearAllProducts}
                     />
                   )

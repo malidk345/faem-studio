@@ -35,15 +35,13 @@ export default function Shop() {
   });
 
   const ITEMS_PER_PAGE = 12;
-  const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
-  const [activeCollection, setActiveCollection] = useState<string>(initialCollection);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
 
-  const loadProducts = async (pageNum: number, category: string, collection: string, isInitial = false) => {
+  const loadProducts = async (pageNum: number, search: string, isInitial = false) => {
     try {
       const from = pageNum * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
@@ -51,14 +49,12 @@ export default function Shop() {
       let query = supabase
         .from('products')
         .select('id, name, price, image_url, category, collection, discount_price, description, images, features, sizes', { count: 'exact' })
+        .or('is_archived.is.null,is_archived.eq.false')
         .order('created_at', { ascending: false })
         .range(from, to);
 
-      if (category !== 'All') {
-        query = query.eq('category', category);
-      }
-      if (collection !== 'All') {
-        query = query.eq('collection', collection);
+      if (search.trim() !== '') {
+        query = query.ilike('name', `%${search.trim()}%`);
       }
 
       const { data, error, count } = await query;
@@ -98,29 +94,16 @@ export default function Shop() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    loadProducts(0, activeCategory, activeCollection, true);
-  }, [activeCategory, activeCollection]);
+    loadProducts(0, searchQuery, true);
+  }, [searchQuery]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
     setPage(nextPage);
-    loadProducts(nextPage, activeCategory, activeCollection);
+    loadProducts(nextPage, searchQuery);
   };
 
-  const [availableCategories, setAvailableCategories] = useState<string[]>(['All']);
-  const [availableCollections, setAvailableCollections] = useState<string[]>(['All']);
 
-  useEffect(() => {
-    const fetchMeta = async () => {
-      const [catRes, collRes] = await Promise.all([
-        supabase.from('categories').select('name'),
-        supabase.from('collections').select('name')
-      ]);
-      if (catRes.data) setAvailableCategories(['All', ...catRes.data.map(c => c.name)]);
-      if (collRes.data) setAvailableCollections(['All', ...collRes.data.map(c => c.name)]);
-    };
-    fetchMeta();
-  }, []);
 
   if (isLoading && products.length === 0) return <GlobalPageLoader isLoading={true} />;
 
@@ -130,123 +113,26 @@ export default function Shop() {
         {/* Editorial Heading Section */}
         <div className="flex flex-col items-center justify-center text-center gap-6 mb-16 md:mb-24">
           <span className="text-[10px] font-normal tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">Faem Studio Collection</span>
-          {/* Filter Trigger Button */}
-          <div className="flex items-center justify-between w-full border-b border-zinc-100 pb-8">
-            <div className="flex flex-col items-start gap-1">
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-400">Arşiv Filtresi</span>
-              <p className="text-[11px] text-zinc-500">
-                {activeCollection !== 'All' ? activeCollection : (activeCategory === 'All' ? 'Tüm Parçalar' : activeCategory)}
-              </p>
-            </div>
-            
-            <button 
-              onClick={() => setIsFilterOpen(true)}
-              className="flex items-center gap-3 px-6 py-3 bg-zinc-50 hover:bg-zinc-100 transition-colors rounded-full group"
-            >
-              <SlidersHorizontal size={14} className="text-zinc-400 group-hover:text-black transition-colors" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Filtrele</span>
-            </button>
-          </div>
-
-          {/* Filter Drawer / Sidebar Overlay */}
-          <AnimatePresence>
-            {isFilterOpen && (
-              <>
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  onClick={() => setIsFilterOpen(false)}
-                  className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]"
-                />
-                <motion.div 
-                  initial={{ x: '100%' }}
-                  animate={{ x: 0 }}
-                  exit={{ x: '100%' }}
-                  transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                  className="fixed right-0 top-0 bottom-0 w-full max-w-[400px] bg-white z-[101] shadow-2xl overflow-y-auto p-10 flex flex-col gap-12"
+          {/* Search Box */}
+          <div className="flex flex-col items-center justify-center w-full max-w-xl mx-auto">
+            <div className="w-full relative">
+              <input 
+                type="text" 
+                placeholder="Ürün Ara..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-14 bg-zinc-50 border border-zinc-100 rounded-full px-6 text-[13px] font-medium focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:bg-zinc-200 rounded-full transition-colors"
                 >
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-2xl font-bold tracking-tighter uppercase">Filtreler</h3>
-                    <button onClick={() => setIsFilterOpen(false)} className="p-2 hover:bg-zinc-50 rounded-full transition-colors">
-                      <X size={20} />
-                    </button>
-                  </div>
-
-                  {/* Categories Filter */}
-                  <div className="space-y-6">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Kategoriler</h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      {availableCategories.map(cat => (
-                        <button
-                          key={cat}
-                          onClick={() => {
-                            setActiveCategory(cat);
-                            setActiveCollection('All');
-                            setPage(0);
-                            setIsLoading(true);
-                            setIsFilterOpen(false);
-                          }}
-                          className={`px-4 py-3 text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all border
-                            ${activeCategory === cat 
-                              ? 'bg-black text-white border-black' 
-                              : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:border-zinc-300'}`}
-                        >
-                          {cat === 'All' ? 'TÜMÜ' : cat}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Collections Filter */}
-                  <div className="space-y-6">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Koleksiyonlar</h4>
-                    <div className="flex flex-col gap-2">
-                      {availableCollections.map(coll => (
-                        <button
-                          key={coll}
-                          onClick={() => {
-                            setActiveCollection(coll);
-                            setActiveCategory('All');
-                            setPage(0);
-                            setIsLoading(true);
-                            setIsFilterOpen(false);
-                          }}
-                          className={`flex items-center justify-between px-6 py-4 rounded-2xl transition-all border
-                            ${activeCollection === coll 
-                              ? 'bg-zinc-50 border-zinc-900 text-zinc-900' 
-                              : 'bg-white border-zinc-100 text-zinc-400 hover:border-zinc-300'}`}
-                        >
-                          <span className="text-xs font-bold uppercase tracking-widest">{coll === 'All' ? 'TÜM KOLEKSİYONLAR' : coll}</span>
-                          <ChevronRight size={14} className={activeCollection === coll ? 'opacity-100' : 'opacity-20'} />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-auto pt-10 border-t border-zinc-100 flex flex-col gap-4">
-                    <Button 
-                      onClick={() => {
-                        setActiveCategory('All');
-                        setActiveCollection('All');
-                        setIsFilterOpen(false);
-                      }}
-                      variant="outline"
-                      className="w-full h-14 rounded-2xl border-zinc-200 text-[10px] font-black uppercase tracking-[0.2em]"
-                    >
-                      Sıfırla
-                    </Button>
-                    <Button 
-                      onClick={() => setIsFilterOpen(false)}
-                      className="w-full h-14 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.2em]"
-                    >
-                      Sonuçları Gör
-                    </Button>
-                  </div>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
+                  <X size={14} className="text-zinc-500" />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Spacious Product Grid */}

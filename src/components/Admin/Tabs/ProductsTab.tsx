@@ -12,10 +12,11 @@ interface ProductsTabProps {
   onBulkImport: () => void;
   onEdit: (product: any) => void;
   onDelete: (id: string) => void;
+  onArchive?: (id: string, isArchived: boolean) => void;
   onClearAll: () => void;
 }
 
-export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, onClearAll }: ProductsTabProps) {
+export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, onArchive, onClearAll }: ProductsTabProps) {
   const columns = [
     {
       accessorKey: "image",
@@ -30,7 +31,14 @@ export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, o
             />
           </div>
           <div className="flex flex-col">
-            <span className="font-semibold text-sm text-zinc-900 leading-tight">{row.original.name}</span>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-sm text-zinc-900 leading-tight">{row.original.name}</span>
+              {row.original.is_archived && (
+                <span className="bg-amber-100 text-amber-700 text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-full">
+                  Arşiv
+                </span>
+              )}
+            </div>
             <span className="text-[10px] text-zinc-500 font-mono">#{row.original.id?.slice(0,8)}</span>
           </div>
         </div>
@@ -39,6 +47,7 @@ export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, o
     {
       accessorKey: "collection",
       header: "Koleksiyon",
+      meta: { className: "hidden md:table-cell" },
       cell: ({ row }: any) => (
         <Badge variant="secondary" className="bg-zinc-100 text-zinc-600 border-none font-semibold text-[10px] uppercase tracking-widest px-2 group-hover:bg-white">
           {row.getValue("collection") || '-'}
@@ -48,11 +57,13 @@ export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, o
     {
       accessorKey: "price",
       header: "Fiyat",
+      meta: { className: "hidden sm:table-cell" },
       cell: ({ row }: any) => <span className="font-semibold text-sm text-zinc-900">{row.getValue("price")}</span>
     },
     {
       accessorKey: "stock_count",
       header: "Stok",
+      meta: { className: "hidden sm:table-cell" },
       cell: ({ row }: any) => {
         const stock = row.getValue("stock_count") || 0;
         return (
@@ -69,7 +80,15 @@ export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, o
       id: "actions",
       header: "",
       cell: ({ row }: any) => (
-        <div className="flex items-center justify-end">
+        <div className="flex items-center justify-end gap-2">
+           <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-7 px-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-amber-600 hover:bg-amber-50"
+            onClick={() => onArchive?.(row.original.id, !row.original.is_archived)}
+           >
+             {row.original.is_archived ? 'Arşivden Çıkar' : 'Arşive Al'}
+           </Button>
            <Button 
             variant="ghost" 
             size="sm" 

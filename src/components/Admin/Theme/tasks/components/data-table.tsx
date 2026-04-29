@@ -84,7 +84,11 @@ export function DataTable<TData, TValue>({
                 <TableRow key={headerGroup.id} className="hover:bg-transparent border-zinc-100">
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id} colSpan={header.colSpan} className="text-[10px] font-black uppercase tracking-widest text-zinc-400 py-4 px-6 h-auto whitespace-nowrap">
+                      <TableHead 
+                        key={header.id} 
+                        colSpan={header.colSpan} 
+                        className={`text-[10px] font-black uppercase tracking-widest text-zinc-400 py-4 px-6 h-auto whitespace-nowrap ${(header.column.columnDef.meta as any)?.className || ''}`}
+                      >
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -106,7 +110,10 @@ export function DataTable<TData, TValue>({
                     className="hover:bg-zinc-50/30 border-zinc-100 transition-colors"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-4 px-6 font-medium text-zinc-900 whitespace-nowrap">
+                      <TableCell 
+                        key={cell.id} 
+                        className={`py-4 px-6 font-medium text-zinc-900 whitespace-nowrap ${(cell.column.columnDef.meta as any)?.className || ''}`}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
