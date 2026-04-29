@@ -6,6 +6,8 @@ import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 
+import { ImageUpload } from './Admin/ImageUpload';
+
 interface Review {
   id: string;
   user: string;
@@ -13,6 +15,8 @@ interface Review {
   comment: string;
   date: string;
   isVerified?: boolean;
+  image_url?: string;
+  admin_reply?: string;
 }
 
 interface ReviewListProps {
@@ -32,6 +36,12 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
   const [comment, setComment] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  
+  // Admin Reply States
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState('');
+  const [isReplying, setIsReplying] = useState(false);
   
   // Admin Fake Review States
   const [adminFakeName, setAdminFakeName] = useState('');
@@ -87,7 +97,9 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
               rating: r.rating,
               comment: r.comment,
               date: new Date(r.created_at).toLocaleDateString('tr-TR'),
-              isVerified: r.is_verified_buyer
+              isVerified: r.is_verified_buyer,
+              image_url: r.image_url,
+              admin_reply: r.admin_reply
             })));
           }
         } catch (e) {
@@ -130,7 +142,8 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
         product_id: productId,
         user_id: user.id,
         rating,
-        comment
+        comment,
+        image_url: imageUrl || null
       };
 
       if (user.role === 'admin') {
@@ -149,12 +162,15 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
           rating: data.rating,
           comment: data.comment,
           date: 'Şimdi',
-          isVerified: data.is_verified_buyer
+          isVerified: data.is_verified_buyer,
+          image_url: data.image_url,
+          admin_reply: data.admin_reply
         };
         setLocalReviews([newReview, ...localReviews]);
         setIsWriting(false);
         setComment('');
         setRating(5);
+        setImageUrl('');
         setAdminFakeName('');
       }
     } catch (err: any) {
@@ -162,6 +178,27 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
       setErrorMsg('Yorum gönderilirken bir hata oluştu.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleAdminReply = async (reviewId: string) => {
+    if (!replyText.trim() || !user || user.role !== 'admin') return;
+    setIsReplying(true);
+    try {
+      const { error } = await supabase
+        .from('reviews')
+        .update({ admin_reply: replyText.trim() })
+        .eq('id', reviewId);
+        
+      if (error) throw error;
+      
+      setLocalReviews(localReviews.map(r => r.id === reviewId ? { ...r, admin_reply: replyText.trim() } : r));
+      setReplyingTo(null);
+      setReplyText('');
+    } catch (e) {
+      console.error("Reply error:", e);
+    } finally {
+      setIsReplying(false);
     }
   };
 
@@ -266,6 +303,11 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                     onChange={(e) => setComment(e.target.value)}
                     className="w-full bg-white border border-zinc-100 rounded-2xl p-6 text-[15px] font-medium leading-relaxed resize-none h-32 focus:outline-none focus:border-zinc-900 transition-all shadow-sm"
                   />
+                  
+                  <div className="mt-2 mb-4">
+                    <ImageUpload onUploadComplete={setImageUrl} currentImage={imageUrl} />
+                  </div>
+                  
                   {errorMsg && <p className="text-rose-500 text-[11px] font-black uppercase tracking-widest mt-2">{errorMsg}</p>}
                 </div>
 
@@ -328,14 +370,63 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                 "{review.comment}"
               </p>
 
+              {review.image_url && (
+                <div className="mt-4 rounded-2xl overflow-hidden max-w-[200px] border border-zinc-100">
+                  <img src={review.image_url} alt="Review attachment" className="w-full object-cover aspect-[4/5] hover:scale-105 transition-transform duration-500" />
+                </div>
+              )}
+
+              {review.admin_reply && (
+                <div className="mt-6 p-5 bg-zinc-50 border border-zinc-100 rounded-2xl flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-zinc-900">
+                    <Check size={14} className="text-emerald-500" />
+                    <span className="text-[11px] font-black uppercase tracking-widest">Faem Studio Yanıtı</span>
+                  </div>
+                  <p className="text-[14px] font-medium text-zinc-600 leading-relaxed">
+                    {review.admin_reply}
+                  </p>
+                </div>
+              )}
+
               <div className="flex gap-6 pt-6 mt-6 border-t border-zinc-50 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
                 <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-zinc-300 hover:text-zinc-900 transition-colors">
                   <Heart size={12} strokeWidth={2.5} /> Faydalı
                 </button>
-                <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-zinc-300 hover:text-zinc-900 transition-colors">
-                  <MessageCircle size={12} strokeWidth={2.5} /> Yanıtla
-                </button>
+                {user?.role === 'admin' && !review.admin_reply && (
+                  <button 
+                    onClick={() => setReplyingTo(replyingTo === review.id ? null : review.id)}
+                    className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-zinc-300 hover:text-zinc-900 transition-colors"
+                  >
+                    <MessageCircle size={12} strokeWidth={2.5} /> Yanıtla
+                  </button>
+                )}
               </div>
+
+              {replyingTo === review.id && (
+                <div className="mt-4 flex flex-col gap-3">
+                  <textarea 
+                    value={replyText}
+                    onChange={e => setReplyText(e.target.value)}
+                    placeholder="Müşteriye yanıtınız..."
+                    className="w-full p-4 text-[13px] font-medium bg-zinc-50 border border-zinc-200 rounded-xl resize-none h-24 focus:outline-none focus:border-black"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <button 
+                      onClick={() => setReplyingTo(null)}
+                      className="px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:bg-zinc-100 rounded-lg"
+                    >
+                      İptal
+                    </button>
+                    <button 
+                      disabled={isReplying}
+                      onClick={() => handleAdminReply(review.id)}
+                      className="px-6 py-2 bg-black text-white text-[10px] font-bold uppercase tracking-widest rounded-lg flex items-center gap-2 disabled:opacity-50"
+                    >
+                      {isReplying ? 'Gönderiliyor...' : <><Send size={12} /> Gönder</>}
+                    </button>
+                  </div>
+                </div>
+              )}
             </motion.div>
           ))
         )}
