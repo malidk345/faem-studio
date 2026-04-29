@@ -35,8 +35,7 @@ export default function SignIn() {
     setError(null);
     
     try {
-      if (isAdminMode) {
-        if (!password) throw new Error("Şifre gereklidir.");
+      if (isAdminMode && password.trim().length > 0) {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password
@@ -78,7 +77,7 @@ export default function SignIn() {
               {isAdminMode ? 'Yönetici Girişi' : t('auth.title')}
             </h1>
             <p className="text-black/40 text-sm font-medium leading-relaxed uppercase tracking-tighter">
-              {isAdminMode ? 'Panele erişmek için şifrenizi girin.' : t('auth.instant_entry')}
+              {isAdminMode ? 'Şifreniz yoksa boş bırakıp bağlantı gönderin.' : t('auth.instant_entry')}
             </p>
           </div>
 
@@ -106,11 +105,10 @@ export default function SignIn() {
                 {isAdminMode && (
                   <input
                     type="password"
-                    placeholder="Yönetici Şifresi"
+                    placeholder="Şifre (İlk girişte boş bırakın)"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     className="w-full px-0 py-4 bg-transparent border-b-2 border-black/5 focus:border-black outline-none transition-all placeholder:text-black/20 text-lg font-bold"
-                    required
                   />
                 )}
               </div>
