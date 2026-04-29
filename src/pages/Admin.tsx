@@ -74,8 +74,25 @@ export default function Admin() {
           <span className="text-3xl text-white font-black">F</span>
         </div>
         <h2 className="text-3xl font-black tracking-tighter">Yönetici Girişi Gerekli</h2>
-        <Link to="/signin" className="bg-black text-white px-10 py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-xl shadow-black/20">
+        <Link to="/signin?redirect=/admin" className="bg-black text-white px-10 py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-xl shadow-black/20">
           Giriş Yap
+        </Link>
+      </div>
+    );
+  }
+
+  if (isAdmin === false) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-8 bg-white text-black text-center p-6">
+        <div className="w-20 h-20 bg-red-50 text-red-500 rounded-3xl flex items-center justify-center shadow-2xl">
+          <span className="text-3xl font-black">!</span>
+        </div>
+        <h2 className="text-3xl font-black tracking-tighter">Yetkisiz Erişim</h2>
+        <p className="text-sm font-medium text-black/50 max-w-sm">
+          Bu paneli görüntülemek için yönetici yetkilerine sahip olmanız gerekmektedir. Lütfen doğru hesapla giriş yaptığınızdan emin olun.
+        </p>
+        <Link to="/" className="bg-black text-white px-10 py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-xl shadow-black/20">
+          Mağazaya Dön
         </Link>
       </div>
     );

@@ -15,6 +15,8 @@ export default function SignIn() {
   const { user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/';
 
   useSEO({
     title: `${t('auth.title')} | Faem Studio`,
@@ -22,8 +24,8 @@ export default function SignIn() {
   });
 
   useEffect(() => {
-    if (user) navigate('/');
-  }, [user, navigate]);
+    if (user) navigate(redirectUrl);
+  }, [user, navigate, redirectUrl]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +36,7 @@ export default function SignIn() {
       const { error: mlError } = await supabase.auth.signInWithOtp({ 
         email,
         options: {
-          emailRedirectTo: window.location.origin,
+          emailRedirectTo: `${window.location.origin}${redirectUrl}`,
         }
       });
       
