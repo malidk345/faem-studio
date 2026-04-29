@@ -18,7 +18,7 @@ export default function SignIn() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '/';
-  const isAdminMode = redirectUrl === '/admin';
+  const isAdminMode = redirectUrl === '/fatihveemirinadminportali';
 
   useSEO({
     title: `${t('auth.title')} | Faem Studio`,

@@ -74,7 +74,7 @@ export default function Admin() {
           <span className="text-3xl text-white font-black">F</span>
         </div>
         <h2 className="text-3xl font-black tracking-tighter">Yönetici Girişi Gerekli</h2>
-        <Link to="/signin?redirect=/admin" className="bg-black text-white px-10 py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-xl shadow-black/20">
+        <Link to="/signin?redirect=/fatihveemirinadminportali" className="bg-black text-white px-10 py-4 rounded-lg font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all shadow-xl shadow-black/20">
           Giriş Yap
         </Link>
       </div>

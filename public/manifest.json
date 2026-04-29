@@ -1,7 +1,7 @@
 {
   "name": "Faem Studio Admin",
   "short_name": "Faem Admin",
-  "start_url": "/admin",
+  "start_url": "/fatihveemirinadminportali",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
