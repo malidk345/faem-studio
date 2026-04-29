@@ -66,19 +66,18 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
             
             const { data: profilesData, error: profilesError } = await supabase
               .from('profiles')
-              .select('id, name, full_name')
+              .select('id, name')
               .in('id', userIds);
               
             if (profilesError) {
               console.error("Profiles fetch error:", profilesError);
             }
 
-            // Create a robust map with multiple fallback fields
+            // Create a robust map
             const profileMap = new Map();
             if (profilesData) {
               profilesData.forEach(p => {
-                const displayName = p.name || p.full_name || p.display_name || "";
-                profileMap.set(p.id, displayName);
+                profileMap.set(p.id, p.name || "");
               });
             }
 
