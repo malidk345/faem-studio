@@ -155,7 +155,6 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
   };
 
   return (
-  return (
     <div className="flex flex-col gap-12 max-w-4xl mx-auto">
       {/* ── Summary & Stats (Restored) ── */}
       <div className="grid grid-cols-1 md:grid-cols-[1fr,2fr] gap-10 items-start pb-10 border-b border-zinc-100">
