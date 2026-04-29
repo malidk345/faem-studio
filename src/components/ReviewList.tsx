@@ -72,7 +72,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
 
             setLocalReviews(reviewsData.map((r: any) => ({
               id: r.id,
-              user: r.author_name || profileMap.get(r.user_id) || 'Müşteri',
+              user: r.author_name || profileMap.get(r.user_id) || '',
               rating: r.rating,
               comment: r.comment,
               date: new Date(r.created_at).toLocaleDateString('tr-TR'),
@@ -134,7 +134,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
       if (data) {
         const newReview: Review = {
           id: data.id,
-          user: data.author_name || user.name || 'Müşteri',
+          user: data.author_name || user.name || '',
           rating: data.rating,
           comment: data.comment,
           date: 'Şimdi',
@@ -292,7 +292,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                     <div className="flex items-center gap-2 text-black">
                       <User size={14} className="text-zinc-400" />
                       <span className="text-[13px] font-medium uppercase tracking-tight leading-none">
-                        {review.user || 'Müşteri'}
+                        {review.user || ''}
                       </span>
                     </div>
                     {review.isVerified && (
