@@ -32,6 +32,10 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
   const [comment, setComment] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Admin Fake Review States
+  const [adminFakeName, setAdminFakeName] = useState('');
+  const [adminForceVerified, setAdminForceVerified] = useState(true);
 
   // Sync with props
   React.useEffect(() => {
@@ -68,7 +72,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
 
             setLocalReviews(reviewsData.map((r: any) => ({
               id: r.id,
-              user: profileMap.get(r.user_id) || 'Müşteri',
+              user: r.author_name || profileMap.get(r.user_id) || 'Müşteri',
               rating: r.rating,
               comment: r.comment,
               date: new Date(r.created_at).toLocaleDateString('tr-TR'),
@@ -116,12 +120,22 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
     setErrorMsg('');
 
     try {
-      const { data, error } = await supabase.from('reviews').insert([{
+      const payload: any = {
         product_id: productId,
         user_id: user.id,
         rating,
         comment
-      }]).select().single();
+      };
+
+      // If user is admin, they can inject fake name and verification status
+      if (user.role === 'admin') {
+        if (adminFakeName.trim().length > 0) {
+          payload.author_name = adminFakeName.trim();
+        }
+        payload.is_verified_buyer = adminForceVerified;
+      }
+
+      const { data, error } = await supabase.from('reviews').insert([payload]).select().single();
 
       if (error) {
         console.error("Supabase insert error:", error);
@@ -131,7 +145,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
       if (data) {
         const newReview: Review = {
           id: data.id,
-          user: user.name || 'Müşteri',
+          user: data.author_name || user.name || 'Müşteri',
           rating: data.rating,
           comment: data.comment,
           date: 'Şimdi',
@@ -141,6 +155,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
         setIsWriting(false);
         setComment('');
         setRating(5);
+        setAdminFakeName('');
       }
     } catch (err: any) {
       console.error(err);
@@ -226,6 +241,29 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                   ))}
                 </div>
               </div>
+
+              {user?.role === 'admin' && (
+                <div className="flex flex-col gap-4 p-5 bg-amber-50/50 border border-amber-100 rounded-2xl mb-2">
+                  <div className="flex items-center gap-2 mb-2 text-amber-700">
+                    <Check size={16} className="text-amber-500" />
+                    <h4 className="text-[11px] font-black uppercase tracking-[0.2em]">Admin Özel: Fake Yorum Ayarları</h4>
+                  </div>
+                  <input 
+                    type="text" 
+                    placeholder="Gösterilecek İsim (Boş bırakırsanız kendi adınız görünür)" 
+                    value={adminFakeName} 
+                    onChange={e => setAdminFakeName(e.target.value)} 
+                    className="w-full h-12 px-4 bg-white border border-amber-200/50 rounded-xl focus:border-amber-400 outline-none transition-all text-[13px] font-medium" 
+                  />
+                  <label className="flex items-center gap-3 cursor-pointer group">
+                    <div className={`w-5 h-5 rounded flex items-center justify-center transition-colors ${adminForceVerified ? 'bg-amber-500' : 'bg-white border border-zinc-200'}`}>
+                       {adminForceVerified && <Check size={12} className="text-white" />}
+                    </div>
+                    <span className="text-[12px] font-bold text-zinc-600 group-hover:text-black transition-colors">Doğrulanmış Alıcı Rozeti Ekle</span>
+                    <input type="checkbox" className="hidden" checked={adminForceVerified} onChange={e => setAdminForceVerified(e.target.checked)} />
+                  </label>
+                </div>
+              )}
 
               <div className="flex flex-col gap-3">
                 <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400">Yorumunuz</h4>
