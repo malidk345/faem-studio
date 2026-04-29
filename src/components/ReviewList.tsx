@@ -289,8 +289,8 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
               <div className="flex justify-between items-start mb-6">
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center gap-3">
-                    {/* Explicitly set color to zinc-900 to ensure visibility */}
-                    <span className="text-zinc-900 text-[13px] font-black uppercase tracking-tight">{review.user}</span>
+                    {/* Explicitly set color to black to ensure visibility */}
+                    <span className="text-black text-[13px] font-black uppercase tracking-tight">{review.user}</span>
                     {review.isVerified && (
                       <div className="flex items-center gap-1 text-[8px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
                         <Check size={10} /> Doğrulanmış Alıcı
