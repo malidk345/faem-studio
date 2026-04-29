@@ -9,6 +9,7 @@ import { ChevronLeft, Loader2, Mail } from 'lucide-react';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,6 +18,7 @@ export default function SignIn() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '/';
+  const isAdminMode = redirectUrl === '/admin';
 
   useSEO({
     title: `${t('auth.title')} | Faem Studio`,
@@ -33,18 +35,24 @@ export default function SignIn() {
     setError(null);
     
     try {
-      const { error: mlError } = await supabase.auth.signInWithOtp({ 
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}${redirectUrl}`,
-        }
-      });
-      
-      if (mlError) {
-        throw mlError;
+      if (isAdminMode) {
+        if (!password) throw new Error("Şifre gereklidir.");
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password
+        });
+        if (signInError) throw signInError;
+      } else {
+        const { error: mlError } = await supabase.auth.signInWithOtp({ 
+          email,
+          options: {
+            emailRedirectTo: `${window.location.origin}${redirectUrl}`,
+          }
+        });
+        
+        if (mlError) throw mlError;
+        setMagicLinkSent(true);
       }
-      
-      setMagicLinkSent(true);
     } catch (err: any) {
       setError(err.message || t('auth.error_sending'));
     } finally {
@@ -67,10 +75,10 @@ export default function SignIn() {
         >
           <div className="mb-8">
             <h1 className="text-[32px] md:text-[40px] font-black tracking-tighter leading-none mb-3">
-              {t('auth.title')}
+              {isAdminMode ? 'Yönetici Girişi' : t('auth.title')}
             </h1>
             <p className="text-black/40 text-sm font-medium leading-relaxed uppercase tracking-tighter">
-              {t('auth.instant_entry')}
+              {isAdminMode ? 'Panele erişmek için şifrenizi girin.' : t('auth.instant_entry')}
             </p>
           </div>
 
@@ -86,7 +94,7 @@ export default function SignIn() {
 
           {!magicLinkSent ? (
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-              <div className="relative">
+              <div className="relative flex flex-col gap-4">
                 <input
                   type="email"
                   placeholder="name@email.com"
@@ -95,6 +103,16 @@ export default function SignIn() {
                   className="w-full px-0 py-4 bg-transparent border-b-2 border-black/5 focus:border-black outline-none transition-all placeholder:text-black/20 text-lg font-bold"
                   required
                 />
+                {isAdminMode && (
+                  <input
+                    type="password"
+                    placeholder="Yönetici Şifresi"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    className="w-full px-0 py-4 bg-transparent border-b-2 border-black/5 focus:border-black outline-none transition-all placeholder:text-black/20 text-lg font-bold"
+                    required
+                  />
+                )}
               </div>
 
               <button
@@ -103,7 +121,7 @@ export default function SignIn() {
                 className="w-full bg-black text-white py-5 rounded-2xl text-xs font-black uppercase tracking-[0.2em] hover:bg-zinc-800 transition-all shadow-2xl shadow-black/10 disabled:opacity-40 flex items-center justify-center gap-3"
               >
                 {loading ? <Loader2 size={16} className="animate-spin" /> : <Mail size={16} />}
-                {loading ? t('auth.sending') : t('auth.send_link')}
+                {loading ? t('auth.sending') : (isAdminMode ? 'Giriş Yap' : t('auth.send_link'))}
               </button>
             </form>
           ) : (
