@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, ChevronDown, ChevronUp, X, Check } from 'lucide-react';
-import { springTransition, contentTransition } from '../utils/animations';
+
+// Smooth easing curve — no spring bouncing, just fluid deceleration
+const smoothTransition = { duration: 0.45, ease: [0.25, 1, 0.5, 1] };
+const fastTransition = { duration: 0.3, ease: [0.25, 1, 0.5, 1] };
 
 interface Product {
   id: string;
@@ -73,63 +76,61 @@ export default function ProductSelectionCard({
   }, [selectedSize, isAdding, handleAddToCart, isOutOfStock]);
 
   return (
-    <div className="fixed bottom-6 left-4 right-4 z-50 flex flex-col items-center pointer-events-none md:right-10 md:bottom-10 md:left-auto md:w-[440px]">
+    <div className="fixed bottom-4 sm:bottom-6 left-4 right-4 z-50 flex flex-col items-end pointer-events-none md:right-8 md:left-auto md:w-[440px]">
 
-      {/* ── Main Detail Card (Now Synced with Header Frame) ── */}
-      <motion.div
-        layout="size"
-        initial={false}
-        animate={{
-          height: collapsed ? 60 : 'auto',
-        }}
-        transition={springTransition}
-        style={{ borderRadius: 8 }}
-        className="w-full glass-nav overflow-hidden pointer-events-auto flex flex-col origin-bottom border border-white/10 shadow-2xl"
+      {/*
+        Architecture: Fixed outer shell holds border-radius + overflow:hidden.
+        Inner content animates height ONLY — no scale transforms, no border distortion.
+      */}
+      <div
+        className="w-full glass-nav pointer-events-auto overflow-hidden border border-white/10 shadow-2xl"
+        style={{ borderRadius: 10 }}
       >
-        {/* Info Area */}
-        <AnimatePresence mode="wait">
+        {/* ── Expandable Info Area ── */}
+        <AnimatePresence initial={false}>
           {!collapsed && (
             <motion.div
-              key="info"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={springTransition}
+              key="info-panel"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={smoothTransition}
               className="overflow-hidden"
             >
               <div className="p-4 flex items-start gap-4">
-                <div className="w-[64px] h-[80px] rounded-[4px] overflow-hidden border border-white/10 shrink-0 bg-white/5">
+                <div className="w-[70px] h-[90px] rounded-[4px] overflow-hidden border border-white/10 shrink-0 bg-white/5">
                   <img src={product.image} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0 pt-0.5">
-                  <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="flex flex-col gap-1">
                       <h3 className="text-[14px] font-bold leading-none text-white/95 tracking-tighter truncate max-w-[240px]">
                         {product.name}
                       </h3>
-                      <p className="text-[16px] font-bold text-white tracking-tighter mt-1">
+                      <p className="text-[17px] font-bold text-white tracking-tighter mt-1">
                         {product.discount_price || product.price}
                       </p>
                       <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] font-bold mt-2 font-['Handjet',sans-serif]">
                         {product.category} {isOutOfStock ? '/ TÜKENDI' : isLowStock ? `/ SON ${stockCount} ADET` : '/ ARCHIVE PIECE'}
                       </p>
                     </div>
-                    <button onClick={() => setIsWishlisted(!isWishlisted)} className="active:scale-90 transition-transform mt-1">
-                      <Heart size={20} className={isWishlisted ? 'fill-white text-white' : 'text-white/40'} />
+                    <button onClick={() => setIsWishlisted(!isWishlisted)} className="active:scale-90 transition-transform p-1.5">
+                      <Heart size={21} className={isWishlisted ? 'fill-white text-white' : 'text-white/40'} />
                     </button>
                   </div>
                 </div>
               </div>
+              <div className="mx-3 h-px bg-white/[0.06]" />
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Action Row */}
-        <div className={`flex items-center gap-2 px-3 pb-3 ${collapsed ? 'h-full pt-3' : 'pt-2'}`}>
+        {/* ── Action Row (always visible) ── */}
+        <div className="flex items-center gap-2 px-1.5 py-1.5">
           <button
             onClick={handleAdd}
             disabled={isOutOfStock}
-            className={`flex-1 h-[48px] rounded-[4px] transition-all flex items-center justify-center shadow-lg
+            className={`flex-[2] h-[42px] sm:h-[44px] rounded-[4px] transition-all flex items-center justify-center shadow-lg
               ${isOutOfStock 
                 ? 'bg-white/20 text-white/40 cursor-not-allowed' 
                 : 'bg-white hover:bg-white/90 text-black active:scale-[0.97]'}`}
@@ -137,45 +138,46 @@ export default function ProductSelectionCard({
             {isAdding ? (
               <Check size={20} className="text-emerald-600 animate-in fade-in zoom-in duration-300" />
             ) : isOutOfStock ? (
-              <span className="text-[16px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif] text-rose-400">TÜKENDI</span>
+              <span className="text-[14px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif] text-rose-400">TÜKENDI</span>
             ) : (
-              <span className="text-[18px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">SEPETE EKLE</span>
+              <span className="text-[16px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">SEPETE EKLE</span>
             )}
           </button>
 
           <button
             onClick={() => { setCollapsed(false); setSizeOpen(!sizeOpen); }}
-            className={`flex-1 h-[48px] rounded-[4px] bg-white/10 hover:bg-white/15 border border-white/10 text-white flex items-center justify-center gap-2 active:scale-[0.97] transition-all font-['Handjet',sans-serif]`}
+            className="flex-1 h-[42px] sm:h-[44px] rounded-[4px] bg-white/10 hover:bg-white/15 border border-white/10 text-white flex items-center justify-center gap-1.5 active:scale-[0.97] transition-all font-['Handjet',sans-serif]"
           >
-            <span className="text-[18px] font-normal uppercase tracking-[0.05em]">{selectedSize || 'BEDEN SEÇ'}</span>
-            <ChevronDown size={14} className={`transition-transform duration-300 ${sizeOpen ? 'rotate-180' : ''}`} />
+            <span className="text-[15px] font-normal uppercase tracking-[0.05em]">{selectedSize || 'BEDEN'}</span>
+            <ChevronDown size={13} className={`transition-transform duration-300 ${sizeOpen ? 'rotate-180' : ''}`} />
           </button>
 
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="w-[48px] h-[48px] shrink-0 bg-white/10 hover:bg-white/15 border border-white/10 rounded-[4px] flex items-center justify-center active:scale-[0.95] transition-all text-white/60"
+            className="w-[42px] h-[42px] sm:w-[44px] sm:h-[44px] shrink-0 bg-white/10 hover:bg-white/15 border border-white/10 rounded-[4px] flex items-center justify-center active:scale-[0.95] transition-all text-white/60"
           >
-            {collapsed ? <ChevronUp size={20} /> : <X size={20} />}
+            {collapsed ? <ChevronUp size={18} /> : <X size={20} />}
           </button>
         </div>
 
-        {/* Size Selection Area */}
-        <AnimatePresence>
+        {/* ── Size Selection Area ── */}
+        <AnimatePresence initial={false}>
           {sizeOpen && !collapsed && (
             <motion.div
+              key="size-panel"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={springTransition}
-              className="px-3 pb-4 overflow-hidden"
+              transition={fastTransition}
+              className="overflow-hidden"
             >
-              <div className="w-full h-px bg-white/10 mb-4" />
-              <div className="grid grid-cols-3 gap-2">
+              <div className="mx-3 h-px bg-white/[0.06] mb-3" />
+              <div className="px-3 pb-4 grid grid-cols-3 gap-2">
                 {product.sizes.map(size => (
                   <button
                     key={size}
                     onClick={() => { setSelectedSize(size); setSizeOpen(false); }}
-                    className={`h-12 rounded-[4px] text-[16px] font-normal transition-all border font-['Handjet',sans-serif]
+                    className={`h-12 rounded-[4px] text-[17px] font-normal transition-all border font-['Handjet',sans-serif]
                       ${selectedSize === size ? 'bg-white text-black border-white shadow-xl' : 'bg-white/5 border-white/5 text-white/40 hover:bg-white/10 hover:border-white/20'}`}
                   >
                     {size}
@@ -185,7 +187,8 @@ export default function ProductSelectionCard({
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </div>
   );
 }
+
