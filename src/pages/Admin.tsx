@@ -21,6 +21,7 @@ import { SettingsTab } from '../components/Admin/Tabs/SettingsTab';
 import { PromotionsTab } from '../components/Admin/Tabs/PromotionsTab';
 import { CmsTab } from '../components/Admin/Tabs/CmsTab';
 import { MessagesTab } from '../components/Admin/Tabs/MessagesTab';
+import { ReviewsTab } from '../components/Admin/Tabs/ReviewsTab';
 import { HeaderNotifications } from '../components/Admin/HeaderNotifications';
 import { BulkImportModal } from '../components/Admin/Modals/BulkImportModal';
 import { toast } from 'sonner';
@@ -150,6 +151,7 @@ export default function Admin() {
                 {activeTab === 'settings' && <SettingsTab settings={settings} onUpdateSettings={updateSettings} />}
                 {activeTab === 'promotions' && <PromotionsTab />}
                 {activeTab === 'messages' && <MessagesTab messages={messages} onToggleRead={toggleMessageRead} onDelete={deleteMessage} />}
+                {activeTab === 'reviews' && <ReviewsTab />}
                 {activeTab === 'cms' && <CmsTab collections={collections} />}
               </motion.div>
             </AnimatePresence>
