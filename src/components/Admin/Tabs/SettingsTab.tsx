@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Store, Globe, CreditCard, Mail, Truck, Save, RefreshCw } from 'lucide-react';
+import { Store, Globe, CreditCard, Mail, Truck, Save, RefreshCw, Shield } from 'lucide-react';
+import { supabase } from '../../../lib/supabase';
+import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +24,27 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
     setLoading(true);
     await onUpdateSettings(settings);
     setLoading(false);
+  };
+
+  const [newPassword, setNewPassword] = useState('');
+  const [passwordLoading, setPasswordLoading] = useState(false);
+
+  const handleUpdatePassword = async () => {
+    if (!newPassword || newPassword.length < 6) {
+      toast.error('Şifre en az 6 karakter olmalıdır.');
+      return;
+    }
+    setPasswordLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      toast.success('Yönetici şifreniz başarıyla güncellendi!');
+      setNewPassword('');
+    } catch (err: any) {
+      toast.error('Şifre güncellenemedi: ' + err.message);
+    } finally {
+      setPasswordLoading(false);
+    }
   };
 
   return (
@@ -154,6 +177,40 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
                     className="h-11 border-zinc-200 focus:border-zinc-400 rounded-xl font-medium"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Kolon 4: Güvenlik (Yönetici Şifresi) */}
+        <div className="space-y-6">
+          <div className="apple-card p-6 flex items-start gap-4 h-full">
+            <div className="w-10 h-10 rounded-full bg-rose-50 flex items-center justify-center text-rose-600 flex-shrink-0">
+              <Shield size={18} />
+            </div>
+            <div className="flex-1 space-y-4">
+              <div>
+                <h3 className="font-semibold text-lg text-zinc-900 leading-none">Güvenlik Ayarları</h3>
+                <p className="text-xs text-zinc-500 font-medium mt-1">Yönetici paneli giriş şifresi.</p>
+              </div>
+              <div className="space-y-3 pt-2">
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Yeni Şifre Belirle</Label>
+                  <Input 
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="En az 6 karakter"
+                    className="h-11 border-zinc-200 focus:border-rose-400 focus:ring-rose-400 rounded-xl font-medium"
+                  />
+                </div>
+                <Button 
+                  onClick={handleUpdatePassword} 
+                  disabled={passwordLoading || !newPassword}
+                  className="w-full h-11 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest mt-2 transition-all"
+                >
+                  {passwordLoading ? <RefreshCw size={14} className="animate-spin" /> : 'Şifreyi Güncelle'}
+                </Button>
               </div>
             </div>
           </div>
