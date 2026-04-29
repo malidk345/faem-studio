@@ -7,6 +7,7 @@ import { supabase } from '../lib/supabase';
 import { ChevronLeft, Loader2, ShieldCheck, Truck, CreditCard, Info } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
 import { useLanguage } from '../context/LanguageContext';
+import { TamiPayment, PaymentOrder, PaymentCard } from '../utils/tami';
 
 type Step = 'details' | 'shipping' | 'confirm';
 
@@ -36,6 +37,18 @@ export default function Checkout() {
   const [city, setCity] = useState('');
   const [postal, setPostal] = useState('');
   const [country, setCountry] = useState('TR');
+
+  // Credit Card state for Tami Integration
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardHolderName, setCardHolderName] = useState('');
+  const [expireMonth, setExpireMonth] = useState('');
+  const [expireYear, setExpireYear] = useState('');
+  const [cvv, setCvv] = useState('');
+
+  // Tami Integration Config from .env
+  const TAMI_CLIENT_ID = import.meta.env.VITE_TAMI_CLIENT_ID || '';
+  const TAMI_STORE_KEY = import.meta.env.VITE_TAMI_STORE_KEY || '';
+  const TAMI_API_URL = import.meta.env.VITE_TAMI_API_URL || 'https://sanalpos.tami.com.tr/fim/est3Dgate';
 
   useSEO({
     title: `${t('checkout.title')} | Faem Studio`,
@@ -111,6 +124,10 @@ export default function Checkout() {
   };
 
   const handleCompleteOrder = async () => {
+    if (!cardNumber || !expireMonth || !expireYear || !cvv || !cardHolderName) {
+      setError("Lütfen kredi kartı bilgilerinizi eksiksiz girin.");
+      return;
+    }
     setError(null);
     setIsLoading(true);
 
@@ -159,15 +176,42 @@ export default function Checkout() {
         }
       }
 
-      // Simulate a small delay for premium feel
-      await new Promise(r => setTimeout(r, 1500));
-      
+      // Tami Integration: Prepare Order & Card details
+      const paymentOrder: PaymentOrder = {
+        orderId: newOrder.id,
+        amount: prices.total, // Numeric amount
+        currency: "949", // TRY
+      };
+
+      const paymentCard: PaymentCard = {
+        cardHolderName: cardHolderName,
+        cardNumber: cardNumber,
+        expireMonth: expireMonth,
+        expireYear: expireYear.length === 2 ? `20${expireYear}` : expireYear,
+        cvv: cvv,
+      };
+
+      if (!TAMI_CLIENT_ID || !TAMI_STORE_KEY) {
+        throw new Error("Tami API bilgileri yapılandırılmamış. Lütfen .env dosyanızı kontrol edin.");
+      }
+
+      const tami = new TamiPayment({
+        clientId: TAMI_CLIENT_ID,
+        storeKey: TAMI_STORE_KEY,
+        apiUrl: TAMI_API_URL,
+        okUrl: window.location.origin + `/order/success/${newOrder.id}`,
+        failUrl: window.location.origin + '/order/error',
+      });
+
+      // Clear cart locally before redirecting to 3D Secure
       clearCart();
-      navigate(`/order/success/${newOrder.id}`);
+
+      // Submit the form which navigates away from the page
+      await tami.initiatePayment(paymentOrder, paymentCard);
+
     } catch (err: any) {
       console.error(err);
-      navigate('/order/error', { state: { message: err.message || "Sipariş oluşturulurken bir hata oluştu." } });
-    } finally {
+      setError(err.message || "Sipariş oluşturulurken veya ödeme başlatılırken hata oluştu.");
       setIsLoading(false);
     }
   };
@@ -321,6 +365,17 @@ export default function Checkout() {
                        <p className="text-[11px] font-bold leading-relaxed tracking-tight">
                          Ödemeniz Tami 256-bit SSL ve 3D Secure korumalı altyapısı ile gerçekleşecektir. Kart bilgileriniz asla sisteme kaydedilmez.
                        </p>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-6 border-t border-zinc-200 space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-2">Kart Bilgileri</h4>
+                    <input type="text" placeholder="Kart Üzerindeki İsim" value={cardHolderName} onChange={e => setCardHolderName(e.target.value.toUpperCase())} required className="w-full h-14 px-6 bg-white border border-zinc-200 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm uppercase" />
+                    <input type="text" placeholder="Kart Numarası" value={cardNumber} onChange={e => setCardNumber(e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim())} required maxLength={19} className="w-full h-14 px-6 bg-white border border-zinc-200 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm tracking-widest" />
+                    <div className="grid grid-cols-3 gap-4">
+                      <input type="text" placeholder="Ay (AA)" value={expireMonth} onChange={e => setExpireMonth(e.target.value.replace(/\D/g, '').substring(0, 2))} required className="w-full h-14 px-6 bg-white border border-zinc-200 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm text-center" />
+                      <input type="text" placeholder="Yıl (YY)" value={expireYear} onChange={e => setExpireYear(e.target.value.replace(/\D/g, '').substring(0, 2))} required className="w-full h-14 px-6 bg-white border border-zinc-200 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm text-center" />
+                      <input type="text" placeholder="CVV" value={cvv} onChange={e => setCvv(e.target.value.replace(/\D/g, '').substring(0, 4))} required className="w-full h-14 px-6 bg-white border border-zinc-200 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm text-center" />
                     </div>
                   </div>
                 </div>
