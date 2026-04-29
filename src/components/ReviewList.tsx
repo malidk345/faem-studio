@@ -388,7 +388,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
                 </div>
               )}
 
-              <div className="flex gap-6 pt-6 mt-6 border-t border-zinc-50 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+              <div className="flex gap-6 pt-6 mt-6 border-t border-zinc-50 opacity-100 translate-y-0 md:opacity-0 md:group-hover:opacity-100 transition-all md:translate-y-2 md:group-hover:translate-y-0">
                 <button className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-black text-zinc-300 hover:text-zinc-900 transition-colors">
                   <Heart size={12} strokeWidth={2.5} /> Faydalı
                 </button>
