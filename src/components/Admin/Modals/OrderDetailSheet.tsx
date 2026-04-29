@@ -9,12 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Clock, Package, Truck, CheckCircle2, XCircle, MapPin, Mail,
   User, ShoppingBag, Hash, Calendar, CreditCard, Send, 
-  ChevronRight, Copy, Check, Save
+  ChevronRight, Copy, Check, Save, FileText
 } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import type { AdminOrder } from "@/hooks/useAdminData";
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { generateInvoiceHTML } from '@/utils/invoiceGenerator';
 
 interface OrderDetailSheetProps {
   order: AdminOrder | null;
@@ -256,6 +257,19 @@ export function OrderDetailSheet({ order, open, onOpenChange, onUpdateStatus }: 
                 onClick={copyOrderId}
               >
                 <Hash className="h-3.5 w-3.5" /> {copiedId ? 'Kopyalandı!' : 'ID Kopyala'}
+              </Button>
+              <Button 
+                variant="outline" 
+                className="rounded-xl py-5 text-xs font-bold flex items-center gap-2 border-zinc-900 text-zinc-900 hover:bg-zinc-900 hover:text-white transition-all col-span-2 sm:col-span-1"
+                onClick={() => {
+                  const invoiceWindow = window.open('', '_blank');
+                  if (invoiceWindow) {
+                    invoiceWindow.document.write(generateInvoiceHTML(order));
+                    invoiceWindow.document.close();
+                  }
+                }}
+              >
+                <FileText className="h-3.5 w-3.5" /> Fatura Oluştur
               </Button>
               {order.status === 'pending' && (
                 <Button 

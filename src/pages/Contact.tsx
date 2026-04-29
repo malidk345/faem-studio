@@ -115,8 +115,8 @@ const Contact = () => {
                 <div>
                   <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-300 font-['Handjet',sans-serif] mb-1.5">Adres</h3>
                   <p className="text-[16px] font-medium text-neutral-800 leading-relaxed">
-                    Maslak Mah. Ahi Evran Cad.<br />
-                    No: 42 D: 12, Sarıyer<br />
+                    Barbaros Mahallesi 177 Sokak<br />
+                    No: 4 Daire: 1, Bağcılar<br />
                     İstanbul, Türkiye
                   </p>
                 </div>

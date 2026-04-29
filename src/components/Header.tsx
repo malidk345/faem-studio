@@ -48,8 +48,8 @@ export default function Header({ isAbsolute = false }: { isAbsolute?: boolean })
           <div className="flex items-center justify-between h-[52px] sm:h-[56px] px-1 sm:px-2 shrink-0 w-full">
             {/* Logo */}
             <Link to="/" onClick={() => setActivePanel(null)} className="pl-3 flex items-center hover:opacity-60 transition-opacity">
-              <span className="text-[19px] sm:text-[21px] font-bold tracking-tighter lowercase leading-none">
-                <span className="text-[#ddff34]">f</span>a<span className="text-[#ddff34]">e</span>m
+              <span className="text-[19px] sm:text-[21px] font-bold tracking-tighter lowercase leading-none text-white">
+                faem
               </span>
             </Link>
 

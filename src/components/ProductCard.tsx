@@ -19,8 +19,8 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const [emblaRef, emblaApi] = useEmblaCarousel({ 
-    loop: false, 
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
     dragFree: true,
     containScroll: 'trimSnaps'
   });
@@ -43,7 +43,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   ].filter(Boolean);
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
@@ -73,16 +73,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Technical Label Overlays */}
         <div className="absolute top-3 left-3 flex flex-col gap-1 pointer-events-none z-10">
           {product.discount_price && (
-             <motion.span 
-               initial={{ x: -10, opacity: 0 }}
-               animate={{ x: 0, opacity: 1 }}
-               className="text-[10px] font-normal uppercase tracking-[0.05em] px-1.5 py-0.5 bg-[#ddff34] text-black rounded-[1px] font-['Handjet',sans-serif] shadow-sm"
-             >
-               Sale
-             </motion.span>
+            <motion.span
+              initial={{ x: -10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              className="text-[10px] font-normal uppercase tracking-[0.05em] px-1.5 py-0.5 bg-[#ddff34] text-black rounded-[1px] font-['Handjet',sans-serif] shadow-sm"
+            >
+              Sale
+            </motion.span>
           )}
           <span className="text-[9px] font-normal uppercase tracking-[0.15em] px-2 py-0.5 glass-nav border-0 text-white/60 rounded-[1px] font-['Handjet',sans-serif] backdrop-blur-md">
-             {product.collection || (product.category !== 'Genel' ? product.category : '')}
+            {product.collection || (product.category !== 'Genel' ? product.category : '')}
           </span>
         </div>
 
@@ -90,7 +90,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {galleryImages.length > 1 && (
           <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             {galleryImages.map((_, i) => (
-              <div 
+              <div
                 key={i}
                 className={`w-1 h-1 rounded-full transition-all duration-500 ${i === selectedIndex ? 'bg-white w-4' : 'bg-white/30'}`}
               />
