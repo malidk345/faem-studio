@@ -44,21 +44,39 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
   React.useEffect(() => {
     if (productId && reviews.length === 0) {
       const fetchReviews = async () => {
-        const { data } = await supabase
-          .from('reviews')
-          .select('*, profiles(name)')
-          .eq('product_id', productId)
-          .order('created_at', { ascending: false });
+        try {
+          const { data: reviewsData, error } = await supabase
+            .from('reviews')
+            .select('*')
+            .eq('product_id', productId)
+            .order('created_at', { ascending: false });
 
-        if (data) {
-          setLocalReviews(data.map((r: any) => ({
-            id: r.id,
-            user: r.profiles?.name || 'Müşteri',
-            rating: r.rating,
-            comment: r.comment,
-            date: new Date(r.created_at).toLocaleDateString('tr-TR'),
-            isVerified: r.is_verified_buyer
-          })));
+          if (error) {
+            console.error("Supabase fetch error:", error);
+            return;
+          }
+
+          if (reviewsData && reviewsData.length > 0) {
+            // Fetch profiles separately to avoid cross-schema join issues
+            const userIds = [...new Set(reviewsData.map(r => r.user_id))];
+            const { data: profilesData } = await supabase
+              .from('profiles')
+              .select('id, name')
+              .in('id', userIds);
+              
+            const profileMap = new Map(profilesData?.map(p => [p.id, p.name]) || []);
+
+            setLocalReviews(reviewsData.map((r: any) => ({
+              id: r.id,
+              user: profileMap.get(r.user_id) || 'Müşteri',
+              rating: r.rating,
+              comment: r.comment,
+              date: new Date(r.created_at).toLocaleDateString('tr-TR'),
+              isVerified: r.is_verified_buyer
+            })));
+          }
+        } catch (e) {
+          console.error("Review fetch exception:", e);
         }
       };
       fetchReviews();
@@ -103,14 +121,17 @@ const ReviewList: React.FC<ReviewListProps> = ({ productId, reviews }) => {
         user_id: user.id,
         rating,
         comment
-      }]).select('*, profiles(name)').single();
+      }]).select().single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase insert error:", error);
+        throw error;
+      }
 
       if (data) {
         const newReview: Review = {
           id: data.id,
-          user: data.profiles?.name || user.name || 'Müşteri',
+          user: user.name || 'Müşteri',
           rating: data.rating,
           comment: data.comment,
           date: 'Şimdi',

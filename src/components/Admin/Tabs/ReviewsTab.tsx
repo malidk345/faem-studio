@@ -12,17 +12,54 @@ export function ReviewsTab() {
 
   const fetchReviews = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('reviews')
-      .select('*, profiles(name), products(name)')
-      .order('created_at', { ascending: false });
+    
+    try {
+      const { data: reviewsData, error } = await supabase
+        .from('reviews')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      toast.error('Yorumlar yüklenemedi.');
-    } else {
-      setReviews(data || []);
+      if (error) {
+        toast.error('Yorumlar yüklenemedi.');
+        console.error(error);
+        setLoading(false);
+        return;
+      }
+
+      if (reviewsData && reviewsData.length > 0) {
+        // Fetch profiles separately
+        const userIds = [...new Set(reviewsData.map(r => r.user_id))];
+        const { data: profilesData } = await supabase
+          .from('profiles')
+          .select('id, name')
+          .in('id', userIds);
+        const profileMap = new Map(profilesData?.map(p => [p.id, p.name]) || []);
+
+        // Fetch products separately
+        const productIds = [...new Set(reviewsData.map(r => r.product_id))];
+        const { data: productsData } = await supabase
+          .from('products')
+          .select('id, name')
+          .in('id', productIds);
+        const productMap = new Map(productsData?.map(p => [p.id, p.name]) || []);
+
+        // Combine data
+        const enrichedReviews = reviewsData.map((r: any) => ({
+          ...r,
+          profiles: { name: profileMap.get(r.user_id) || 'Müşteri' },
+          products: { name: productMap.get(r.product_id) || 'Bilinmeyen Ürün' }
+        }));
+        
+        setReviews(enrichedReviews);
+      } else {
+        setReviews([]);
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error('Sistem hatası.');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
