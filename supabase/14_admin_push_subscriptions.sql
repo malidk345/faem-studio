@@ -6,9 +6,9 @@
 CREATE TABLE IF NOT EXISTS public.admin_subscriptions (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  endpoint text UNIQUE NOT NULL, -- Endpoint'i benzersiz yaparak mükerrerliği önlüyoruz
   subscription jsonb NOT NULL,
-  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
-  UNIQUE(user_id, subscription)
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- RLS
@@ -22,3 +22,4 @@ USING (auth.uid() = user_id AND (EXISTS (SELECT 1 FROM public.profiles WHERE id 
 
 -- Index for performance
 CREATE INDEX IF NOT EXISTS idx_admin_subscriptions_user ON public.admin_subscriptions(user_id);
+

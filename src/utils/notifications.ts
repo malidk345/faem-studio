@@ -38,12 +38,14 @@ export async function subscribeToPushNotifications(userId: string) {
     });
 
     // Save to Supabase
+    const subJSON = subscription.toJSON();
     const { error } = await supabase
       .from('admin_subscriptions')
       .upsert({
         user_id: userId,
-        subscription: subscription.toJSON()
-      }, { onConflict: 'user_id, subscription' });
+        endpoint: subJSON.endpoint,
+        subscription: subJSON
+      }, { onConflict: 'endpoint' });
 
     if (error) throw error;
 
