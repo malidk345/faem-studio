@@ -179,11 +179,11 @@ export default function Home() {
                 <div className="flex justify-center mt-12">
                   <Link 
                     to={slide.link} 
-                    className="group relative overflow-hidden bg-white/95 backdrop-blur-xl text-black px-12 py-5 rounded-[2px] transition-all hover:bg-white hover:scale-105 active:scale-95 shadow-2xl"
+                    className="group relative overflow-hidden bg-transparent border border-white/40 text-white px-10 py-3.5 rounded-full transition-all hover:bg-white hover:text-black hover:border-white active:scale-95 shadow-xl"
                   >
-                    <span className="relative z-10 flex items-center gap-6">
-                      <span className="text-[20px] font-normal uppercase tracking-[0.05em] font-['Handjet',sans-serif]">{slide.buttonText || 'ARŞİVİ KEŞFET'}</span>
-                      <ArrowUpRight size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform opacity-40 group-hover:opacity-100" />
+                    <span className="relative z-10 flex items-center gap-3">
+                      <span className="text-[12px] font-bold uppercase tracking-[0.2em]">{slide.buttonText || 'Keşfet'}</span>
+                      <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
                     </span>
                   </Link>
                 </div>
@@ -191,15 +191,28 @@ export default function Home() {
             )}
           </AnimatePresence>
 
-          <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-8 hidden md:flex">
+          {/* ─── INDICATORS (Mobile: Horizontal Bottom, Desktop: Vertical Right) ─── */}
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20 md:hidden">
+            {currentSlides.length > 1 && currentSlides.map((_, i) => (
+              <button 
+                key={i} 
+                onClick={() => setActiveSlide(i)}
+                className={`transition-all duration-500 ease-in-out rounded-full ${
+                  i === activeSlide ? 'w-10 h-1 bg-white' : 'w-2 h-2 bg-white/20'
+                }`}
+              />
+            ))}
+          </div>
+
+          <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-6 hidden md:flex z-20">
             {currentSlides.length > 1 && currentSlides.map((_, i) => (
               <button 
                 key={i} 
                 onClick={() => setActiveSlide(i)} 
                 className="group flex flex-col items-center gap-2"
               >
-                <span className={`text-[12px] font-normal font-['Handjet',sans-serif] transition-all ${i === activeSlide ? 'text-white' : 'text-white/20 group-hover:text-white/40'}`}>0{i + 1}</span>
-                <div className={`h-[40px] w-[1px] transition-all duration-700 ${i === activeSlide ? 'bg-white h-[60px]' : 'bg-white/10 group-hover:bg-white/30'}`} />
+                <span className={`text-[10px] font-bold transition-all ${i === activeSlide ? 'text-white' : 'text-white/20 group-hover:text-white/40'}`}>0{i + 1}</span>
+                <div className={`w-[1px] transition-all duration-700 ${i === activeSlide ? 'bg-white h-[60px]' : 'bg-white/10 group-hover:bg-white/30 h-[30px]'}`} />
               </button>
             ))}
           </div>
