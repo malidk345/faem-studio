@@ -70,6 +70,8 @@ serve(async (req) => {
       const bodyString = JSON.stringify(requestBody);
       const hash = await generateTamiHash(bodyString);
 
+      console.log('Initiating Tami Payment for Order:', orderId);
+
       const response = await fetch(TAMI_CONFIG.apiUrl, {
         method: 'POST',
         headers: {
@@ -82,6 +84,17 @@ serve(async (req) => {
       });
 
       const result = await response.json();
+      console.log('Tami Auth Response:', result);
+
+      if (!response.ok || result.success === false) {
+        return new Response(JSON.stringify({ 
+          error: result.message || 'Tami ödeme başlatma hatası',
+          details: result 
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        });
+      }
 
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -103,6 +116,8 @@ serve(async (req) => {
       const bodyString = JSON.stringify(requestBody);
       const hash = await generateTamiHash(bodyString);
 
+      console.log('Completing Tami Payment for TamiID:', tamiId);
+
       const response = await fetch(TAMI_CONFIG.completeUrl, {
         method: 'POST',
         headers: {
@@ -115,6 +130,17 @@ serve(async (req) => {
       });
 
       const result = await response.json();
+      console.log('Tami Complete Response:', result);
+
+      if (!response.ok || result.success === false) {
+        return new Response(JSON.stringify({ 
+          error: result.message || 'Ödeme tamamlama hatası',
+          details: result 
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400,
+        });
+      }
 
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
