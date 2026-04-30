@@ -109,7 +109,12 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         expiryMonth,
         expiryYear: `20${expiryYear}`,
         cvv: formData.cvv,
-        callbackUrl: `https://idqnxgtleerpanujcdfn.supabase.co/functions/v1/tami-callback`
+        callbackUrl: `https://idqnxgtleerpanujcdfn.supabase.co/functions/v1/tami-callback`,
+        // Pass mandatory buyer details for V3
+        firstName: shippingAddress.firstName,
+        lastName: shippingAddress.lastName,
+        email: shippingAddress.email,
+        phone: shippingAddress.phone
       });
 
       console.log('Full Payment Response:', response);

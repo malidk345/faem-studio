@@ -39,11 +39,15 @@ serve(async (req) => {
   }
 
   try {
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
     const { action, ...data } = await req.json()
 
     // ACTION: Initiate 3D Payment
     if (action === 'init-3d') {
-      const { orderId, amount, cardHolderName, cardNumber, expiryMonth, expiryYear, cvv, callbackUrl } = data;
+      const { 
+        orderId, amount, cardHolderName, cardNumber, expiryMonth, expiryYear, cvv, callbackUrl,
+        firstName, lastName, email, phone 
+      } = data;
 
       const requestBody = {
         merchantNumber: TAMI_CONFIG.merchantNumber,
@@ -53,7 +57,15 @@ serve(async (req) => {
         currency: 'TRY',
         installmentCount: 1,
         paymentType: 'SALE',
-        paymentGroup: 'PRODUCT', // Mandatory in V3
+        paymentGroup: 'PRODUCT',
+        buyer: {
+          buyerId: orderId, // Use order ID as buyer ID for simplicity
+          name: firstName || cardHolderName.split(' ')[0] || 'Customer',
+          surName: lastName || cardHolderName.split(' ').slice(1).join(' ') || 'Customer',
+          emailAddress: email || 'test@example.com',
+          phoneNumber: phone || '5555555555',
+          ipAddress: clientIp
+        },
         card: {
           holderName: cardHolderName,
           number: cardNumber,
@@ -66,7 +78,7 @@ serve(async (req) => {
 
       const hash = await generateTamiHash();
 
-      console.log('Initiating Tami V3 Payment for Order:', orderId);
+      console.log('Initiating Tami V3 Payment for Order:', orderId, 'with Buyer IP:', clientIp);
 
       const response = await fetch(TAMI_CONFIG.apiUrl, {
         method: 'POST',

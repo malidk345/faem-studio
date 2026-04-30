@@ -9,6 +9,10 @@ export interface TamiPaymentParams {
   expiryYear: string;
   cvv: string;
   callbackUrl: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
 }
 
 export class PaymentService {
