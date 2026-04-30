@@ -16,10 +16,19 @@ interface PaymentFormProps {
   numericAmount: string;
   orderId: string;
   cartItems: CartItem[];
+  shippingAddress: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    postalCode: string;
+  };
   onSuccess: (htmlContent: string) => void;
 }
 
-export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount, orderId, cartItems, onSuccess }) => {
+export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount, orderId, cartItems, shippingAddress, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     cardHolderName: '',
@@ -50,24 +59,39 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
     setLoading(true);
 
     try {
+      console.log('Creating order in DB...');
+      
       // 1. Create Order in Database first (Pending Payment)
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .insert({
-          total_amount: parseFloat(numericAmount),
+          total: numericAmount, // Matching DB's TEXT type
           payment_status: 'pending',
           payment_provider: 'tami',
-          status: 'pending', // Order status
-          items: cartItems // Assuming items can be stored as JSON
+          status: 'pending', 
+          items: cartItems,
+          shipping_address: {
+            first_name: shippingAddress.firstName,
+            last_name: shippingAddress.lastName,
+            address: shippingAddress.address,
+            city: shippingAddress.city,
+            postal: shippingAddress.postalCode,
+            email: shippingAddress.email
+          }
         })
         .select()
         .single();
 
-      if (orderError) throw new Error('Sipariş oluşturulamadı: ' + orderError.message);
+      if (orderError) {
+        console.error('DB Insert Error:', orderError);
+        throw new Error(`Sipariş oluşturulamadı: ${orderError.message}`);
+      }
+
+      console.log('Order created:', orderData.id);
 
       const [expiryMonth, expiryYear] = formData.expiryDate.split('/');
       
-      // 2. Initiate Tami Payment with the Real Order ID
+      // 2. Initiate Tami Payment
       const response = await PaymentService.initiate3DPayment({
         orderId: orderData.id,
         amount: numericAmount,
@@ -76,7 +100,6 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         expiryMonth,
         expiryYear: `20${expiryYear}`,
         cvv: formData.cvv,
-        // The callback now goes to our Supabase Edge Function
         callbackUrl: `https://idqnxgtleerpanujcdfn.supabase.co/functions/v1/tami-callback`
       });
 
