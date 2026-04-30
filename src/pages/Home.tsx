@@ -220,8 +220,8 @@ export default function Home() {
 
 
       {/* ─── LATEST PRODUCTS SECTION ─── */}
-      <section className="pt-40 pb-32 px-4 lg:px-8 max-w-[1500px] mx-auto">
-        <div className="flex justify-center mb-24">
+      <section className="pt-20 pb-32 px-4 lg:px-8 max-w-[1500px] mx-auto">
+        <div className="flex justify-center mb-12">
           <div className="relative">
             <span className="relative z-10 text-[32px] md:text-[42px] font-bold uppercase tracking-[0.05em] text-black font-['Handjet',sans-serif] leading-none">
               LATEST PRODUCTS
