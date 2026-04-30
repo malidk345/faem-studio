@@ -480,15 +480,15 @@ export default function ProductDetail() {
                 <div className="flex items-center gap-3">
                   {product.discount_price ? (
                     <>
-                      <p className="text-lg font-medium tracking-tight line-through text-zinc-400">
+                      <p className="text-xl font-medium tracking-tight line-through text-zinc-400">
                         {product.price}
                       </p>
-                      <p className="text-2xl font-semibold tracking-tight text-rose-600">
+                      <p className="text-3xl font-semibold tracking-tight text-rose-600">
                         {product.discount_price}
                       </p>
                     </>
                   ) : (
-                    <p className="text-2xl font-semibold tracking-tight text-zinc-900">
+                    <p className="text-3xl font-semibold tracking-tight text-zinc-900">
                       {product.price}
                     </p>
                   )}
@@ -600,10 +600,10 @@ export default function ProductDetail() {
                   <div className="flex items-center gap-2 mt-1">
                     {p.discount_price ? (
                       <>
-                        <p className="text-xs font-medium text-zinc-400 line-through">
+                        <p className="text-sm font-medium text-zinc-400 line-through">
                           {p.price}
                         </p>
-                        <p className="text-sm font-medium text-rose-600">
+                        <p className="text-base font-medium text-rose-600">
                           {p.discount_price}
                         </p>
                       </>

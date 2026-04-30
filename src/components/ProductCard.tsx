@@ -110,11 +110,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="flex items-center gap-2 font-['Handjet',sans-serif]">
           {product.discount_price ? (
             <>
-              <span className="text-[12px] opacity-20 line-through text-black font-normal">{product.price}</span>
-              <span className="text-[15px] text-black font-normal tracking-wide">{product.discount_price}</span>
+              <span className="text-[14px] opacity-20 line-through text-black font-normal">{product.price}</span>
+              <span className="text-[18px] text-black font-normal tracking-wide">{product.discount_price}</span>
             </>
           ) : (
-            <span className="text-[15px] text-black font-normal tracking-wide">
+            <span className="text-[18px] text-black font-normal tracking-wide">
               {product.price}
             </span>
           )}
