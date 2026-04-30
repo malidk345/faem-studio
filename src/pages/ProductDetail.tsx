@@ -14,6 +14,7 @@ import { useSEO } from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from 'sonner';
+import ProductCard from '../components/ProductCard';
 
 interface ProductImage {
   id: string;
@@ -575,46 +576,9 @@ export default function ProductDetail() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">
             {t('product.also_like')}
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-2 gap-y-8">
             {relatedProducts.map(p => (
-              <button
-                key={p.id}
-                onClick={() => navigate(`/product/${p.id}`)}
-                className="group flex flex-col gap-3 text-left apple-card p-2 border-transparent hover:border-zinc-200 transition-all"
-              >
-                <div
-                  className="w-full overflow-hidden rounded-xl bg-zinc-50"
-                  style={{ aspectRatio: '3/4' }}
-                >
-                  <img
-                    src={p.image}
-                    alt={p.name}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                </div>
-                <div className="px-2 pb-2">
-                  <h4 className="text-sm font-medium tracking-tight text-zinc-900 line-clamp-1">
-                    {p.name}
-                  </h4>
-                  <div className="flex items-center gap-2 mt-1">
-                    {p.discount_price ? (
-                      <>
-                        <p className="text-sm font-medium text-zinc-400 line-through">
-                          {p.price}
-                        </p>
-                        <p className="text-base font-medium text-rose-600">
-                          {p.discount_price}
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-sm font-medium text-zinc-900">
-                        {p.price}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </button>
+              <ProductCard key={p.id} product={p as any} />
             ))}
           </div>
         </div>

@@ -109,7 +109,7 @@ export default function Shop() {
 
   return (
     <div className="min-h-screen pt-24 pb-32">
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+      <div className="max-w-[1500px] mx-auto px-4 lg:px-8">
         {/* Editorial Heading Section */}
         <div className="flex flex-col items-center justify-center text-center gap-6 mb-16 md:mb-24">
           <span className="text-[10px] font-normal tracking-[0.4em] text-black/20 font-['Handjet',sans-serif]">Faem Studio Collection</span>
@@ -140,7 +140,7 @@ export default function Shop() {
           <AnimatePresence mode="popLayout">
             <motion.div
               layout
-              className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-x-10 md:gap-y-20"
+              className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-8"
             >
               {products.map((product, i) => (
                 <motion.div

@@ -73,7 +73,7 @@ export default function Wishlist() {
   }
 
   return (
-    <div className="min-h-screen bg-white pt-32 pb-24 px-6 md:px-12 max-w-[1600px] mx-auto">
+    <div className="min-h-screen bg-white pt-32 pb-24 px-4 md:px-8 max-w-[1500px] mx-auto">
       {/* Header */}
       <div className="flex flex-col gap-2 mb-16 border-b border-black/5 pb-8">
          <Link to="/shop" className="inline-flex items-center gap-2 text-black/40 hover:text-black transition-colors mb-4 text-[10px] font-black uppercase tracking-widest leading-none">
@@ -105,7 +105,7 @@ export default function Wishlist() {
         ) : (
           <motion.div 
             layout
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-16"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-8"
           >
             {items.map((product, i) => (
               <motion.div
