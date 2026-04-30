@@ -22,7 +22,28 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const { title, body, url } = await req.json()
+    const payload = await req.json()
+    let title = payload.title || 'Bildirim'
+    let body = payload.body || 'Yeni bir işlem gerçekleşti.'
+    let url = payload.url || '/admin'
+
+    // Handle Supabase Webhook payload
+    if (payload.record) {
+      const { table, record } = payload
+      
+      if (table === 'contact_messages') {
+        title = `📬 Yeni Mesaj: ${record.name || 'Biri yazdı'}`
+        body = record.message ? (record.message.length > 60 ? record.message.substring(0, 57) + '...' : record.message) : 'Mesaj içeriği boş.'
+        url = '/admin?tab=messages'
+      } 
+      else if (table === 'orders') {
+        const amount = record.total || '---'
+        const customer = record.user_email || 'Misafir'
+        title = `🛍️ Yeni Sipariş Geldi!`
+        body = `Tutar: ${amount} TL | Müşteri: ${customer}`
+        url = '/admin?tab=orders'
+      }
+    }
 
     // 1. Fetch all admin subscriptions
     const { data: subscriptions, error } = await supabaseClient

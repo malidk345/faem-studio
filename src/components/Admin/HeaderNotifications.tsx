@@ -90,14 +90,14 @@ export function HeaderNotifications({ orders }: HeaderNotificationsProps) {
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative w-10 h-10 rounded-md hover:bg-white/10 transition-all active:scale-95 group">
-            <Bell size={19} strokeWidth={2} className="text-white group-hover:scale-110 transition-transform" />
+          <Button variant="ghost" size="icon" className="relative w-10 h-10 rounded-md hover:bg-black/5 transition-all active:scale-95 group">
+            <Bell size={19} strokeWidth={2} className="text-black group-hover:scale-110 transition-transform" />
             <AnimatePresence>
               {unreadCount > 0 && (
                 <motion.span 
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="absolute top-2 right-2 w-4 h-4 bg-white text-black text-[9px] font-black flex items-center justify-center rounded-full border-2 border-black"
+                  className="absolute top-2 right-2 w-4 h-4 bg-black text-white text-[9px] font-black flex items-center justify-center rounded-full border-2 border-white"
                 >
                   {unreadCount}
                 </motion.span>
@@ -105,7 +105,10 @@ export function HeaderNotifications({ orders }: HeaderNotificationsProps) {
             </AnimatePresence>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-85 rounded-2xl border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-2 liquid-header-dark backdrop-blur-3xl">
+        <DropdownMenuContent 
+          align="end" 
+          className="w-[calc(100vw-32px)] sm:w-85 mx-4 sm:mx-0 rounded-2xl border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-2 liquid-header-dark backdrop-blur-3xl"
+        >
           <DropdownMenuLabel className="flex items-center justify-between px-4 py-4">
             <div className="flex flex-col">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-0.5">Yönetim Paneli</span>
