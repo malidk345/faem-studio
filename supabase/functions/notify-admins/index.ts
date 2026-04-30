@@ -31,6 +31,13 @@ serve(async (req) => {
 
     if (error) throw error
 
+    if (!subscriptions || subscriptions.length === 0) {
+      return new Response(JSON.stringify({ message: 'Hiç aktif yönetici aboneliği bulunamadı.' }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    }
+
     // 2. Setup Web Push
     webpush.setVapidDetails(
       'mailto:admin@faem.studio',
@@ -39,6 +46,7 @@ serve(async (req) => {
     )
 
     // 3. Send notifications
+    console.log(`${subscriptions.length} cihaza bildirim gönderiliyor...`)
     const results = await Promise.allSettled(
       subscriptions.map((s: any) => 
         webpush.sendNotification(
@@ -48,7 +56,11 @@ serve(async (req) => {
       )
     )
 
-    return new Response(JSON.stringify({ results }), {
+    return new Response(JSON.stringify({ 
+      success: true, 
+      deviceCount: subscriptions.length,
+      results 
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })

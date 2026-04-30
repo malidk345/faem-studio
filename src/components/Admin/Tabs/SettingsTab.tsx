@@ -255,24 +255,19 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
                     variant="outline"
                     onClick={async () => {
                       try {
-                        const { data: { session } } = await supabase.auth.getSession();
-                        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notify-admins`, {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${session?.access_token}`
-                          },
-                          body: JSON.stringify({
+                        const { data, error } = await supabase.functions.invoke('notify-admins', {
+                          body: {
                             title: 'Test Bildirimi 🔔',
                             body: 'Faem Studio bildirim sistemi başarıyla çalışıyor!',
                             url: '/fatihveemirinadminportali'
-                          })
+                          }
                         });
-                        if (!response.ok) throw new Error('Fonksiyon çağrılamadı.');
+
+                        if (error) throw error;
                         toast.success('Test bildirimi gönderildi!');
                       } catch (err: any) {
                         toast.error('Test hatası: ' + err.message);
-                        console.error(err);
+                        console.error('Edge Function Error:', err);
                       }
                     }}
                     className="w-full h-11 border-zinc-200 text-zinc-600 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
