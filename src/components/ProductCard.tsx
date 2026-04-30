@@ -88,7 +88,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
         {/* ── Slider Dot Indicators ── */}
         {galleryImages.length > 1 && (
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 pointer-events-none z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 pointer-events-none z-10 transition-opacity duration-500">
             {galleryImages.map((_, i) => (
               <div
                 key={i}
