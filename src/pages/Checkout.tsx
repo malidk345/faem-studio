@@ -94,16 +94,30 @@ export default function Checkout() {
       .from('promotions')
       .select('*')
       .eq('code', discountCode.trim().toUpperCase())
-      .eq('is_active', true)
+      .eq('active', true)
       .single();
 
     setValidatingDiscount(false);
 
     if (error || !data) {
-      setDiscountError("Geçersiz veya süresi dolmuş kod.");
+      setDiscountError("Geçersiz veya bulunamayan kod.");
       setAppliedDiscount(null);
     } else {
-      setAppliedDiscount({ code: data.code, percent: data.discount_percent });
+      // Süre kontrolü
+      if (data.expires_at && new Date(data.expires_at) < new Date()) {
+        setDiscountError("Bu kodun süresi dolmuş.");
+        setAppliedDiscount(null);
+        return;
+      }
+      
+      // Min tutar kontrolü
+      if (data.min_amount && cartTotal < data.min_amount) {
+        setDiscountError(`Bu kod en az ₺${data.min_amount} değerindeki sepetlerde geçerlidir.`);
+        setAppliedDiscount(null);
+        return;
+      }
+
+      setAppliedDiscount({ code: data.code, percent: data.percent });
       setDiscountCode('');
     }
   };
@@ -164,6 +178,16 @@ export default function Checkout() {
         .single();
       
       if (dbError) throw dbError;
+
+      // Increment promo usage if a discount was applied
+      if (appliedDiscount) {
+        const { error: promoError } = await supabase.rpc('increment_promo_usage', {
+          p_code: appliedDiscount.code
+        });
+        if (promoError) {
+          console.warn('Promo usage increment failed for', appliedDiscount.code, promoError.message);
+        }
+      }
 
       // Decrement stock for each ordered item
       for (const item of cartItems) {
