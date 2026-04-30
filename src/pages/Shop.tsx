@@ -171,77 +171,74 @@ export default function Shop() {
           </div>
         </div>
 
-        {/* Filter Drawer Overlay */}
         <AnimatePresence>
           {isFilterOpen && (
-            <>
+            <div className="fixed inset-0 flex items-center justify-center z-[100] p-4">
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsFilterOpen(false)}
-                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100]"
+                className="absolute inset-0 bg-black/60 backdrop-blur-md"
               />
               <motion.div 
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                className="fixed right-0 top-0 bottom-0 w-full max-w-[400px] bg-white z-[101] shadow-2xl overflow-y-auto p-10 flex flex-col gap-12"
+                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="relative w-full max-w-[440px] bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
               >
-                <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-bold tracking-tighter uppercase">Filtreler</h3>
-                  <button onClick={() => setIsFilterOpen(false)} className="p-2 hover:bg-zinc-50 rounded-full transition-colors">
+                {/* Header */}
+                <div className="px-8 pt-8 pb-4 flex items-center justify-between">
+                  <h3 className="text-xl font-bold tracking-tighter uppercase">Filtrele</h3>
+                  <button onClick={() => setIsFilterOpen(false)} className="p-3 hover:bg-zinc-100 rounded-full transition-colors text-zinc-400">
                     <X size={20} />
                   </button>
                 </div>
 
-                {/* Categories Filter */}
-                <div className="space-y-6">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Kategoriler</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {availableCats.map(cat => (
-                      <button
-                        key={cat}
-                        onClick={() => {
-                          setActiveCategory(cat);
-                          setIsFilterOpen(false);
-                        }}
-                        className={`px-4 py-3 text-[11px] font-bold uppercase tracking-wider rounded-xl transition-all border
-                          ${activeCategory === cat 
-                            ? 'bg-black text-white border-black' 
-                            : 'bg-zinc-50 text-zinc-500 border-zinc-100 hover:border-zinc-300'}`}
-                      >
-                        {cat === 'All' ? 'TÜMÜ' : cat}
-                      </button>
-                    ))}
+                <div className="flex-grow overflow-y-auto px-8 py-4 flex flex-col gap-10">
+                  {/* Categories Filter */}
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Kategoriler</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {availableCats.map(cat => (
+                        <button
+                          key={cat}
+                          onClick={() => setActiveCategory(cat)}
+                          className={`px-4 py-3 text-[11px] font-bold uppercase tracking-wider rounded-2xl transition-all border
+                            ${activeCategory === cat 
+                              ? 'bg-black text-white border-black shadow-lg shadow-black/10' 
+                              : 'bg-zinc-50 text-zinc-400 border-zinc-100 hover:border-zinc-300'}`}
+                        >
+                          {cat === 'All' ? 'TÜMÜ' : cat}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Collections Filter */}
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Koleksiyonlar</h4>
+                    <div className="grid grid-cols-1 gap-2">
+                      {availableColls.map(coll => (
+                        <button
+                          key={coll}
+                          onClick={() => setActiveCollection(coll)}
+                          className={`flex items-center justify-between px-6 py-4 rounded-2xl transition-all border
+                            ${activeCollection === coll 
+                              ? 'bg-zinc-50 border-zinc-900 text-zinc-900 shadow-sm' 
+                              : 'bg-white border-zinc-100 text-zinc-400 hover:border-zinc-200'}`}
+                        >
+                          <span className="text-[11px] font-bold uppercase tracking-widest">{coll === 'All' ? 'TÜM KOLEKSİYONLAR' : coll}</span>
+                          <div className={`w-1.5 h-1.5 rounded-full transition-colors ${activeCollection === coll ? 'bg-black' : 'bg-transparent'}`} />
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
-                {/* Collections Filter */}
-                <div className="space-y-6">
-                  <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Koleksiyonlar</h4>
-                  <div className="flex flex-col gap-2">
-                    {availableColls.map(coll => (
-                      <button
-                        key={coll}
-                        onClick={() => {
-                          setActiveCollection(coll);
-                          setIsFilterOpen(false);
-                        }}
-                        className={`flex items-center justify-between px-6 py-4 rounded-2xl transition-all border
-                          ${activeCollection === coll 
-                            ? 'bg-zinc-50 border-zinc-900 text-zinc-900' 
-                            : 'bg-white border-zinc-100 text-zinc-400 hover:border-zinc-300'}`}
-                      >
-                        <span className="text-xs font-bold uppercase tracking-widest">{coll === 'All' ? 'TÜM KOLEKSİYONLAR' : coll}</span>
-                        <ChevronRight size={14} className={activeCollection === coll ? 'opacity-100' : 'opacity-20'} />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-auto pt-10 border-t border-zinc-100 flex flex-col gap-4">
+                {/* Footer Actions */}
+                <div className="p-8 bg-zinc-50/50 border-t border-zinc-100 flex gap-3">
                   <Button 
                     onClick={() => {
                       setActiveCategory('All');
@@ -249,19 +246,19 @@ export default function Shop() {
                       setIsFilterOpen(false);
                     }}
                     variant="outline"
-                    className="w-full h-14 rounded-2xl border-zinc-200 text-[10px] font-black uppercase tracking-[0.2em]"
+                    className="flex-1 h-14 rounded-2xl border-zinc-200 text-[10px] font-black uppercase tracking-[0.2em] bg-white hover:bg-zinc-50"
                   >
                     Sıfırla
                   </Button>
                   <Button 
                     onClick={() => setIsFilterOpen(false)}
-                    className="w-full h-14 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.2em]"
+                    className="flex-[2] h-14 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-black/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
                   >
-                    Sonuçları Gör
+                    Uygula
                   </Button>
                 </div>
               </motion.div>
-            </>
+            </div>
           )}
         </AnimatePresence>
 
