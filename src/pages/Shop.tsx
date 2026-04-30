@@ -182,33 +182,33 @@ export default function Shop() {
                 className="absolute inset-0 bg-black/60 backdrop-blur-md"
               />
               <motion.div 
-                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="relative w-full max-w-[440px] bg-white rounded-[40px] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 400 }}
+                className="relative w-full max-w-[360px] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
               >
                 {/* Header */}
-                <div className="px-8 pt-8 pb-4 flex items-center justify-between">
-                  <h3 className="text-xl font-bold tracking-tighter uppercase">Filtrele</h3>
-                  <button onClick={() => setIsFilterOpen(false)} className="p-3 hover:bg-zinc-100 rounded-full transition-colors text-zinc-400">
-                    <X size={20} />
+                <div className="px-6 pt-6 pb-2 flex items-center justify-between">
+                  <h3 className="text-lg font-bold tracking-tighter uppercase">Filtrele</h3>
+                  <button onClick={() => setIsFilterOpen(false)} className="p-2 hover:bg-zinc-100 rounded-lg transition-colors text-zinc-400">
+                    <X size={18} />
                   </button>
                 </div>
 
-                <div className="flex-grow overflow-y-auto px-8 py-4 flex flex-col gap-10">
+                <div className="flex-grow overflow-y-auto px-6 py-4 flex flex-col gap-8">
                   {/* Categories Filter */}
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Kategoriler</h4>
+                  <div className="space-y-3">
+                    <h4 className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-300">Kategoriler</h4>
                     <div className="grid grid-cols-2 gap-2">
                       {availableCats.map(cat => (
                         <button
                           key={cat}
                           onClick={() => setActiveCategory(cat)}
-                          className={`px-4 py-3 text-[11px] font-bold uppercase tracking-wider rounded-2xl transition-all border
+                          className={`px-3 py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all border
                             ${activeCategory === cat 
-                              ? 'bg-black text-white border-black shadow-lg shadow-black/10' 
-                              : 'bg-zinc-50 text-zinc-400 border-zinc-100 hover:border-zinc-300'}`}
+                              ? 'bg-black text-white border-black shadow-md' 
+                              : 'bg-zinc-50 text-zinc-400 border-zinc-100 hover:border-zinc-200'}`}
                         >
                           {cat === 'All' ? 'TÜMÜ' : cat}
                         </button>
@@ -217,20 +217,20 @@ export default function Shop() {
                   </div>
 
                   {/* Collections Filter */}
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-300">Koleksiyonlar</h4>
-                    <div className="grid grid-cols-1 gap-2">
+                  <div className="space-y-3">
+                    <h4 className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-300">Koleksiyonlar</h4>
+                    <div className="grid grid-cols-1 gap-1.5">
                       {availableColls.map(coll => (
                         <button
                           key={coll}
                           onClick={() => setActiveCollection(coll)}
-                          className={`flex items-center justify-between px-6 py-4 rounded-2xl transition-all border
+                          className={`flex items-center justify-between px-5 py-3.5 rounded-xl transition-all border
                             ${activeCollection === coll 
-                              ? 'bg-zinc-50 border-zinc-900 text-zinc-900 shadow-sm' 
-                              : 'bg-white border-zinc-100 text-zinc-400 hover:border-zinc-200'}`}
+                              ? 'bg-zinc-50 border-zinc-900 text-zinc-900' 
+                              : 'bg-white border-zinc-50 text-zinc-400 hover:border-zinc-200'}`}
                         >
-                          <span className="text-[11px] font-bold uppercase tracking-widest">{coll === 'All' ? 'TÜM KOLEKSİYONLAR' : coll}</span>
-                          <div className={`w-1.5 h-1.5 rounded-full transition-colors ${activeCollection === coll ? 'bg-black' : 'bg-transparent'}`} />
+                          <span className="text-[10px] font-bold uppercase tracking-widest">{coll === 'All' ? 'TÜM KOLEKSİYONLAR' : coll}</span>
+                          <div className={`w-1 h-1 rounded-full ${activeCollection === coll ? 'bg-black' : 'bg-transparent'}`} />
                         </button>
                       ))}
                     </div>
@@ -238,7 +238,7 @@ export default function Shop() {
                 </div>
 
                 {/* Footer Actions */}
-                <div className="p-8 bg-zinc-50/50 border-t border-zinc-100 flex gap-3">
+                <div className="p-6 bg-zinc-50/50 border-t border-zinc-100 flex gap-2">
                   <Button 
                     onClick={() => {
                       setActiveCategory('All');
@@ -246,13 +246,13 @@ export default function Shop() {
                       setIsFilterOpen(false);
                     }}
                     variant="outline"
-                    className="flex-1 h-14 rounded-2xl border-zinc-200 text-[10px] font-black uppercase tracking-[0.2em] bg-white hover:bg-zinc-50"
+                    className="flex-1 h-12 rounded-xl border-zinc-200 text-[9px] font-black uppercase tracking-[0.2em] bg-white"
                   >
                     Sıfırla
                   </Button>
                   <Button 
                     onClick={() => setIsFilterOpen(false)}
-                    className="flex-[2] h-14 rounded-2xl bg-black text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-black/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    className="flex-[2] h-12 rounded-xl bg-black text-white text-[9px] font-black uppercase tracking-[0.2em] shadow-lg shadow-black/10 hover:bg-zinc-900"
                   >
                     Uygula
                   </Button>
