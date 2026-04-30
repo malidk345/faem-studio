@@ -1,501 +1,110 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
-import { supabase } from '../lib/supabase';
-import { ChevronLeft, Loader2, ShieldCheck, Truck, CreditCard, Info } from 'lucide-react';
-import { useSEO } from '../hooks/useSEO';
-import { useLanguage } from '../context/LanguageContext';
-import { TamiPayment, PaymentOrder, PaymentCard } from '../utils/tami';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { PaymentForm } from '@/components/Payment/PaymentForm';
+import { Payment3DSModal } from '@/components/Payment/Payment3DSModal';
+import { ShoppingBag, ArrowLeft, ShieldCheck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
-type Step = 'details' | 'shipping' | 'confirm';
-
-export default function Checkout() {
-  const { cartItems, cartTotal, clearCart } = useCart();
-  const { user } = useAuth();
-  const { t } = useLanguage();
+const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<Step>('details');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedShipping, setSelectedShipping] = useState<string>('0');
+  const [show3DS, setShow3DS] = useState(false);
+  const [htmlContent, setHtmlContent] = useState('');
   
-  // Discount state
-  const [discountCode, setDiscountCode] = useState('');
-  const [appliedDiscount, setAppliedDiscount] = useState<{ code: string, percent: number } | null>(null);
-  const [discountError, setDiscountError] = useState<string | null>(null);
-  const [validatingDiscount, setValidatingDiscount] = useState(false);
-
-  // Form state
-  const [email, setEmail] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [identityNumber, setIdentityNumber] = useState(''); // Required for Tami (Compliance)
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [postal, setPostal] = useState('');
-  const [country, setCountry] = useState('TR');
-
-  // Credit Card state for Tami Integration
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardHolderName, setCardHolderName] = useState('');
-  const [expireMonth, setExpireMonth] = useState('');
-  const [expireYear, setExpireYear] = useState('');
-  const [cvv, setCvv] = useState('');
-
-  // Tami Integration Config from .env
-  const TAMI_CLIENT_ID = import.meta.env.VITE_TAMI_CLIENT_ID || '';
-  const TAMI_STORE_KEY = import.meta.env.VITE_TAMI_STORE_KEY || '';
-  const TAMI_API_URL = import.meta.env.VITE_TAMI_API_URL || 'https://sanalpos.tami.com.tr/fim/est3Dgate';
-
-  useSEO({
-    title: `${t('checkout.title')} | Faem Studio`,
-    description: t('checkout.success_desc')
-  });
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' });
-    if (user) {
-      setEmail(user.email || '');
-      const parts = (user.name || '').split(' ');
-      setFirstName(parts[0] || '');
-      setLastName(parts.slice(1).join(' ') || '');
-    }
-  }, [user]);
-
-  // Price calculations
-  const prices = useMemo(() => {
-    const rawTotal = parseFloat(cartTotal.replace(/[^\d.]/g, '')) || 0;
-    
-    // Apply discount
-    const discountAmount = appliedDiscount ? (rawTotal * (appliedDiscount.percent / 100)) : 0;
-    const subtotalAfterDiscount = rawTotal - discountAmount;
-
-    const shipping = selectedShipping === '1' ? 45 : 0; // Express 45 TL
-    const tax = subtotalAfterDiscount * 0.10; // %10 KDV (giyim)
-    
-    return {
-      subtotal: rawTotal - tax,
-      discount: discountAmount,
-      tax,
-      shipping,
-      total: subtotalAfterDiscount + shipping
-    };
-  }, [cartTotal, selectedShipping, appliedDiscount]);
-
-  const handleApplyDiscount = async () => {
-    if (!discountCode.trim()) return;
-    setValidatingDiscount(true);
-    setDiscountError(null);
-
-    const { data, error } = await supabase
-      .from('promotions')
-      .select('*')
-      .eq('code', discountCode.trim().toUpperCase())
-      .eq('active', true)
-      .single();
-
-    setValidatingDiscount(false);
-
-    if (error || !data) {
-      setDiscountError("Geçersiz veya bulunamayan kod.");
-      setAppliedDiscount(null);
-    } else {
-      // Süre kontrolü
-      if (data.expires_at && new Date(data.expires_at) < new Date()) {
-        setDiscountError("Bu kodun süresi dolmuş.");
-        setAppliedDiscount(null);
-        return;
-      }
-      
-      // Min tutar kontrolü
-      if (data.min_amount && cartTotal < data.min_amount) {
-        setDiscountError(`Bu kod en az ₺${data.min_amount} değerindeki sepetlerde geçerlidir.`);
-        setAppliedDiscount(null);
-        return;
-      }
-
-      setAppliedDiscount({ code: data.code, percent: data.percent });
-      setDiscountCode('');
-    }
+  // Örnek Veri (Normalde sepetten/context'ten gelecek)
+  const orderDetails = {
+    amount: '1250.00',
+    orderId: `ORD-${Math.floor(Math.random() * 1000000)}`,
+    itemsCount: 2
   };
 
-  const handleDetailsSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!phone || !identityNumber) {
-      setError("Telefon ve T.C. Kimlik numarası Tami ödeme altyapısı için zorunludur.");
-      return;
-    }
-    setError(null);
-    setStep('shipping');
+  const handlePaymentSuccess = (html: string) => {
+    setHtmlContent(html);
+    setShow3DS(true);
   };
-
-  const handleShippingSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStep('confirm');
-  };
-
-  const handleCompleteOrder = async () => {
-    if (!cardNumber || !expireMonth || !expireYear || !cvv || !cardHolderName) {
-      setError("Lütfen kredi kartı bilgilerinizi eksiksiz girin.");
-      return;
-    }
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
-
-      const orderData = {
-        user_id: userId || null,
-        total: `₺${prices.total.toFixed(2)}`,
-        status: 'pending',
-        shipping_address: {
-          first_name: firstName,
-          last_name: lastName,
-          phone,
-          identity_number: identityNumber,
-          address,
-          city,
-          postal,
-          country,
-          email,
-          shipping_method: selectedShipping === '1' ? 'Express' : 'Standard'
-        },
-        items: cartItems,
-        payment_provider: 'Tami',
-        payment_status: 'pending',
-        applied_discount: appliedDiscount ? `${appliedDiscount.code} (%${appliedDiscount.percent})` : null
-      };
-
-      const { data: newOrder, error: dbError } = await supabase
-        .from('orders')
-        .insert(orderData)
-        .select()
-        .single();
-      
-      if (dbError) throw dbError;
-
-      // Increment promo usage if a discount was applied
-      if (appliedDiscount) {
-        const { error: promoError } = await supabase.rpc('increment_promo_usage', {
-          p_code: appliedDiscount.code
-        });
-        if (promoError) {
-          console.warn('Promo usage increment failed for', appliedDiscount.code, promoError.message);
-        }
-      }
-
-      // Decrement stock for each ordered item
-      for (const item of cartItems) {
-        const { error: stockError } = await supabase.rpc('decrement_stock', {
-          p_product_id: item.productId,
-          p_amount: item.quantity
-        });
-        if (stockError) {
-          console.warn('Stock decrement failed for', item.productId, stockError.message);
-        }
-      }
-
-      // Tami Integration: Prepare Order & Card details
-      const paymentOrder: PaymentOrder = {
-        orderId: newOrder.id,
-        amount: prices.total, // Numeric amount
-        currency: "949", // TRY
-      };
-
-      const paymentCard: PaymentCard = {
-        cardHolderName: cardHolderName,
-        cardNumber: cardNumber,
-        expireMonth: expireMonth,
-        expireYear: expireYear.length === 2 ? `20${expireYear}` : expireYear,
-        cvv: cvv,
-      };
-
-      if (!TAMI_CLIENT_ID || !TAMI_STORE_KEY) {
-        throw new Error("Tami API bilgileri yapılandırılmamış. Lütfen .env dosyanızı kontrol edin.");
-      }
-
-      const tami = new TamiPayment({
-        clientId: TAMI_CLIENT_ID,
-        storeKey: TAMI_STORE_KEY,
-        apiUrl: TAMI_API_URL,
-        okUrl: window.location.origin + `/order/success/${newOrder.id}`,
-        failUrl: window.location.origin + '/order/error',
-      });
-
-      // Clear cart locally before redirecting to 3D Secure
-      clearCart();
-
-      // Submit the form which navigates away from the page
-      await tami.initiatePayment(paymentOrder, paymentCard);
-
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Sipariş oluşturulurken veya ödeme başlatılırken hata oluştu.");
-      setIsLoading(false);
-    }
-  };
-
-  if (cartItems.length === 0) {
-    return (
-      <div className="min-h-screen bg-white pt-[120px] px-6 text-center flex flex-col items-center justify-center">
-        <h1 className="text-4xl font-black tracking-tighter mb-4">Sepetiniz Boş</h1>
-        <p className="text-zinc-400 mb-8 max-w-xs font-medium">Satın almak istediğiniz parçaları ekleyerek başlayabilirsiniz.</p>
-        <Link to="/shop" className="bg-black text-white px-10 py-4 rounded-xl font-black text-xs uppercase tracking-widest">
-          Alışverişe Dön
-        </Link>
-      </div>
-    );
-  }
 
   return (
-    <div className="min-h-screen bg-white pt-[120px] pb-24 px-6 md:px-12 max-w-6xl mx-auto">
-      <Link to="/" className="inline-flex items-center gap-2 text-black/40 hover:text-black transition-colors mb-12 text-[10px] font-black uppercase tracking-widest leading-none">
-        <ChevronLeft size={14} /> Geri Dön
-      </Link>
+    <div className="min-h-screen bg-zinc-50/50 py-12 px-4 sm:px-6 lg:px-8 font-sans">
+      <div className="max-w-6xl mx-auto">
+        <header className="flex items-center justify-between mb-12">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-zinc-500 hover:text-black font-bold uppercase text-[10px] tracking-widest transition-colors"
+          >
+            <ArrowLeft size={16} />
+            Alışverişe Dön
+          </Button>
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="text-emerald-500" size={18} />
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">256-bit SSL Güvenli Ödeme</span>
+          </div>
+        </header>
 
-      {/* Progress Bar */}
-      <div className="flex items-center gap-4 mb-16 overflow-x-auto hide-scrollbar">
-        {[
-          { id: 'details', label: '01 Bilgiler', icon: Info },
-          { id: 'shipping', label: '02 Teslimat', icon: Truck },
-          { id: 'confirm', label: '03 Ödeme', icon: CreditCard }
-        ].map((s, i) => (
-          <React.Fragment key={s.id}>
-            <div 
-              className={`flex items-center gap-3 whitespace-nowrap transition-all duration-500 ${step === s.id ? 'opacity-100' : 'opacity-30'}`}
-            >
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center border ${step === s.id ? 'bg-black text-white border-black' : 'border-zinc-200 text-black'}`}>
-                <s.icon size={14} />
-              </div>
-              <span className="text-[11px] font-black uppercase tracking-widest">{s.label}</span>
-            </div>
-            {i < 2 && <div className="hidden md:block w-8 h-[1px] bg-zinc-100" />}
-          </React.Fragment>
-        ))}
-      </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          {/* Sol: Ödeme Formu */}
+          <div>
+            <PaymentForm 
+              amount={orderDetails.amount} 
+              orderId={orderDetails.orderId}
+              onSuccess={handlePaymentSuccess}
+            />
+          </div>
 
-      <div className="grid lg:grid-cols-[1fr,380px] gap-16 items-start">
-        {/* FORM SIDE */}
-        <div className="space-y-8">
-          {error && (
-            <div className="p-4 bg-rose-50 border border-rose-100 rounded-xl text-rose-600 text-[12px] font-bold">
-              {error}
-            </div>
-          )}
-
-          <AnimatePresence mode="wait">
-            {step === 'details' && (
-              <motion.form 
-                key="details"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                onSubmit={handleDetailsSubmit} 
-                className="space-y-6"
-              >
-                <div className="space-y-4">
-                  <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">İletişim & Kimlik</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                       <input type="text" placeholder="T.C. Kimlik Numarası (Zorunlu)" value={identityNumber} onChange={e => setIdentityNumber(e.target.value.replace(/\D/g, ''))} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" maxLength={11} />
-                       <p className="text-[9px] text-zinc-400 uppercase tracking-widest ml-2 italic">Tami altyapısı için gereklidir</p>
-                    </div>
-                    <input type="tel" placeholder="Telefon (05xx...)" value={phone} onChange={e => setPhone(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
-                  </div>
-                  <input type="email" placeholder="E-posta" value={email} onChange={e => setEmail(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
+          {/* Sağ: Sipariş Özeti */}
+          <motion.div 
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="lg:pl-12"
+          >
+            <div className="p-10 rounded-[2.5rem] bg-black text-white shadow-2xl shadow-black/20">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                  <ShoppingBag size={20} />
                 </div>
-
-                <div className="space-y-4">
-                  <h3 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Teslimat Adresi</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="Ad" value={firstName} onChange={e => setFirstName(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
-                    <input type="text" placeholder="Soyad" value={lastName} onChange={e => setLastName(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
-                  </div>
-                  <textarea placeholder="Adres (Sokak, Bina, No, Daire)" value={address} onChange={e => setAddress(e.target.value)} required className="w-full h-32 px-6 py-4 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm resize-none" />
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="Şehir" value={city} onChange={e => setCity(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
-                    <input type="text" placeholder="Posta Kodu" value={postal} onChange={e => setPostal(e.target.value)} required className="w-full h-14 px-6 bg-zinc-50 border border-zinc-100 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm" />
-                  </div>
-                </div>
-
-                <button type="submit" className="w-full h-16 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-xl shadow-black/10 hover:bg-zinc-800 transition-all">
-                  Kargo Seçimine Geç
-                </button>
-              </motion.form>
-            )}
-
-            {step === 'shipping' && (
-              <motion.form 
-                key="shipping"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                onSubmit={handleShippingSubmit} 
-                className="space-y-8"
-              >
-                <div className="space-y-4">
-                  {[
-                    { id: '0', label: 'Standart Teslimat', price: 'Ücretsiz', time: '3-5 İş Günü' },
-                    { id: '1', label: 'VIP Express', price: '₺45.00', time: '24-48 Saat' }
-                  ].map(opt => (
-                    <label 
-                      key={opt.id}
-                      className={`block p-6 rounded-2xl border-2 cursor-pointer transition-all ${selectedShipping === opt.id ? 'border-black bg-zinc-50' : 'border-zinc-100 hover:border-zinc-200'}`}
-                    >
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-4">
-                          <input type="radio" checked={selectedShipping === opt.id} onChange={() => setSelectedShipping(opt.id)} className="w-4 h-4 accent-black" />
-                          <div>
-                            <p className="text-sm font-black uppercase tracking-tight">{opt.label}</p>
-                            <p className="text-[11px] text-zinc-400 font-bold uppercase tracking-widest">{opt.time}</p>
-                          </div>
-                        </div>
-                        <span className="text-sm font-black">{opt.price}</span>
-                      </div>
-                    </label>
-                  ))}
-                </div>
-                <div className="flex gap-4">
-                    <button type="button" onClick={() => setStep('details')} className="flex-1 h-16 bg-zinc-100 text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-200 transition-all">Geri</button>
-                    <button type="submit" className="flex-[2] h-16 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all">Siparişi İncele</button>
-                </div>
-              </motion.form>
-            )}
-
-            {step === 'confirm' && (
-              <motion.div 
-                key="confirm"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 10 }}
-                className="space-y-8"
-              >
-                <div className="p-8 bg-zinc-50 rounded-3xl border border-zinc-100 space-y-6">
-                  <div>
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3">Teslimat Adresi</h4>
-                    <p className="text-sm font-bold text-black">{firstName} {lastName}</p>
-                    <p className="text-sm font-medium text-zinc-500 mt-1">{address}, {city} {postal}</p>
-                    <p className="text-sm font-medium text-zinc-500">{phone}</p>
-                  </div>
-                  <div className="pt-6 border-t border-zinc-200">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3">Güvenlik Önsözü</h4>
-                    <div className="flex items-start gap-4 text-emerald-600 bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
-                       <ShieldCheck size={18} className="mt-0.5 flex-shrink-0" />
-                       <p className="text-[11px] font-bold leading-relaxed tracking-tight">
-                         Ödemeniz Tami 256-bit SSL ve 3D Secure korumalı altyapısı ile gerçekleşecektir. Kart bilgileriniz asla sisteme kaydedilmez.
-                       </p>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-6 border-t border-zinc-200 space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-2">Kart Bilgileri</h4>
-                    <input type="text" placeholder="Kart Üzerindeki İsim" value={cardHolderName} onChange={e => setCardHolderName(e.target.value.toUpperCase())} required className="w-full h-14 px-6 bg-white border border-zinc-200 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm uppercase" />
-                    <input type="text" placeholder="Kart Numarası" value={cardNumber} onChange={e => setCardNumber(e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim())} required maxLength={19} className="w-full h-14 px-6 bg-white border border-zinc-200 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm tracking-widest" />
-                    <div className="grid grid-cols-3 gap-4">
-                      <input type="text" placeholder="Ay (AA)" value={expireMonth} onChange={e => setExpireMonth(e.target.value.replace(/\D/g, '').substring(0, 2))} required className="w-full h-14 px-6 bg-white border border-zinc-200 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm text-center" />
-                      <input type="text" placeholder="Yıl (YY)" value={expireYear} onChange={e => setExpireYear(e.target.value.replace(/\D/g, '').substring(0, 2))} required className="w-full h-14 px-6 bg-white border border-zinc-200 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm text-center" />
-                      <input type="text" placeholder="CVV" value={cvv} onChange={e => setCvv(e.target.value.replace(/\D/g, '').substring(0, 4))} required className="w-full h-14 px-6 bg-white border border-zinc-200 rounded-2xl focus:border-black outline-none transition-all font-bold text-sm text-center" />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                    <button type="button" onClick={() => setStep('shipping')} className="flex-1 h-16 bg-zinc-100 text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-zinc-200 transition-all">Geri</button>
-                    <button onClick={handleCompleteOrder} disabled={isLoading} className="flex-[2] h-16 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl shadow-black/20 hover:bg-zinc-800 transition-all flex items-center justify-center gap-3">
-                      {isLoading ? <Loader2 size={18} className="animate-spin" /> : <>Ödemeyi Başlat <ChevronLeft size={16} className="rotate-180" /></>}
-                    </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* SUMMARY SIDE */}
-        <div className="bg-zinc-50/50 p-8 pt-10 rounded-[2.5rem] border border-zinc-100 h-fit sticky top-32">
-          <h2 className="text-xs font-black uppercase tracking-[0.4em] mb-8 border-b border-zinc-100 pb-4">Sipariş Özeti</h2>
-          
-          <div className="space-y-6 mb-10 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-            {cartItems.map(item => (
-              <div key={item.id} className="flex gap-4">
-                <div className="w-16 h-20 bg-zinc-100 rounded-xl overflow-hidden flex-shrink-0">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                </div>
-                <div className="flex flex-col justify-between py-1">
-                  <div>
-                    <p className="text-[13px] font-black tracking-tight leading-tight">{item.name}</p>
-                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mt-1">{item.size} · {item.quantity} Adet</p>
-                  </div>
-                  <p className="text-[13px] font-black">{item.price}</p>
+                <div>
+                  <h3 className="text-lg font-black tracking-tight">Sipariş Özeti</h3>
+                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">{orderDetails.orderId}</p>
                 </div>
               </div>
-            ))}
-          </div>
 
-          <div className="space-y-3 border-t border-zinc-100 pt-6">
-             <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-zinc-400">
-                <span>Ara Toplam</span>
-                <span>₺{prices.subtotal.toFixed(2)}</span>
-             </div>
-             {appliedDiscount && (
-               <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-emerald-500">
-                  <span>İndirim ({appliedDiscount.code})</span>
-                  <span>-₺{prices.discount.toFixed(2)}</span>
-               </div>
-             )}
-             <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-zinc-400">
-                <span>KDV (10%)</span>
-                <span>₺{prices.tax.toFixed(2)}</span>
-             </div>
-             <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-zinc-400">
-                <span>Kargo</span>
-                <span className={prices.shipping === 0 ? 'text-emerald-500' : 'text-black'}>
-                  {prices.shipping === 0 ? 'Ücretsiz' : `₺${prices.shipping.toFixed(2)}`}
-                </span>
-             </div>
-             <div className="h-[1px] bg-zinc-200 my-4" />
-             <div className="flex justify-between items-end">
-                <span className="text-[12px] font-black uppercase tracking-[0.2em]">Toplam</span>
-                <span className="text-2xl font-black tracking-tighter leading-none">₺{prices.total.toFixed(2)}</span>
-             </div>
-          </div>
+              <div className="space-y-6">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-bold text-white/50">Ürün Sayısı</span>
+                  <span className="font-black">{orderDetails.itemsCount} Adet</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-bold text-white/50">Kargo</span>
+                  <span className="font-black text-emerald-400">ÜCRETSİZ</span>
+                </div>
+                <div className="h-px bg-white/10 my-2" />
+                <div className="flex justify-between items-end">
+                  <span className="font-bold text-white/50 text-xs uppercase tracking-widest">Ödenecek Tutar</span>
+                  <div className="text-right">
+                    <span className="block text-4xl font-black tracking-tighter leading-none mb-1">{orderDetails.amount}</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Türk Lirası</span>
+                  </div>
+                </div>
+              </div>
 
-          <div className="mt-8 border-t border-zinc-100 pt-6">
-             <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3">İndirim Kodu</h4>
-             {appliedDiscount ? (
-               <div className="flex items-center justify-between p-4 bg-emerald-50 border border-emerald-100 rounded-xl">
-                 <div className="flex items-center gap-2">
-                   <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-                   <span className="text-xs font-bold text-emerald-700 uppercase tracking-widest">{appliedDiscount.code} (%{appliedDiscount.percent}) UYGULANDI</span>
-                 </div>
-                 <button onClick={() => setAppliedDiscount(null)} className="text-[10px] text-emerald-600 font-bold uppercase hover:text-emerald-800">Kaldır</button>
-               </div>
-             ) : (
-               <div className="flex gap-2">
-                 <input 
-                   type="text" 
-                   value={discountCode}
-                   onChange={e => setDiscountCode(e.target.value)}
-                   placeholder="Kodunuzu Girin" 
-                   className="w-full h-12 px-4 bg-white border border-zinc-200 rounded-xl focus:border-black outline-none font-bold text-sm uppercase" 
-                 />
-                 <button 
-                   onClick={handleApplyDiscount}
-                   disabled={validatingDiscount || !discountCode.trim()}
-                   className="h-12 px-6 bg-black text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-zinc-800 transition-all disabled:opacity-50"
-                 >
-                   {validatingDiscount ? '...' : 'Uygula'}
-                 </button>
-               </div>
-             )}
-             {discountError && <p className="text-[10px] font-bold text-rose-500 mt-2 uppercase tracking-widest">{discountError}</p>}
-          </div>
+              <div className="mt-12 p-5 rounded-2xl bg-white/5 border border-white/10">
+                <p className="text-[11px] leading-relaxed text-white/60 font-medium italic">
+                  * "Ödemeyi Onayla" butonuna bastığınızda Tami güvenli ödeme sayfasına yönlendirileceksiniz. Ödemeniz başarıyla tamamlandığında siparişiniz anında işleme alınacaktır.
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
+
+      {/* 3D Secure Modal */}
+      <Payment3DSModal 
+        isOpen={show3DS}
+        onClose={() => setShow3DS(false)}
+        htmlContent={htmlContent}
+      />
     </div>
   );
-}
+};
+
+export default CheckoutPage;

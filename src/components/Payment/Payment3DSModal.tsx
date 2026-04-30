@@ -1,0 +1,80 @@
+import React, { useEffect, useRef } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Loader2, ShieldCheck } from 'lucide-react';
+
+interface Payment3DSModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  htmlContent: string; // Base64 encoded HTML from Tami
+}
+
+export const Payment3DSModal: React.FC<Payment3DSModalProps> = ({ isOpen, onClose, htmlContent }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen && htmlContent && containerRef.current) {
+      try {
+        // 1. Decode the Base64 HTML content
+        const decodedHtml = atob(htmlContent);
+        
+        // 2. Inject it into the container
+        // WARNING: This HTML usually contains a <form> that auto-submits to the bank
+        containerRef.current.innerHTML = decodedHtml;
+
+        // 3. Find and submit the form automatically if it doesn't do it itself
+        const form = containerRef.current.querySelector('form');
+        if (form) {
+          form.submit();
+        }
+      } catch (error) {
+        console.error('Failed to decode 3DS HTML:', error);
+      }
+    }
+  }, [isOpen, htmlContent]);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[500px] h-[600px] p-0 overflow-hidden bg-white border-none rounded-[2.5rem]">
+        <DialogHeader className="p-6 border-b border-zinc-50 bg-zinc-50/50">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+              <ShieldCheck className="text-emerald-600" size={18} />
+            </div>
+            <DialogTitle className="text-sm font-black uppercase tracking-tight">
+              Banka Onay Ekranı
+            </DialogTitle>
+          </div>
+        </DialogHeader>
+        
+        <div className="relative flex-1 w-full h-full bg-white flex flex-col items-center justify-center">
+          {/* We hide the container because it often just auto-submits to a new page or iframe */}
+          <div ref={containerRef} className="hidden" />
+          
+          <div className="flex flex-col items-center gap-4 text-center p-12">
+            <Loader2 className="w-12 h-12 text-black animate-spin opacity-20" />
+            <div>
+              <h3 className="font-black text-lg tracking-tight mb-1">Güvenli Bağlantı Kuruluyor</h3>
+              <p className="text-xs text-zinc-400 font-medium max-w-[240px] mx-auto">
+                Lütfen pencereyi kapatmayın, bankanızın 3D Secure onay sayfasına yönlendiriliyorsunuz.
+              </p>
+            </div>
+          </div>
+          
+          {/* For some 3D flows, we might need to show the content in an iframe here */}
+          <div className="absolute inset-0 z-10 bg-white">
+             <iframe 
+                name="tami_3ds_frame" 
+                className="w-full h-full border-none"
+                title="3D Secure Validation"
+             />
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
