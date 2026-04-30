@@ -18,24 +18,19 @@ const TAMI_CONFIG = {
 
 /**
  * Tami V3 Signature Generator
- * Requests are signed using HMAC-SHA256 with the JWK Key
+ * SHA-256 of (merchantNumber + terminalNumber + secretKey)
+ * Result must be Base64 encoded
  */
-async function generateTamiHash(body: string) {
+async function generateTamiHash() {
   const encoder = new TextEncoder();
-  const keyData = encoder.encode(TAMI_CONFIG.jwk_k);
-  const messageData = encoder.encode(body);
-
-  const key = await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
-    ['sign']
-  );
-
-  const signature = await crypto.subtle.sign('HMAC', key, messageData);
-  const hashArray = Array.from(new Uint8Array(signature));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  const inputString = `${TAMI_CONFIG.merchantNumber}${TAMI_CONFIG.terminalNumber}${TAMI_CONFIG.jwk_k}`;
+  const data = encoder.encode(inputString);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  
+  // Encode as Base64 (Standard Tami V3 requirement)
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashBinary = String.fromCharCode(...hashArray);
+  return btoa(hashBinary);
 }
 
 serve(async (req) => {
@@ -58,19 +53,20 @@ serve(async (req) => {
         currency: 'TRY',
         installmentCount: 1,
         paymentType: 'SALE',
-        cardHolderName: cardHolderName,
-        cardNumber: cardNumber,
-        expiryMonth: expiryMonth,
-        expiryYear: expiryYear,
-        cvv: cvv,
-        callbackUrl: callbackUrl,
-        // Diğer zorunlu alanlar dokümantasyona göre buraya eklenebilir
+        paymentGroup: 'PRODUCT', // Mandatory in V3
+        card: {
+          holderName: cardHolderName,
+          number: cardNumber,
+          expireMonth: expiryMonth,
+          expireYear: expiryYear,
+          cvv: cvv
+        },
+        callbackUrl: callbackUrl
       };
 
-      const bodyString = JSON.stringify(requestBody);
-      const hash = await generateTamiHash(bodyString);
+      const hash = await generateTamiHash();
 
-      console.log('Initiating Tami Payment for Order:', orderId);
+      console.log('Initiating Tami V3 Payment for Order:', orderId);
 
       const response = await fetch(TAMI_CONFIG.apiUrl, {
         method: 'POST',
@@ -80,7 +76,7 @@ serve(async (req) => {
           'PG-Auth-Token': `${TAMI_CONFIG.merchantNumber}:${TAMI_CONFIG.terminalNumber}:${hash}`,
           'correlationId': crypto.randomUUID()
         },
-        body: bodyString
+        body: JSON.stringify(requestBody)
       });
 
       const result = await response.json();
@@ -113,10 +109,16 @@ serve(async (req) => {
         orderId: orderId
       };
 
-      const bodyString = JSON.stringify(requestBody);
-      const hash = await generateTamiHash(bodyString);
+      const requestBody = {
+        merchantNumber: TAMI_CONFIG.merchantNumber,
+        terminalNumber: TAMI_CONFIG.terminalNumber,
+        tamiId: tamiId,
+        orderId: orderId
+      };
 
-      console.log('Completing Tami Payment for TamiID:', tamiId);
+      const hash = await generateTamiHash();
+
+      console.log('Completing Tami V3 Payment for TamiID:', tamiId);
 
       const response = await fetch(TAMI_CONFIG.completeUrl, {
         method: 'POST',
@@ -126,7 +128,7 @@ serve(async (req) => {
           'PG-Auth-Token': `${TAMI_CONFIG.merchantNumber}:${TAMI_CONFIG.terminalNumber}:${hash}`,
           'correlationId': crypto.randomUUID()
         },
-        body: bodyString
+        body: JSON.stringify(requestBody)
       });
 
       const result = await response.json();

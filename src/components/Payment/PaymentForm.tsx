@@ -114,11 +114,11 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
 
       console.log('Full Payment Response:', response);
       
-      // Tami V3 can return htmlContent or paymentUrl
+      // Tami V3 returns threeDSHtmlContent when 3D is required
       const resData = response.data || response;
-      const htmlContent = resData.htmlContent;
+      const htmlContent = resData.threeDSHtmlContent || resData.htmlContent;
       const paymentUrl = resData.paymentUrl || resData.url;
-      const isSuccess = response.success === true || resData.success === true;
+      const isSuccess = response.success === true || resData.success === true || (resData.status === 'success');
 
       if (isSuccess && (htmlContent || paymentUrl)) {
         toast.success("Banka onay sayfasına yönlendiriliyorsunuz...", { id: 'payment-status' });
@@ -127,7 +127,8 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
           // If a direct URL is provided, redirect the whole page
           window.location.href = paymentUrl;
         } else {
-          // If HTML form is provided, show the modal
+          // If HTML form is provided (usually Base64 in V3), show the modal
+          console.log('3D HTML found, passing to modal...');
           onSuccess(htmlContent);
         }
       } else {
