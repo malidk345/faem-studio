@@ -6,16 +6,22 @@ import { ShoppingBag, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
+import { useCart } from '@/context/CartContext';
+
 const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
+  const { cartItems, cartTotal, cartCount } = useCart();
   const [show3DS, setShow3DS] = useState(false);
   const [htmlContent, setHtmlContent] = useState('');
   
-  // Örnek Veri (Normalde sepetten/context'ten gelecek)
+  // Convert currency string (₺1.250,00) to API-friendly amount (1250.00)
+  const numericAmount = cartTotal.replace(/[^0-9,.]/g, '').replace(',', '.');
+  
   const orderDetails = {
-    amount: '1250.00',
+    amount: numericAmount,
+    displayAmount: cartTotal,
     orderId: `ORD-${Math.floor(Math.random() * 1000000)}`,
-    itemsCount: 2
+    itemsCount: cartCount
   };
 
   const handlePaymentSuccess = (html: string) => {
@@ -81,7 +87,7 @@ const CheckoutPage: React.FC = () => {
                 <div className="flex justify-between items-end">
                   <span className="font-bold text-white/50 text-xs uppercase tracking-widest">Ödenecek Tutar</span>
                   <div className="text-right">
-                    <span className="block text-4xl font-black tracking-tighter leading-none mb-1">{orderDetails.amount}</span>
+                    <span className="block text-4xl font-black tracking-tighter leading-none mb-1">{orderDetails.displayAmount}</span>
                     <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Türk Lirası</span>
                   </div>
                 </div>
