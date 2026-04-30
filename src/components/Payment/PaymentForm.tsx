@@ -61,6 +61,9 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
     try {
       console.log('--- Payment Process Started ---');
       
+      // --- Step 1: Create Order ---
+      toast.info("Siparişiniz hazırlanıyor...", { id: 'payment-status' });
+      
       // Get current user if any
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -81,13 +84,8 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         }
       };
 
-      // Only add user_id if logged in
-      if (user) {
-        insertData.user_id = user.id;
-      }
+      if (user) insertData.user_id = user.id;
 
-      console.log('Inserting to Supabase:', insertData);
-      
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
         .insert(insertData)
@@ -95,14 +93,11 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         .single();
 
       if (orderError) {
-        console.error('CRITICAL_DATABASE_ERROR:', orderError);
-        // WE SHOW THE EXACT ERROR TO THE USER NOW
-        throw new Error(`Veritabanı Hatası: ${orderError.message} (${orderError.code}) - Lütfen yöneticiye bildirin.`);
+        throw new Error(`Veritabanı Hatası: ${orderError.message}`);
       }
 
-      if (!orderData) throw new Error('Sipariş oluşturuldu ancak yanıt alınamadı.');
-
-      console.log('Order created successfully:', orderData.id);
+      // --- Step 2: Initiate Payment ---
+      toast.info("Ödeme kanalı ile bağlantı kuruluyor...", { id: 'payment-status' });
 
       const [expiryMonth, expiryYear] = formData.expiryDate.split('/');
       
@@ -117,23 +112,33 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         callbackUrl: `https://idqnxgtleerpanujcdfn.supabase.co/functions/v1/tami-callback`
       });
 
-      console.log('Payment API Response Received:', response);
+      console.log('Full Payment Response:', response);
       
-      const actualHtmlContent = response.data?.htmlContent || response.htmlContent;
-      const isSuccess = response.success || (response.data && response.success);
+      // Tami V3 can return htmlContent or paymentUrl
+      const resData = response.data || response;
+      const htmlContent = resData.htmlContent;
+      const paymentUrl = resData.paymentUrl || resData.url;
+      const isSuccess = response.success === true || resData.success === true;
 
-      if (isSuccess && actualHtmlContent) {
-        console.log('3D Secure HTML Content found, triggering onSuccess...');
-        onSuccess(actualHtmlContent);
+      if (isSuccess && (htmlContent || paymentUrl)) {
+        toast.success("Banka onay sayfasına yönlendiriliyorsunuz...", { id: 'payment-status' });
+        
+        if (paymentUrl) {
+          // If a direct URL is provided, redirect the whole page
+          window.location.href = paymentUrl;
+        } else {
+          // If HTML form is provided, show the modal
+          onSuccess(htmlContent);
+        }
       } else {
-        const errorMsg = response.message || response.error || (response.data && response.data.message) || 'Tami ödeme başlatma hatası verdi.';
-        console.error('Payment Error Detail:', response);
+        const errorMsg = response.message || resData.message || response.error || "Ödeme başlatılamadı. Lütfen kart bilgilerinizi kontrol edin.";
         throw new Error(errorMsg);
       }
     } catch (error: any) {
       console.error('Payment Error Catch:', error);
-      toast.error(error.message, {
-        duration: 8000, // Show longer to read
+      toast.error(error.message, { 
+        id: 'payment-status',
+        duration: 6000 
       });
     } finally {
       setLoading(false);
