@@ -111,16 +111,29 @@ const CheckoutPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">E-Posta</Label>
-                    <Input 
-                      type="email" 
-                      placeholder="mustafa@example.com" 
-                      required 
-                      value={addressData.email}
-                      onChange={e => setAddressData({...addressData, email: e.target.value})}
-                      className="h-12 rounded-xl border-zinc-100 bg-zinc-50/50"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">E-Posta</Label>
+                      <Input 
+                        type="email" 
+                        placeholder="mustafa@example.com" 
+                        required 
+                        value={addressData.email}
+                        onChange={e => setAddressData({...addressData, email: e.target.value})}
+                        className="h-12 rounded-xl border-zinc-100 bg-zinc-50/50"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Telefon</Label>
+                      <Input 
+                        type="tel" 
+                        placeholder="05XX XXX XX XX" 
+                        required 
+                        value={addressData.phone}
+                        onChange={e => setAddressData({...addressData, phone: e.target.value})}
+                        className="h-12 rounded-xl border-zinc-100 bg-zinc-50/50"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-1.5">

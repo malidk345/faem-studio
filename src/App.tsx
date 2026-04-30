@@ -19,6 +19,7 @@ import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import MainLayout from './layouts/MainLayout';
 import { GlobalPageLoader } from './components/GlobalPageLoader';
+import { Toaster } from 'sonner';
 
 function AppRoutes() {
   const [loading, setLoading] = useState(false);
@@ -62,6 +63,7 @@ export default function App() {
       <AuthProvider>
         <CartProvider>
           <Router>
+            <Toaster position="top-center" richColors />
             <AppRoutes />
           </Router>
         </CartProvider>
