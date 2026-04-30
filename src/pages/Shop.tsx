@@ -164,9 +164,9 @@ export default function Shop() {
             </div>
             <button 
               onClick={() => setIsFilterOpen(true)}
-              className="w-14 h-14 flex items-center justify-center bg-black text-white rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg"
+              className="w-11 h-11 flex items-center justify-center bg-black text-white rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg"
             >
-              <SlidersHorizontal size={20} />
+              <SlidersHorizontal size={18} />
             </button>
           </div>
         </div>
