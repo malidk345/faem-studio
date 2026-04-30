@@ -90,8 +90,8 @@ export function HeaderNotifications({ orders }: HeaderNotificationsProps) {
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative w-10 h-10 rounded-md hover:bg-zinc-100 transition-all active:scale-95">
-            <Bell size={19} strokeWidth={2} className="text-white" />
+          <Button variant="ghost" size="icon" className="relative w-10 h-10 rounded-md hover:bg-white/10 transition-all active:scale-95 group">
+            <Bell size={19} strokeWidth={2} className="text-white group-hover:scale-110 transition-transform" />
             <AnimatePresence>
               {unreadCount > 0 && (
                 <motion.span 
@@ -105,57 +105,60 @@ export function HeaderNotifications({ orders }: HeaderNotificationsProps) {
             </AnimatePresence>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-80 rounded-md border-white/10 shadow-2xl p-2 liquid-header">
-          <DropdownMenuLabel className="flex items-center justify-between px-4 py-3">
+        <DropdownMenuContent align="end" className="w-85 rounded-2xl border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-2 liquid-header-dark backdrop-blur-3xl">
+          <DropdownMenuLabel className="flex items-center justify-between px-4 py-4">
             <div className="flex flex-col">
-              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Canlı Akış</span>
-              <span className="text-sm font-black tracking-tight text-white">Bildirimler</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-0.5">Yönetim Paneli</span>
+              <span className="text-base font-black tracking-tighter text-white">Bildirim Merkezi</span>
             </div>
             {unreadCount > 0 && (
-              <Badge variant="outline" className="text-[9px] font-black uppercase border-none bg-zinc-100 text-zinc-600">
+              <Badge variant="outline" className="text-[9px] font-black uppercase border-white/20 bg-white text-black px-2 py-0.5">
                 {unreadCount} Yeni
               </Badge>
             )}
           </DropdownMenuLabel>
           <DropdownMenuSeparator className="bg-white/10 mx-2" />
-          <div className="py-2 space-y-1">
+          <div className="py-2 space-y-1 max-h-[400px] overflow-y-auto hide-scrollbar">
             {recentOrders.length > 0 ? (
               recentOrders.map((order, i) => (
-                <DropdownMenuItem key={order.id} className="flex items-center gap-3 p-3 rounded-md hover:bg-white/5 cursor-pointer group">
-                  <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${
-                    order.status === 'pending' ? 'bg-white text-black' : 'bg-white/10 text-white/40'
+                <DropdownMenuItem key={order.id} className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 cursor-pointer group transition-all">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
+                    order.status === 'pending' 
+                      ? 'bg-white border-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
+                      : 'bg-zinc-900 border-white/10 text-zinc-500'
                   }`}>
-                    <ShoppingBag size={16} />
+                    <ShoppingBag size={18} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start mb-0.5">
-                      <p className="text-[11px] font-bold text-white truncate pr-2">
+                    <div className="flex justify-between items-start mb-1">
+                      <p className="text-[12px] font-bold text-white truncate pr-2">
                         {order.user || 'Misafir Müşteri'}
                       </p>
-                      <span className="text-[9px] font-bold text-white/50 font-mono">
+                      <span className="text-[10px] font-black text-zinc-400 font-mono">
                         {order.total}
                       </span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <Circle size={4} className={order.status === 'pending' ? 'fill-emerald-500 text-emerald-500' : 'fill-zinc-300 text-zinc-300'} />
-                      <p className="text-[10px] text-zinc-500 font-medium">Yeni sipariş oluşturuldu</p>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-1.5 h-1.5 rounded-full ${order.status === 'pending' ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-600'}`} />
+                      <p className="text-[11px] text-zinc-500 font-medium">Yeni sipariş detayları</p>
                     </div>
                   </div>
-                  <ChevronRight size={14} className="text-zinc-300 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" />
+                  <ChevronRight size={14} className="text-zinc-600 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" />
                 </DropdownMenuItem>
               ))
             ) : (
-              <div className="py-8 text-center bg-zinc-50/50 rounded-xl mx-2">
-                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Henüz bildirim yok</p>
+              <div className="py-12 text-center bg-white/5 rounded-2xl mx-2 border border-white/5">
+                <BellOff size={24} className="mx-auto text-zinc-700 mb-3 opacity-20" />
+                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-500">Kayıtlı bildirim bulunmuyor</p>
               </div>
             )}
           </div>
           <DropdownMenuSeparator className="bg-white/10 mx-2" />
-          <DropdownMenuItem className="w-full p-2 justify-center">
-            <Button variant="ghost" className="w-full text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-black hover:bg-zinc-50 rounded-lg h-8">
-              Tüm Etkinlikleri Gör
+          <div className="p-2">
+            <Button variant="ghost" className="w-full text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl h-10 transition-all">
+              Tüm Bildirimleri Yönet
             </Button>
-          </DropdownMenuItem>
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
