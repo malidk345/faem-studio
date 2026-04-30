@@ -219,12 +219,12 @@ export default function Home() {
       </section>
 
 
-      {/* ─── FEATURED ARCHIVE ─── */}
-      <section className="py-24 md:py-32 px-4 lg:px-8 max-w-[1500px] mx-auto">
-        <div className="flex justify-center mb-16">
-          <div className="relative group">
-            <span className="relative z-10 text-[22px] font-normal uppercase tracking-[0.05em] text-black font-['Handjet',sans-serif]">
-              SON ÇIKANLAR
+      {/* ─── LATEST PRODUCTS SECTION ─── */}
+      <section className="pt-40 pb-32 px-4 lg:px-8 max-w-[1500px] mx-auto">
+        <div className="flex justify-center mb-24">
+          <div className="relative">
+            <span className="relative z-10 text-[32px] md:text-[42px] font-bold uppercase tracking-[0.05em] text-black font-['Handjet',sans-serif] leading-none">
+              LATEST PRODUCTS
             </span>
             {/* Masterful Asymmetric Blue Stripe */}
             <motion.div 
@@ -232,9 +232,9 @@ export default function Home() {
               whileInView={{ scaleX: 1, opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-              className="absolute -left-8 -right-4 top-1/2 -translate-y-1/2 h-[12px] bg-blue-600/10 -skew-x-[20deg] origin-left z-0"
+              className="absolute -left-12 -right-8 top-1/2 -translate-y-1/2 h-[20px] bg-blue-600/10 -skew-x-[20deg] origin-left z-0"
             />
-            <div className="absolute -left-12 -right-8 top-1/2 -translate-y-1/2 h-[1px] bg-blue-400/20 -skew-x-[20deg] z-0" />
+            <div className="absolute -left-16 -right-12 top-1/2 -translate-y-1/2 h-[1px] bg-blue-400/20 -skew-x-[20deg] z-0" />
           </div>
         </div>
 
