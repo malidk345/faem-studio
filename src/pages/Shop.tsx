@@ -151,7 +151,7 @@ export default function Shop() {
                 placeholder="Ürün Ara..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-14 bg-zinc-50 border border-zinc-100 rounded-full px-6 text-[13px] font-medium focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                className="w-full h-12 bg-zinc-50 border border-zinc-100 rounded-full px-6 text-[13px] font-medium focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
               />
               {searchQuery && (
                 <button 
@@ -164,7 +164,7 @@ export default function Shop() {
             </div>
             <button 
               onClick={() => setIsFilterOpen(true)}
-              className="w-11 h-11 flex items-center justify-center bg-black text-white rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg"
+              className="w-12 h-12 flex items-center justify-center bg-black text-white rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg"
             >
               <SlidersHorizontal size={18} />
             </button>
