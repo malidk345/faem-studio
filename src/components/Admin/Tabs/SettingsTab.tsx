@@ -147,7 +147,7 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
             <div className="flex-1 space-y-4">
               <div>
                 <h3 className="font-semibold text-lg text-zinc-900 leading-none">Ödeme Altyapısı</h3>
-                <p className="text-xs text-zinc-500 font-medium mt-1">iyzico API anahtarları.</p>
+                <p className="text-xs text-zinc-500 font-medium mt-1">Tami API anahtarları.</p>
               </div>
               <div className="space-y-3 pt-2">
                 <div className="space-y-1.5">
@@ -159,22 +159,22 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">iyzico API Key</Label>
+                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Tami Merchant Number</Label>
                   <Input 
-                    type="password"
+                    type="text"
                     value={settings.stripe_public_key}
                     onChange={(e) => setSettings({...settings, stripe_public_key: e.target.value})}
-                    placeholder="sandbox-..."
+                    placeholder="7700..."
                     className="h-11 border-zinc-200 focus:border-zinc-400 rounded-xl font-medium"
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">iyzico Secret Key</Label>
+                  <Label className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Tami Secret Key (JWK K)</Label>
                   <Input 
                     type="password"
                     value={settings.stripe_secret_key}
                     onChange={(e) => setSettings({...settings, stripe_secret_key: e.target.value})}
-                    placeholder="sandbox-..."
+                    placeholder="Şifreniz..."
                     className="h-11 border-zinc-200 focus:border-zinc-400 rounded-xl font-medium"
                   />
                 </div>

@@ -50,8 +50,6 @@ serve(async (req) => {
       } = data;
 
       const requestBody = {
-        merchantNumber: TAMI_CONFIG.merchantNumber,
-        terminalNumber: TAMI_CONFIG.terminalNumber,
         orderId: orderId,
         amount: amount,
         currency: 'TRY',
@@ -86,7 +84,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
           'PG-Api-Version': 'v3',
           'PG-Auth-Token': `${TAMI_CONFIG.merchantNumber}:${TAMI_CONFIG.terminalNumber}:${hash}`,
-          'correlationId': crypto.randomUUID()
+          'CorrelationId': crypto.randomUUID()
         },
         body: JSON.stringify(requestBody)
       });
@@ -115,8 +113,6 @@ serve(async (req) => {
       const { tamiId, orderId } = data;
 
       const requestBody = {
-        merchantNumber: TAMI_CONFIG.merchantNumber,
-        terminalNumber: TAMI_CONFIG.terminalNumber,
         tamiId: tamiId,
         orderId: orderId
       };
@@ -131,7 +127,7 @@ serve(async (req) => {
           'Content-Type': 'application/json',
           'PG-Api-Version': 'v3',
           'PG-Auth-Token': `${TAMI_CONFIG.merchantNumber}:${TAMI_CONFIG.terminalNumber}:${hash}`,
-          'correlationId': crypto.randomUUID()
+          'CorrelationId': crypto.randomUUID()
         },
         body: JSON.stringify(requestBody)
       });
