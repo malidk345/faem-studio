@@ -221,13 +221,19 @@ export default function Home() {
 
       {/* ─── FEATURED ARCHIVE ─── */}
       <section className="py-24 md:py-32 px-4 lg:px-8 max-w-[1500px] mx-auto">
-        <div className="flex justify-center mb-24">
+        <div className="flex flex-col items-center gap-8 mb-16">
           <Link
             to="/shop"
             className="flex items-center gap-4 text-[18px] font-normal uppercase tracking-[0.05em] text-black/30 hover:text-black transition-all group font-['Handjet',sans-serif]"
           >
             TÜM KOLEKSİYON <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
           </Link>
+          
+          <div className="flex items-center gap-4 w-full max-w-[200px]">
+             <div className="h-[1px] flex-1 bg-black/5" />
+             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-black/40">Son Çıkanlar</span>
+             <div className="h-[1px] flex-1 bg-black/5" />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-8">
