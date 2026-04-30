@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Store, Globe, CreditCard, Mail, Truck, Save, RefreshCw, Shield } from 'lucide-react';
+import { Store, Globe, CreditCard, Mail, Truck, Save, RefreshCw, Shield, Bell } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
+import { subscribeToPushNotifications } from '../../../utils/notifications';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -210,6 +211,43 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
                   className="w-full h-11 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-[10px] font-black uppercase tracking-widest mt-2 transition-all"
                 >
                   {passwordLoading ? <RefreshCw size={14} className="animate-spin" /> : 'Şifreyi Güncelle'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Kolon 5: Bildirimler */}
+        <div className="space-y-6">
+          <div className="apple-card p-6 flex items-start gap-4 h-full">
+            <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600 flex-shrink-0">
+              <Bell size={18} />
+            </div>
+            <div className="flex-1 space-y-4">
+              <div>
+                <h3 className="font-semibold text-lg text-zinc-900 leading-none">Anlık Bildirimler</h3>
+                <p className="text-xs text-zinc-500 font-medium mt-1">Yeni sipariş ve mesaj uyarıları.</p>
+              </div>
+              <div className="space-y-3 pt-2">
+                <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-100">
+                  <p className="text-[10px] text-zinc-500 leading-relaxed">
+                    iOS (16.4+) ve Android cihazlarda anlık bildirim almak için uygulamayı <strong>ana ekrana eklemeniz</strong> gerekmektedir.
+                  </p>
+                </div>
+                <Button 
+                  onClick={async () => {
+                    try {
+                      const { data: { user } } = await supabase.auth.getUser();
+                      if (!user) throw new Error('Oturum bulunamadı.');
+                      await subscribeToPushNotifications(user.id);
+                      toast.success('Bildirimler başarıyla aktif edildi!');
+                    } catch (err: any) {
+                      toast.error('Bildirim hatası: ' + err.message);
+                    }
+                  }}
+                  className="w-full h-11 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest mt-2 transition-all shadow-lg shadow-amber-200"
+                >
+                  Bildirimleri Bu Cihazda Aç
                 </Button>
               </div>
             </div>
