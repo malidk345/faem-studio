@@ -222,9 +222,20 @@ export default function Home() {
       {/* ─── FEATURED ARCHIVE ─── */}
       <section className="py-24 md:py-32 px-4 lg:px-8 max-w-[1500px] mx-auto">
         <div className="flex justify-center mb-16">
-          <span className="text-[20px] font-normal uppercase tracking-[0.05em] text-black/20 font-['Handjet',sans-serif]">
-            SON ÇIKANLAR
-          </span>
+          <div className="relative group">
+            <span className="relative z-10 text-[22px] font-normal uppercase tracking-[0.05em] text-black font-['Handjet',sans-serif]">
+              SON ÇIKANLAR
+            </span>
+            {/* Masterful Asymmetric Blue Stripe */}
+            <motion.div 
+              initial={{ scaleX: 0, opacity: 0 }}
+              whileInView={{ scaleX: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+              className="absolute -left-8 -right-4 top-1/2 -translate-y-1/2 h-[12px] bg-blue-600/10 -skew-x-[20deg] origin-left z-0"
+            />
+            <div className="absolute -left-12 -right-8 top-1/2 -translate-y-1/2 h-[1px] bg-blue-400/20 -skew-x-[20deg] z-0" />
+          </div>
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-8">
