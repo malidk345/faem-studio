@@ -59,39 +59,53 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
     setLoading(true);
 
     try {
-      console.log('Creating order in DB...');
+      console.log('--- Payment Process Started ---');
       
-      // 1. Create Order in Database first (Pending Payment)
+      // Get current user if any
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      const insertData: any = {
+        total: String(numericAmount),
+        payment_status: 'pending',
+        payment_provider: 'tami',
+        status: 'pending', 
+        items: cartItems,
+        shipping_address: {
+          first_name: shippingAddress.firstName,
+          last_name: shippingAddress.lastName,
+          address: shippingAddress.address,
+          city: shippingAddress.city,
+          postal: shippingAddress.postalCode,
+          email: shippingAddress.email,
+          phone: shippingAddress.phone
+        }
+      };
+
+      // Only add user_id if logged in
+      if (user) {
+        insertData.user_id = user.id;
+      }
+
+      console.log('Inserting to Supabase:', insertData);
+      
       const { data: orderData, error: orderError } = await supabase
         .from('orders')
-        .insert({
-          total: numericAmount, // Matching DB's TEXT type
-          payment_status: 'pending',
-          payment_provider: 'tami',
-          status: 'pending', 
-          items: cartItems,
-          shipping_address: {
-            first_name: shippingAddress.firstName,
-            last_name: shippingAddress.lastName,
-            address: shippingAddress.address,
-            city: shippingAddress.city,
-            postal: shippingAddress.postalCode,
-            email: shippingAddress.email
-          }
-        })
+        .insert(insertData)
         .select()
         .single();
 
       if (orderError) {
-        console.error('DB Insert Error:', orderError);
-        throw new Error(`Sipariş oluşturulamadı: ${orderError.message}`);
+        console.error('CRITICAL_DATABASE_ERROR:', orderError);
+        // WE SHOW THE EXACT ERROR TO THE USER NOW
+        throw new Error(`Veritabanı Hatası: ${orderError.message} (${orderError.code}) - Lütfen yöneticiye bildirin.`);
       }
 
-      console.log('Order created:', orderData.id);
+      if (!orderData) throw new Error('Sipariş oluşturuldu ancak yanıt alınamadı.');
+
+      console.log('Order created successfully:', orderData.id);
 
       const [expiryMonth, expiryYear] = formData.expiryDate.split('/');
       
-      // 2. Initiate Tami Payment
       const response = await PaymentService.initiate3DPayment({
         orderId: orderData.id,
         amount: numericAmount,
@@ -106,10 +120,13 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
       if (response.success && response.data?.htmlContent) {
         onSuccess(response.data.htmlContent);
       } else {
-        throw new Error(response.message || 'Ödeme başlatılamadı.');
+        throw new Error(response.message || 'Tami ödeme başlatma hatası verdi.');
       }
     } catch (error: any) {
-      toast.error(error.message);
+      console.error('Payment Error Catch:', error);
+      toast.error(error.message, {
+        duration: 8000, // Show longer to read
+      });
     } finally {
       setLoading(false);
     }
