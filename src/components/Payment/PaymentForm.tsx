@@ -117,10 +117,18 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         callbackUrl: `https://idqnxgtleerpanujcdfn.supabase.co/functions/v1/tami-callback`
       });
 
-      if (response.success && response.data?.htmlContent) {
-        onSuccess(response.data.htmlContent);
+      console.log('Payment API Response Received:', response);
+      
+      const actualHtmlContent = response.data?.htmlContent || response.htmlContent;
+      const isSuccess = response.success || (response.data && response.success);
+
+      if (isSuccess && actualHtmlContent) {
+        console.log('3D Secure HTML Content found, triggering onSuccess...');
+        onSuccess(actualHtmlContent);
       } else {
-        throw new Error(response.message || 'Tami ödeme başlatma hatası verdi.');
+        const errorMsg = response.message || response.error || (response.data && response.data.message) || 'Tami ödeme başlatma hatası verdi.';
+        console.error('Payment Error Detail:', response);
+        throw new Error(errorMsg);
       }
     } catch (error: any) {
       console.error('Payment Error Catch:', error);

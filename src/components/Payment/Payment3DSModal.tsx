@@ -19,20 +19,51 @@ export const Payment3DSModal: React.FC<Payment3DSModalProps> = ({ isOpen, onClos
   useEffect(() => {
     if (isOpen && htmlContent && containerRef.current) {
       try {
-        // 1. Decode the Base64 HTML content
-        const decodedHtml = atob(htmlContent);
+        console.log('--- 3DS Modal Content Received ---');
+        
+        // 1. Determine if it's Base64 or raw HTML
+        // Tami sometimes returns raw HTML, sometimes Base64
+        let decodedHtml = htmlContent;
+        const isBase64 = !htmlContent.trim().startsWith('<') && !htmlContent.includes('form') && !htmlContent.includes('html');
+        
+        if (isBase64) {
+          try {
+            console.log('Decoding Base64 HTML content...');
+            decodedHtml = atob(htmlContent);
+          } catch (e) {
+            console.warn('Failed to decode as base64, using as raw content');
+            decodedHtml = htmlContent;
+          }
+        }
         
         // 2. Inject it into the container
-        // WARNING: This HTML usually contains a <form> that auto-submits to the bank
         containerRef.current.innerHTML = decodedHtml;
 
-        // 3. Find and submit the form automatically if it doesn't do it itself
+        // 3. Find and submit the form automatically
         const form = containerRef.current.querySelector('form');
         if (form) {
+          console.log('3DS Form found, submitting to iframe...');
+          // Target the iframe so it stays within our modal
+          form.target = "tami_3ds_frame";
           form.submit();
+        } else {
+          console.error('No form found in 3DS HTML content');
+          // If no form, maybe there is a script that does a redirect?
+          // Scripts in innerHTML don't run automatically. 
+          // We might need to manually execute scripts if Tami uses them.
+          const scripts = containerRef.current.querySelectorAll('script');
+          scripts.forEach(script => {
+            const newScript = document.createElement('script');
+            if (script.src) {
+              newScript.src = script.src;
+            } else {
+              newScript.textContent = script.textContent;
+            }
+            document.head.appendChild(newScript).parentNode?.removeChild(newScript);
+          });
         }
       } catch (error) {
-        console.error('Failed to decode 3DS HTML:', error);
+        console.error('Failed to process 3DS HTML:', error);
       }
     }
   }, [isOpen, htmlContent]);
