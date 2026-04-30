@@ -224,9 +224,9 @@ export default function Home() {
         <div className="flex justify-center mb-24">
           <Link
             to="/shop"
-            className="flex items-center gap-6 text-[16px] md:text-[20px] font-bold uppercase tracking-[0.2em] text-black/20 hover:text-black transition-all group"
+            className="flex items-center gap-4 text-[18px] font-normal uppercase tracking-[0.05em] text-black/30 hover:text-black transition-all group font-['Handjet',sans-serif]"
           >
-            TÜM KOLEKSİYONU İNCELE <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+            TÜM KOLEKSİYON <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
           </Link>
         </div>
 
