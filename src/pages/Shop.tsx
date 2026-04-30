@@ -85,6 +85,20 @@ export default function Shop() {
     }
   };
 
+  const mapProduct = (p: any) => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    image: p.image_url,
+    images: p.images || [],
+    category: p.category,
+    collection: p.collection,
+    sizes: p.sizes || ['One Size'],
+    description: p.description,
+    features: p.features || [],
+    discount_price: p.discount_price
+  });
+
   useEffect(() => {
     const fetchMeta = async () => {
       const [catRes, collRes] = await Promise.all([
