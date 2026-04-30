@@ -100,8 +100,8 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ items }) => {
                    animate={{ opacity: activeIndex === idx ? 1 : 0, scale: activeIndex === idx ? 1 : 0.95 }}
                    transition={{ delay: 0.5, duration: 0.8 }}
                  >
-                   <button className="bg-white/90 backdrop-blur-md text-black px-8 py-3.5 rounded-xl text-[13px] font-bold hover:bg-white transition-all shadow-lg active:scale-95 group/btn flex items-center gap-2.5">
-                     Discover <ChevronRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+                   <button className="bg-transparent border border-white/40 text-white px-8 py-3 rounded-full text-[10px] uppercase font-bold tracking-[0.2em] hover:bg-white hover:text-black hover:border-white transition-all active:scale-95 group/btn flex items-center gap-2">
+                     Keşfet <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
                    </button>
                  </motion.div>
               </div>
