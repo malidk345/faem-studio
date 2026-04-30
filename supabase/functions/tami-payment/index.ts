@@ -8,9 +8,9 @@ const corsHeaders = {
 
 // TAMI CONFIG (Sandbox - Bunlar onay gelince paneldeki değerlerle değişecek)
 const TAMI_CONFIG = {
-  merchantNumber: Deno.env.get('TAMI_MERCHANT_NUMBER') || 'TEST_MERCHANT',
-  terminalNumber: Deno.env.get('TAMI_TERMINAL_NUMBER') || 'TEST_TERMINAL',
-  jwk_k: Deno.env.get('TAMI_JWK_K') || 'TEST_K_VALUE',
+  merchantNumber: Deno.env.get('TAMI_MERCHANT_NUMBER') || '77006950',
+  terminalNumber: Deno.env.get('TAMI_TERMINAL_NUMBER') || '84006953',
+  jwk_k: Deno.env.get('TAMI_JWK_K') || '0edad05a-7ea7-40f1-a80c-d600121ca51b',
   jwk_kid: Deno.env.get('TAMI_JWK_KID') || 'TEST_KID_VALUE',
   apiUrl: 'https://sandbox-paymentapi.tami.com.tr/payment/auth',
   completeUrl: 'https://sandbox-paymentapi.tami.com.tr/payment/complete-3ds'
@@ -101,13 +101,6 @@ serve(async (req) => {
     // ACTION: Complete 3D Payment (After callback)
     if (action === 'complete-3d') {
       const { tamiId, orderId } = data;
-
-      const requestBody = {
-        merchantNumber: TAMI_CONFIG.merchantNumber,
-        terminalNumber: TAMI_CONFIG.terminalNumber,
-        tamiId: tamiId,
-        orderId: orderId
-      };
 
       const requestBody = {
         merchantNumber: TAMI_CONFIG.merchantNumber,
