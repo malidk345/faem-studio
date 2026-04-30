@@ -110,13 +110,17 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ items }) => {
         ))}
       </div>
 
-      {/* Modern Index Indicators */}
-      <div className="absolute bottom-12 right-8 md:right-16 flex items-center gap-4 z-20">
+      {/* Modern Index Indicators (Horizontal Mobile, Vertical Desktop) */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:left-auto md:right-12 flex md:flex-col items-center gap-2.5 md:gap-4 z-20">
          {items.map((_, i) => (
            <button 
              key={i} 
              onClick={() => scrollTo(i)}
-             className={`h-1.5 transition-all duration-700 ease-in-out rounded-full ${activeIndex === i ? 'w-12 bg-white' : 'w-4 bg-white/20 hover:bg-white/40'}`}
+             className={`transition-all duration-700 ease-in-out rounded-full ${
+               activeIndex === i 
+                 ? 'w-8 h-1 md:w-1 md:h-12 bg-white' 
+                 : 'w-2 h-2 md:w-1 md:h-4 bg-white/30 hover:bg-white/60'
+             }`}
            />
          ))}
       </div>
