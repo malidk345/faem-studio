@@ -220,7 +220,7 @@ export default function Home() {
 
 
       {/* ─── FEATURED ARCHIVE ─── */}
-      <section className="py-24 md:py-32 px-6 lg:px-12 max-w-[1400px] mx-auto">
+      <section className="py-24 md:py-32 px-4 lg:px-8 max-w-[1500px] mx-auto">
         <div className="flex justify-center mb-24">
           <Link
             to="/shop"
@@ -230,7 +230,7 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-24">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-8">
           <AnimatePresence mode="popLayout">
             {products.map((product) => (
               <motion.div
