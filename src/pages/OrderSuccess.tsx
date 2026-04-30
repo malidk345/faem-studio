@@ -3,14 +3,19 @@ import { motion } from 'motion/react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CheckCircle2, Package, ArrowRight, ShoppingBag } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useCart } from '../context/CartContext';
 import confetti from 'canvas-confetti';
 
 export default function OrderSuccess() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { clearCart } = useCart();
 
   useEffect(() => {
+    // Clear the cart immediately on success
+    clearCart();
+    
     // Elegant celebration burst
     const duration = 2.5 * 1000;
     const animationEnd = Date.now() + duration;
