@@ -8,13 +8,18 @@ import { Badge } from '@/components/ui/badge';
 import { PaymentService } from '@/services/PaymentService';
 import { toast } from 'sonner';
 
+import { supabase } from '@/lib/supabase';
+import { CartItem } from '@/context/CartContext';
+
 interface PaymentFormProps {
   amount: string;
+  numericAmount: string;
   orderId: string;
+  cartItems: CartItem[];
   onSuccess: (htmlContent: string) => void;
 }
 
-export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, orderId, onSuccess }) => {
+export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount, orderId, cartItems, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     cardHolderName: '',
@@ -45,17 +50,34 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, orderId, onSuc
     setLoading(true);
 
     try {
+      // 1. Create Order in Database first (Pending Payment)
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          total_amount: parseFloat(numericAmount),
+          payment_status: 'pending',
+          payment_provider: 'tami',
+          status: 'pending', // Order status
+          items: cartItems // Assuming items can be stored as JSON
+        })
+        .select()
+        .single();
+
+      if (orderError) throw new Error('Sipariş oluşturulamadı: ' + orderError.message);
+
       const [expiryMonth, expiryYear] = formData.expiryDate.split('/');
       
+      // 2. Initiate Tami Payment with the Real Order ID
       const response = await PaymentService.initiate3DPayment({
-        orderId,
-        amount,
+        orderId: orderData.id,
+        amount: numericAmount,
         cardHolderName: formData.cardHolderName,
         cardNumber: formData.cardNumber.replace(/\s/g, ''),
         expiryMonth,
         expiryYear: `20${expiryYear}`,
         cvv: formData.cvv,
-        callbackUrl: `${window.location.origin}/payment-callback`
+        // The callback now goes to our Supabase Edge Function
+        callbackUrl: `https://idqnxgtleerpanujcdfn.supabase.co/functions/v1/tami-callback`
       });
 
       if (response.success && response.data?.htmlContent) {

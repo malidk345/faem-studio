@@ -51,8 +51,10 @@ const CheckoutPage: React.FC = () => {
           {/* Sol: Ödeme Formu */}
           <div>
             <PaymentForm 
-              amount={orderDetails.amount} 
+              amount={orderDetails.displayAmount} 
+              numericAmount={orderDetails.amount}
               orderId={orderDetails.orderId}
+              cartItems={cartItems}
               onSuccess={handlePaymentSuccess}
             />
           </div>
