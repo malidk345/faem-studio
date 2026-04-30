@@ -23,6 +23,22 @@ interface Product {
   discount_price?: string;
 }
 
+const ITEMS_PER_PAGE = 12;
+
+const mapProduct = (p: any) => ({
+  id: p.id,
+  name: p.name,
+  price: p.price,
+  image: p.image_url,
+  images: p.images || [],
+  category: p.category,
+  collection: p.collection,
+  sizes: p.sizes || ['One Size'],
+  description: p.description,
+  features: p.features || [],
+  discount_price: p.discount_price
+});
+
 export default function Shop() {
   const { t } = useLanguage();
   const [searchParams] = useSearchParams();
@@ -34,7 +50,11 @@ export default function Shop() {
     description: t('shop.desc')
   });
 
-  const ITEMS_PER_PAGE = 12;
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
   const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
   const [activeCollection, setActiveCollection] = useState<string>(initialCollection);
   const [availableCats, setAvailableCats] = useState<string[]>(['All']);
@@ -49,7 +69,6 @@ export default function Shop() {
       let query = supabase
         .from('products')
         .select('id, name, price, image_url, category, collection, discount_price, description, images, features, sizes', { count: 'exact' })
-        .or('is_archived.is.null,is_archived.eq.false')
         .order('created_at', { ascending: false })
         .range(from, to);
 
@@ -70,13 +89,15 @@ export default function Shop() {
         if (isInitial) setProducts([]);
         setHasMore(false);
       } else {
+        const mappedData = data.map(mapProduct);
         if (isInitial) {
-          setProducts(data.map(mapProduct));
+          setProducts(mappedData);
         } else {
-          setProducts(prev => [...prev, ...data.map(mapProduct)]);
+          setProducts(prev => [...prev, ...mappedData]);
         }
         
-        setHasMore(count ? (from + data.length < count) : data.length === ITEMS_PER_PAGE);
+        const currentTotal = from + data.length;
+        setHasMore(count ? currentTotal < count : data.length === ITEMS_PER_PAGE);
       }
     } catch (error) {
       console.error('Error loading products:', error);
@@ -85,28 +106,18 @@ export default function Shop() {
     }
   };
 
-  const mapProduct = (p: any) => ({
-    id: p.id,
-    name: p.name,
-    price: p.price,
-    image: p.image_url,
-    images: p.images || [],
-    category: p.category,
-    collection: p.collection,
-    sizes: p.sizes || ['One Size'],
-    description: p.description,
-    features: p.features || [],
-    discount_price: p.discount_price
-  });
-
   useEffect(() => {
     const fetchMeta = async () => {
-      const [catRes, collRes] = await Promise.all([
-        supabase.from('categories').select('name'),
-        supabase.from('collections').select('name')
-      ]);
-      if (catRes.data) setAvailableCats(['All', ...catRes.data.map(c => c.name)]);
-      if (collRes.data) setAvailableColls(['All', ...collRes.data.map(c => c.name)]);
+      try {
+        const [catRes, collRes] = await Promise.all([
+          supabase.from('categories').select('name'),
+          supabase.from('collections').select('name')
+        ]);
+        if (catRes.data) setAvailableCats(['All', ...catRes.data.map(c => c.name)]);
+        if (collRes.data) setAvailableColls(['All', ...collRes.data.map(c => c.name)]);
+      } catch (err) {
+        console.error("Meta fetch error:", err);
+      }
     };
     fetchMeta();
   }, []);
@@ -114,6 +125,7 @@ export default function Shop() {
   useEffect(() => {
     window.scrollTo(0, 0);
     setPage(0);
+    setIsLoading(true);
     loadProducts(0, searchQuery, true);
   }, [searchQuery, activeCategory, activeCollection]);
 
