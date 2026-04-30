@@ -234,21 +234,52 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
                     iOS (16.4+) ve Android cihazlarda anlık bildirim almak için uygulamayı <strong>ana ekrana eklemeniz</strong> gerekmektedir.
                   </p>
                 </div>
-                <Button 
-                  onClick={async () => {
-                    try {
-                      const { data: { user } } = await supabase.auth.getUser();
-                      if (!user) throw new Error('Oturum bulunamadı.');
-                      await subscribeToPushNotifications(user.id);
-                      toast.success('Bildirimler başarıyla aktif edildi!');
-                    } catch (err: any) {
-                      toast.error('Bildirim hatası: ' + err.message);
-                    }
-                  }}
-                  className="w-full h-11 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest mt-2 transition-all shadow-lg shadow-amber-200"
-                >
-                  Bildirimleri Bu Cihazda Aç
-                </Button>
+                <div className="flex flex-col gap-2 mt-2">
+                  <Button 
+                    onClick={async () => {
+                      try {
+                        const { data: { user } } = await supabase.auth.getUser();
+                        if (!user) throw new Error('Oturum bulunamadı.');
+                        await subscribeToPushNotifications(user.id);
+                        toast.success('Bildirimler bu cihaz için aktif edildi!');
+                      } catch (err: any) {
+                        toast.error('Bildirim hatası: ' + err.message);
+                      }
+                    }}
+                    className="w-full h-11 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-amber-200"
+                  >
+                    1. Bu Cihazda Bildirimleri Aç
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        const { data: { session } } = await supabase.auth.getSession();
+                        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/notify-admins`, {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${session?.access_token}`
+                          },
+                          body: JSON.stringify({
+                            title: 'Test Bildirimi 🔔',
+                            body: 'Faem Studio bildirim sistemi başarıyla çalışıyor!',
+                            url: '/fatihveemirinadminportali'
+                          })
+                        });
+                        if (!response.ok) throw new Error('Fonksiyon çağrılamadı.');
+                        toast.success('Test bildirimi gönderildi!');
+                      } catch (err: any) {
+                        toast.error('Test hatası: ' + err.message);
+                        console.error(err);
+                      }
+                    }}
+                    className="w-full h-11 border-zinc-200 text-zinc-600 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+                  >
+                    2. Test Bildirimi Gönder
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
