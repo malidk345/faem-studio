@@ -33,9 +33,11 @@ export function useAdminData() {
   const [customers, setCustomers] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    setHasError(false);
     try {
       // Run queries in parallel for maximum speed
       const [
@@ -104,6 +106,7 @@ export function useAdminData() {
       }
     } catch (error) {
       console.error('Error fetching admin data:', error);
+      setHasError(true);
     } finally {
       setLoading(false);
     }
@@ -254,6 +257,7 @@ export function useAdminData() {
     updateOrderStatus,
     toggleMessageRead,
     deleteMessage,
-    updateSettings
+    updateSettings,
+    hasError
   };
 }
