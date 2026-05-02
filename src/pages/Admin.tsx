@@ -192,16 +192,17 @@ export default function Admin() {
                       onClick={() => setIsAdminMenuOpen(false)}
                     />
                     <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.95, filter: 'blur(4px)' }}
-                      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                      exit={{ opacity: 0, y: 4, scale: 0.98, filter: 'blur(2px)' }}
+                      initial={{ opacity: 0, y: 4, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 4, scale: 0.98 }}
                       transition={{ 
                         type: "spring", 
-                        damping: 20, 
-                        stiffness: 300,
-                        mass: 0.8
+                        damping: 25, 
+                        stiffness: 400,
+                        mass: 0.5
                       }}
-                      className="absolute top-full left-0 mt-2 w-56 bg-white/90 backdrop-blur-xl border border-gray-200/50 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] z-[50] py-1.5 flex flex-col overflow-hidden origin-top-left"
+                      style={{ willChange: "transform, opacity" }}
+                      className="absolute top-full left-0 mt-2 w-56 bg-white/95 backdrop-blur-2xl border border-gray-200/50 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] z-[50] py-1.5 flex flex-col overflow-hidden origin-top-left"
                     >
                       <div className="px-3 py-2 mb-1 border-b border-gray-100/50 bg-gray-50/50">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Hızlı Erişim</span>
