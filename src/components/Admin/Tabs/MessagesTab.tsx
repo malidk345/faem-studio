@@ -94,36 +94,36 @@ export const MessagesTab: React.FC<MessagesTabProps> = ({ messages, onToggleRead
           {filteredMessages.map((msg) => (
             <div 
               key={msg.id} 
-              className={`group flex items-center gap-2 sm:gap-4 px-2 sm:px-3 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50/50 transition-all active:scale-[0.99] ${
+              className={`group flex items-center gap-3 px-3 py-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50/50 transition-all active:scale-[0.995] ${
                 msg.is_read ? 'bg-gray-50/20' : 'bg-white'
               }`}
             >
-              <div className="hidden xs:flex items-center gap-1.5 shrink-0 text-gray-300 pl-1">
-                <GripVertical className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Star className={`w-3.5 h-3.5 hover:text-amber-400 transition-colors ${msg.is_starred ? 'text-amber-400 fill-amber-400' : 'text-gray-200'}`} />
+              <div className="hidden xs:flex items-center gap-2 shrink-0 text-gray-300 pl-1">
+                <GripVertical className="w-4.5 h-4.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Star className={`w-4 h-4 hover:text-amber-400 transition-colors ${msg.is_starred ? 'text-amber-400 fill-amber-400' : 'text-gray-200'}`} />
               </div>
               
-              <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-4">
-                <div className="w-16 sm:w-32 shrink-0">
-                  <span className={`text-[11px] sm:text-sm truncate block leading-tight ${msg.is_read ? 'text-gray-500 font-medium' : 'text-gray-900 font-black'}`}>
+              <div className="flex-1 min-w-0 flex items-center gap-3 sm:gap-6">
+                <div className="w-20 sm:w-40 shrink-0">
+                  <span className={`text-[12px] sm:text-sm truncate block leading-tight ${msg.is_read ? 'text-gray-500 font-medium' : 'text-gray-900 font-black'}`}>
                     {msg.name}
                   </span>
                 </div>
                 
                 <div className="flex-1 truncate">
-                  <span className={`text-[11px] sm:text-sm truncate block leading-tight ${msg.is_read ? 'text-gray-500' : 'text-gray-900 font-bold'}`}>
+                  <span className={`text-[12px] sm:text-sm truncate block leading-tight ${msg.is_read ? 'text-gray-500' : 'text-gray-900 font-bold'}`}>
                     {msg.subject}
                   </span>
-                  <span className="text-gray-400 text-[10px] sm:text-xs truncate hidden sm:inline">{msg.message}</span>
+                  <span className="text-gray-400 text-[11px] sm:text-xs truncate hidden sm:inline opacity-70">{msg.message}</span>
                 </div>
                 
-                <div className="shrink-0 w-12 sm:w-20 text-right text-[9px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-tighter">
+                <div className="shrink-0 w-16 sm:w-24 text-right text-[10px] sm:text-[12px] font-black text-gray-400 uppercase tracking-tighter">
                   {new Date(msg.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' })}
                 </div>
               </div>
               
               <div className="shrink-0 flex items-center pr-1 sm:pr-2">
-                <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
+                <ChevronRight className="w-4 h-4 text-gray-300" />
               </div>
             </div>
           ))}

@@ -157,27 +157,27 @@ export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, o
                 />
               </div>
               
-              <div className="flex-1 truncate flex items-center gap-2 sm:gap-4">
+              <div className="flex-1 truncate flex items-center gap-3 sm:gap-6">
                 <div className="flex flex-col min-w-0 flex-1">
-                  <span className="font-bold text-gray-900 truncate text-[11px] sm:text-[13px]">{product.name}</span>
-                  <span className="text-[9px] text-gray-400 font-mono tracking-tighter">ID: #{product.id?.slice(0,6)}</span>
+                  <span className="font-bold text-gray-900 truncate text-[12px] sm:text-[14px]">{product.name}</span>
+                  <span className="text-[10px] text-gray-400 font-mono tracking-tighter">ID: #{product.id?.slice(0,8).toUpperCase()}</span>
                 </div>
                 
-                <div className="flex flex-col w-16 sm:w-32 shrink-0">
-                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Kol.</span>
-                  <span className="text-[10px] sm:text-[12px] font-medium text-gray-700 truncate">{product.collection || '—'}</span>
+                <div className="flex flex-col w-20 sm:w-32 shrink-0">
+                  <span className="text-[9px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-tighter">Koleksiyon</span>
+                  <span className="text-[11px] sm:text-[13px] font-medium text-gray-700 truncate">{product.collection || '—'}</span>
                 </div>
                 
+                <div className="flex flex-col w-14 sm:w-28 shrink-0 text-right">
+                  <span className="text-[9px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-tighter">Fiyat</span>
+                  <span className="text-[11px] sm:text-[14px] font-black text-gray-900">{product.price}</span>
+                </div>
+ 
                 <div className="flex flex-col w-12 sm:w-24 shrink-0 text-right">
-                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Fiyat</span>
-                  <span className="text-[10px] sm:text-[12px] font-bold text-gray-900">{product.price}</span>
-                </div>
-
-                <div className="flex flex-col w-10 sm:w-20 shrink-0 text-right">
-                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Stok</span>
-                  <div className="flex items-center justify-end gap-1 sm:gap-1.5">
-                    <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${(product.stock_count || 0) > 5 ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'}`} />
-                    <span className="text-[10px] sm:text-[12px] font-bold text-gray-900">{product.stock_count || 0}</span>
+                  <span className="text-[9px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-tighter">Stok</span>
+                  <div className="flex items-center justify-end gap-1 sm:gap-2">
+                    <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${(product.stock_count || 0) > 5 ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'}`} />
+                    <span className="text-[11px] sm:text-[14px] font-black text-gray-900">{product.stock_count || 0}</span>
                   </div>
                 </div>
               </div>

@@ -160,35 +160,35 @@ export function CustomersTab({ customers, orders }: CustomersTabProps) {
           {filteredCustomers.map((customer) => (
             <div 
               key={customer.id} 
-              className="group flex items-center gap-2 sm:gap-4 px-2 sm:px-3 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50/50 transition-all active:scale-[0.99]"
+              className="group flex items-center gap-3 px-3 py-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50/50 transition-all active:scale-[0.995]"
             >
-              <div className="hidden xs:flex items-center gap-1.5 shrink-0 text-gray-300 pl-1">
-                <GripVertical className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="hidden xs:flex items-center gap-2 shrink-0 text-gray-300 pl-1">
+                <GripVertical className="w-4.5 h-4.5 opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                <span className="text-[10px] sm:text-xs font-black text-emerald-600 uppercase">{customer.name?.charAt(0) || '?'}</span>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+                <span className="text-xs sm:text-sm font-black text-emerald-600 uppercase">{customer.name?.charAt(0) || '?'}</span>
               </div>
               
-              <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-4">
+              <div className="flex-1 min-w-0 flex items-center gap-3 sm:gap-6">
                 <div className="flex flex-col min-w-0 flex-1">
-                  <span className="font-bold text-gray-900 truncate text-[11px] sm:text-[13px]">{customer.name || 'İsimsiz'}</span>
-                  <span className="text-[9px] sm:text-[10px] text-gray-400 font-medium truncate opacity-70">{customer.email}</span>
+                  <span className="font-bold text-gray-900 truncate text-[12px] sm:text-[14px]">{customer.name || 'İsimsiz'}</span>
+                  <span className="text-[10px] sm:text-[11px] text-gray-400 font-medium truncate opacity-70">{customer.email}</span>
                 </div>
                 
-                <div className="flex flex-col w-12 sm:w-24 shrink-0">
-                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Sipariş</span>
-                  <span className="font-bold text-gray-900 text-[10px] sm:text-[12px]">{customer.orderCount}</span>
+                <div className="flex flex-col w-14 sm:w-24 shrink-0">
+                  <span className="text-[9px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-tighter">Siparişler</span>
+                  <span className="font-bold text-gray-900 text-[11px] sm:text-[14px]">{customer.orderCount}</span>
                 </div>
 
-                <div className="flex flex-col w-16 sm:w-32 shrink-0 text-right">
-                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Harcanan</span>
-                  <span className="font-black text-emerald-600 text-[10px] sm:text-[12px]">{customer.formattedTotalSpent}</span>
+                <div className="flex flex-col w-20 sm:w-32 shrink-0 text-right">
+                  <span className="text-[9px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-tighter">Harcama</span>
+                  <span className="font-black text-emerald-600 text-[11px] sm:text-[14px]">{customer.formattedTotalSpent}</span>
                 </div>
               </div>
               
               <div className="shrink-0 flex items-center pr-1 sm:pr-2">
-                <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
+                <ChevronRight className="w-4 h-4 text-gray-300" />
               </div>
             </div>
           ))}

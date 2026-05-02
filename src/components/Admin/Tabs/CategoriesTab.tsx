@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS public.categories (
               <h2 className="text-xl sm:text-3xl font-black tracking-tighter text-zinc-900">
                 {isCollection ? 'Mevcut Koleksiyonlar' : 'Mevcut Kategoriler'}
               </h2>
-              <p className="text-zinc-500 text-[9px] sm:text-[11px] font-bold uppercase tracking-widest mt-1">
+              <p className="text-zinc-500 text-[10px] sm:text-[12px] font-bold uppercase tracking-[0.2em] mt-1">
                 {isCollection ? 'Arşiv Yapılanması' : 'Envanter Hiyerarşisi'}
               </p>
            </div>
@@ -57,11 +57,11 @@ CREATE TABLE IF NOT EXISTS public.categories (
                variant="outline" 
                size="sm" 
                onClick={() => setShowSql(!showSql)}
-               className="rounded-xl border-zinc-100 text-[9px] sm:text-[10px] font-black uppercase tracking-widest h-9 sm:h-10 px-3 sm:px-4"
+               className="rounded-xl border-zinc-100 text-[10px] sm:text-[11px] font-black uppercase tracking-widest h-9 sm:h-10 px-4"
              >
                <Code size={14} className="mr-2" /> SQL
              </Button>
-             <Badge variant="secondary" className="font-black bg-zinc-100 text-zinc-900 px-4 sm:px-5 py-1.5 sm:py-2 rounded-xl uppercase text-[9px] sm:text-[10px] tracking-widest border-none">
+             <Badge variant="secondary" className="font-black bg-zinc-100 text-zinc-900 px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl uppercase text-[10px] sm:text-[11px] tracking-widest border-none">
                 {categories.length} Toplam
              </Badge>
            </div>
@@ -71,21 +71,21 @@ CREATE TABLE IF NOT EXISTS public.categories (
           <motion.div 
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 relative overflow-hidden"
+            className="bg-zinc-900 rounded-[1.5rem] sm:rounded-[2rem] p-5 sm:p-7 relative overflow-hidden"
           >
             <div className="absolute top-4 right-4 text-white/20">
               <Code size={30} className="sm:size-10" />
             </div>
-            <h3 className="text-white text-[10px] sm:text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
+            <h3 className="text-white text-[11px] sm:text-xs font-black uppercase tracking-widest mb-4 flex items-center gap-2">
               <Info size={14} className="text-blue-400" /> Şema
             </h3>
-            <pre className="text-emerald-400 font-mono text-[9px] sm:text-[11px] overflow-x-auto p-3 sm:p-4 bg-black/30 rounded-xl leading-relaxed">
+            <pre className="text-emerald-400 font-mono text-[10px] sm:text-[12px] overflow-x-auto p-4 bg-black/30 rounded-xl leading-relaxed">
               {sqlCode}
             </pre>
           </motion.div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           <AnimatePresence mode="popLayout">
             {categories.length > 0 ? (
               categories.map((c, i) => (
@@ -97,15 +97,15 @@ CREATE TABLE IF NOT EXISTS public.categories (
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3, delay: i * 0.05 }}
                 >
-                  <Card className="group border-zinc-100 hover:border-zinc-900 transition-all duration-500 rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm active:scale-[0.98]">
-                    <CardContent className="p-4 sm:p-6 flex items-center justify-between">
-                        <div className="flex items-center gap-3 sm:gap-4">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-zinc-900 group-hover:text-white transition-all duration-500">
-                            <Hash size={18} />
+                  <Card className="group border-zinc-100 hover:border-zinc-900 transition-all duration-500 rounded-2xl sm:rounded-[2rem] overflow-hidden shadow-sm active:scale-[0.98]">
+                    <CardContent className="p-5 sm:p-6 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-zinc-50 flex items-center justify-center text-zinc-400 group-hover:bg-zinc-900 group-hover:text-white transition-all duration-500">
+                            <Hash size={20} />
                           </div>
                           <div className="flex flex-col">
                             <span className="font-bold tracking-tight text-zinc-900 text-sm sm:text-lg leading-none">{c.name || c}</span>
-                            <span className="text-[8px] sm:text-[9px] font-black text-zinc-400 uppercase tracking-[0.2em] mt-2">Aktif Birim</span>
+                            <span className="text-[10px] sm:text-[11px] font-black text-zinc-300 uppercase tracking-[0.2em] mt-2.5">Aktif Birim</span>
                           </div>
                         </div>
                         <Button 
@@ -117,19 +117,19 @@ CREATE TABLE IF NOT EXISTS public.categories (
                               toast.error(isCollection ? 'Koleksiyon silindi.' : 'Kategori silindi.');
                             }
                           }}
-                          className="h-9 w-9 text-zinc-300 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all"
+                          className="h-10 w-10 text-zinc-200 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
                         >
-                            <Trash2 size={16} />
+                            <Trash2 size={18} />
                         </Button>
                     </CardContent>
                   </Card>
                 </motion.div>
               ))
             ) : (
-              <div className="col-span-full py-16 sm:py-20 bg-zinc-50/50 rounded-[2rem] sm:rounded-[3rem] border border-dashed border-zinc-200 flex flex-col items-center justify-center text-center px-6">
-                 <Layers className="text-zinc-200 mb-4 sm:mb-6" size={48} sm:size={64} />
-                 <h3 className="text-[10px] sm:text-xs font-black text-zinc-400 uppercase tracking-[0.3em]">Hiyerarşi Boş</h3>
-                 <p className="text-[10px] sm:text-[11px] text-zinc-400 mt-2 sm:mt-3 max-w-xs leading-relaxed font-medium">
+              <div className="col-span-full py-20 bg-zinc-50/50 rounded-[2.5rem] border border-dashed border-zinc-200 flex flex-col items-center justify-center text-center px-8">
+                 <Layers className="text-zinc-200 mb-6" size={64} />
+                 <h3 className="text-[11px] sm:text-xs font-black text-zinc-400 uppercase tracking-[0.3em]">Hiyerarşi Boş</h3>
+                 <p className="text-[11px] sm:text-[12px] text-zinc-300 mt-4 max-w-xs leading-relaxed font-medium">
                    Henüz tanımlanmış bir kayıt bulunmuyor.
                  </p>
               </div>
@@ -140,41 +140,41 @@ CREATE TABLE IF NOT EXISTS public.categories (
 
       {/* Add Category Section */}
       <div className="lg:col-span-4 mt-4 lg:mt-0">
-        <div className="bg-white border border-zinc-100 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 sticky top-24 shadow-2xl shadow-black/[0.02]">
+        <div className="bg-white border border-zinc-100 rounded-[2.5rem] p-8 sticky top-24 shadow-2xl shadow-black/[0.02]">
           <div className="space-y-6">
             <div className="flex flex-row items-center lg:flex-col lg:items-start gap-4">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-zinc-900 text-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl shadow-black/20 shrink-0">
-                  {isCollection ? <Layers size={24} sm:size={28} /> : <Plus size={24} sm:size={28} />}
+              <div className="w-14 h-14 bg-zinc-900 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-black/20 shrink-0">
+                  {isCollection ? <Layers size={28} /> : <Plus size={28} />}
               </div>
               <div>
-                <h3 className="text-lg sm:text-xl font-black tracking-tighter text-zinc-900">
+                <h3 className="text-xl font-black tracking-tighter text-zinc-900">
                   {isCollection ? 'Yeni Koleksiyon' : 'Yeni Kategori'}
                 </h3>
-                <p className="text-zinc-500 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest mt-1 leading-relaxed">
+                <p className="text-zinc-400 text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mt-1.5 leading-relaxed">
                   {isCollection ? 'Archive Planning' : 'Stratejik Sınıflandırma'}
                 </p>
               </div>
             </div>
             
-            <div className="space-y-4 pt-4 border-t border-zinc-50">
-              <div className="space-y-2">
-                 <label className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">
-                   {isCollection ? 'Başlık' : 'Başlık'}
+            <div className="space-y-5 pt-6 border-t border-zinc-50">
+              <div className="space-y-2.5">
+                 <label className="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-zinc-300 ml-1">
+                   BAŞLIK
                  </label>
                  <Input 
                   value={newCat}
                   onChange={e => setNewCat(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleAdd()}
                   placeholder={isCollection ? "Örn. ARCHIVE 001" : "Örn. OUTERWEAR"} 
-                  className="h-12 sm:h-14 bg-zinc-50/50 border-zinc-100 rounded-xl sm:rounded-2xl font-black text-[11px] sm:text-xs focus:bg-white focus:ring-1 focus:ring-black transition-all shadow-none" 
+                  className="h-14 bg-zinc-50/50 border-zinc-100 rounded-2xl font-black text-xs sm:text-sm focus:bg-white focus:ring-1 focus:ring-black transition-all shadow-none" 
                  />
               </div>
               <Button 
                 onClick={handleAdd}
                 disabled={!newCat.trim()}
-                className="w-full bg-black text-white hover:bg-zinc-800 h-12 sm:h-14 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-[11px] uppercase tracking-[0.2em] shadow-xl shadow-black/10 transition-all active:scale-95 disabled:opacity-30"
+                className="w-full bg-black text-white hover:bg-zinc-800 h-14 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-xl shadow-black/10 transition-all active:scale-95 disabled:opacity-30"
               >
-                {isCollection ? 'Koleksiyonu Yayınla' : 'Kategoriyi Yayınla'}
+                {isCollection ? 'YAYINLA' : 'YAYINLA'}
               </Button>
             </div>
           </div>
