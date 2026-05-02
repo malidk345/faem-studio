@@ -1,6 +1,11 @@
-import React from 'react';
-import { motion } from 'motion/react';
-import { Mail, Trash2, CheckCircle, Clock, User, MessageSquare } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { 
+  Mail, Trash2, CheckCircle, Clock, User, 
+  MessageSquare, Search, ChevronDown, RotateCw, 
+  MoreVertical, Square, GripVertical, ChevronLeft, 
+  ChevronRight, Star
+} from 'lucide-react';
 
 interface MessagesTabProps {
   messages: any[];
@@ -9,93 +14,145 @@ interface MessagesTabProps {
 }
 
 export const MessagesTab: React.FC<MessagesTabProps> = ({ messages, onToggleRead, onDelete }) => {
-  if (messages.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 text-neutral-400">
-        <MessageSquare size={40} strokeWidth={1} className="mb-4 opacity-20" />
-        <p className="text-[10px] uppercase font-bold tracking-[0.2em]">Henüz mesaj bulunmuyor</p>
-      </div>
-    );
-  }
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredMessages = messages.filter(m => 
+    m.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    m.message?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between mb-8">
+      {/* Strategic Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">Gelen Mesajlar</h2>
-          <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-500 mt-1">İletişim Formu Başvuruları</p>
+           <h2 className="text-2xl font-bold tracking-tight text-gray-900">Gelen Mesajlar</h2>
+           <p className="text-gray-500 text-[11px] font-bold uppercase tracking-widest mt-1">Müşteri İletişimi</p>
         </div>
-        <div className="bg-zinc-50 px-4 py-2 rounded-xl border-none shadow-sm">
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500">Toplam: {messages.length}</span>
+        <div className="flex items-center gap-2">
+          <div className="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-100 flex flex-col items-end">
+            <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter">Okunmamış</span>
+            <span className="text-lg font-bold text-blue-700 leading-tight">{messages.filter(m => !m.is_read).length}</span>
+          </div>
+          <div className="px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-100 flex flex-col items-end">
+            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Toplam Mesaj</span>
+            <span className="text-lg font-bold text-gray-700 leading-tight">{messages.length}</span>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-4">
-        {messages.map((msg) => (
-          <motion.div
-            key={msg.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`group relative apple-card ${msg.is_read ? 'opacity-60' : 'opacity-100'} p-5 sm:p-6 transition-all`}
-          >
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
-              <div className="flex-1 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className={`w-2 h-2 rounded-full ${msg.is_read ? 'bg-zinc-200' : 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]'}`} />
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400">
-                    {new Date(msg.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' })}
+      {/* Messages Feed Area */}
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col text-[13px] shadow-sm min-h-[500px]">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 text-gray-600 bg-white">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
+              <Square className="w-4 h-4" />
+              <ChevronDown className="w-3 h-3" />
+            </div>
+            <div className="cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
+              <RotateCw className="w-4 h-4" />
+            </div>
+            <div className="cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
+              <MoreVertical className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="flex items-center gap-4 text-xs font-medium">
+            <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded border border-gray-100">
+              <Search className="w-3.5 h-3.5 text-gray-400" />
+              <input 
+                type="text" 
+                placeholder="Mesajlarda ara..." 
+                className="bg-transparent border-none outline-none text-xs w-32 sm:w-48"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <span className="hidden sm:inline">1-{Math.min(filteredMessages.length, 16)} of {filteredMessages.length}</span>
+            <div className="flex items-center gap-1">
+              <div className="cursor-pointer hover:bg-gray-100 p-1 rounded">
+                <ChevronLeft className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="cursor-pointer hover:bg-gray-100 p-1 rounded">
+                <ChevronRight className="w-4 h-4" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs for Filtering (Visual only for now) */}
+        <div className="flex items-center border-b border-gray-200 overflow-x-auto hide-scrollbar bg-white">
+          <button className="flex items-center gap-3 px-4 py-3 border-b-2 border-emerald-600 text-emerald-600 min-w-max cursor-pointer bg-emerald-50/30 transition-all">
+            <Mail className="w-4 h-4" />
+            <span className="font-bold uppercase tracking-tight text-xs">Gelen Kutusu</span>
+          </button>
+          <button className="flex items-center gap-3 px-4 py-3 border-b-2 border-transparent text-gray-600 hover:bg-gray-50 min-w-max cursor-pointer transition-all">
+            <Star className="w-4 h-4 text-amber-400" />
+            <span className="font-bold uppercase tracking-tight text-xs">Yıldızlılar</span>
+          </button>
+        </div>
+
+        {/* List View */}
+        <div className="flex flex-col bg-white">
+          {filteredMessages.map((msg) => (
+            <div 
+              key={msg.id} 
+              className={`group flex items-center gap-4 px-3 py-3 border-b border-gray-100 cursor-pointer hover:shadow-[inset_1px_0_0_#dadce0,inset_-1px_0_0_#dadce0,0_1px_2px_0_rgba(60,64,67,.3),0_1px_3px_1px_rgba(60,64,67,.15)] hover:z-10 transition-all ${
+                msg.is_read ? 'bg-gray-50/50' : 'bg-white'
+              }`}
+            >
+              <div className="flex items-center gap-1.5 shrink-0 text-gray-300">
+                <GripVertical className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Square className="w-4 h-4 hover:text-gray-600 opacity-60" />
+                <Star className={`w-4 h-4 hover:text-amber-400 transition-colors ${msg.is_starred ? 'text-amber-400 fill-amber-400' : 'text-gray-300'}`} />
+              </div>
+              
+              <div className="flex-1 truncate flex items-center gap-4">
+                <div className="w-[150px] shrink-0">
+                  <span className={`text-sm truncate block ${msg.is_read ? 'text-gray-600 font-medium' : 'text-gray-900 font-bold'}`}>
+                    {msg.name}
                   </span>
                 </div>
                 
-                <div>
-                  <h3 className="text-lg font-semibold tracking-tight text-zinc-900 mb-1">{msg.subject}</h3>
-                  <p className="text-zinc-600 text-sm leading-relaxed">{msg.message}</p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-6 pt-2">
-                  <div className="flex items-center gap-2 text-zinc-400">
-                    <User size={14} />
-                    <span className="text-xs font-medium text-zinc-700">{msg.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-zinc-400">
-                    <Mail size={14} />
-                    <a href={`mailto:${msg.email}`} className="text-xs font-medium text-zinc-700 hover:text-zinc-900 hover:underline transition-colors">{msg.email}</a>
-                  </div>
+                <div className="flex-1 truncate">
+                  <span className={`${msg.is_read ? 'text-gray-600' : 'text-gray-900 font-bold'}`}>
+                    {msg.subject}
+                  </span>
+                  <span className="text-gray-400 mx-2">—</span>
+                  <span className="text-gray-500 truncate text-xs">{msg.message}</span>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 md:self-start">
-                <a
-                  href={`mailto:${msg.email}?subject=${encodeURIComponent('Re: ' + (msg.subject || 'İletişim'))}&body=${encodeURIComponent(`Sayın ${msg.name},\n\nMesajınız için teşekkür ederiz.\n\n---\nOrijinal Mesaj: "${msg.message}"\n\nSaygılarımızla,\nFaem Studio`)}`}
-                  className="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center hover:bg-blue-100 hover:text-blue-700 transition-all"
-                  title="E-posta ile yanıtla"
+              
+              <div className="shrink-0 w-24 text-right text-[11px] font-bold text-gray-400 group-hover:hidden uppercase tracking-tighter">
+                {new Date(msg.created_at).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' })}
+              </div>
+              
+              <div className="shrink-0 flex items-center gap-3 text-gray-400 hidden group-hover:flex pr-2">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); onToggleRead(msg.id, !msg.is_read); }}
+                  className="hover:text-blue-600 transition-colors"
+                  title={msg.is_read ? 'Okunmadı İşaretle' : 'Okundu İşaretle'}
                 >
-                  <Mail size={18} />
-                </a>
-                <button
-                  onClick={() => onToggleRead(msg.id, !msg.is_read)}
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
-                    msg.is_read ? 'bg-neutral-50 text-neutral-400' : 'bg-black text-white hover:bg-neutral-800'
-                  }`}
-                  title={msg.is_read ? 'Okunmadı olarak işaretle' : 'Okundu olarak işaretle'}
-                >
-                  {msg.is_read ? <Clock size={18} /> : <CheckCircle size={18} />}
+                  {msg.is_read ? <Mail className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
                 </button>
-                <button
-                  onClick={() => {
-                    if (confirm('Bu mesajı silmek istediğinize emin misiniz?')) {
-                      onDelete(msg.id);
-                    }
-                  }}
-                  className="w-10 h-10 rounded-xl bg-neutral-50 text-neutral-400 flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-all"
+                <button 
+                  onClick={(e) => { e.stopPropagation(); if (confirm('Silmek istediğinize emin misiniz?')) onDelete(msg.id); }}
+                  className="hover:text-red-600 transition-colors"
                   title="Sil"
                 >
-                  <Trash2 size={18} />
+                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
-          </motion.div>
-        ))}
+          ))}
+          {filteredMessages.length === 0 && (
+            <div className="flex flex-col items-center justify-center py-32 text-gray-400">
+              <MessageSquare className="w-12 h-12 mb-4 opacity-10" />
+              <p className="text-sm font-medium">Henüz mesaj bulunmuyor</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
