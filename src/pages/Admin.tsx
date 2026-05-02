@@ -185,26 +185,64 @@ export default function Admin() {
               {/* Dropdown */}
               <AnimatePresence>
                 {isAdminMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 5 }}
-                    className="absolute top-full left-0 mt-1.5 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50 py-1 flex flex-col overflow-hidden"
-                  >
-                    <Link to="/" className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                      <ArrowLeft className="w-4 h-4 text-gray-400" />
-                      Mağazaya Dön
-                    </Link>
-                    <div className="h-px bg-gray-100 my-1"></div>
-                    <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                      <Terminal className="w-4 h-4 text-gray-400" />
-                      Sistem Kayıtları
-                    </button>
-                    <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                      <Database className="w-4 h-4 text-gray-400" />
-                      Veritabanı
-                    </button>
-                  </motion.div>
+                  <>
+                    {/* Backdrop for closing */}
+                    <div 
+                      className="fixed inset-0 z-[40]" 
+                      onClick={() => setIsAdminMenuOpen(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.95, filter: 'blur(4px)' }}
+                      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                      exit={{ opacity: 0, y: 4, scale: 0.98, filter: 'blur(2px)' }}
+                      transition={{ 
+                        type: "spring", 
+                        damping: 20, 
+                        stiffness: 300,
+                        mass: 0.8
+                      }}
+                      className="absolute top-full left-0 mt-2 w-56 bg-white/90 backdrop-blur-xl border border-gray-200/50 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] z-[50] py-1.5 flex flex-col overflow-hidden origin-top-left"
+                    >
+                      <div className="px-3 py-2 mb-1 border-b border-gray-100/50 bg-gray-50/50">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Hızlı Erişim</span>
+                      </div>
+                      
+                      <Link 
+                        to="/" 
+                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center justify-between group transition-all"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-white transition-colors">
+                            <ArrowLeft className="w-4 h-4 text-gray-400 group-hover:text-emerald-600" />
+                          </div>
+                          <span className="font-semibold">Mağazaya Dön</span>
+                        </div>
+                        <ChevronRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all" />
+                      </Link>
+
+                      <div className="h-px bg-gray-100/50 my-1"></div>
+
+                      <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center justify-between group transition-all">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                            <Terminal className="w-4 h-4 text-gray-400" />
+                          </div>
+                          <span className="font-semibold text-gray-600">Sistem Kayıtları</span>
+                        </div>
+                        <div className="px-1.5 py-0.5 rounded bg-gray-100 text-[10px] font-bold text-gray-400 group-hover:bg-white transition-colors">ALT+L</div>
+                      </button>
+
+                      <button className="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 flex items-center justify-between group transition-all">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+                            <Database className="w-4 h-4 text-gray-400" />
+                          </div>
+                          <span className="font-semibold text-gray-600">Veritabanı</span>
+                        </div>
+                        <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] mr-1"></div>
+                      </button>
+                    </motion.div>
+                  </>
                 )}
               </AnimatePresence>
 
