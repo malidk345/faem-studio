@@ -142,14 +142,14 @@ export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, o
             <div 
               key={product.id} 
               onClick={() => onEdit(product)}
-              className="group flex items-center gap-4 px-3 py-3 border-b border-gray-100 cursor-pointer hover:shadow-[inset_1px_0_0_#dadce0,inset_-1px_0_0_#dadce0,0_1px_2px_0_rgba(60,64,67,.3),0_1px_3px_1px_rgba(60,64,67,.15)] hover:z-10 hover:bg-white transition-all"
+              className="group flex items-center gap-2 sm:gap-4 px-2 sm:px-3 py-3 border-b border-gray-100 cursor-pointer hover:shadow-[inset_1px_0_0_#dadce0,inset_-1px_0_0_#dadce0,0_1px_2px_0_rgba(60,64,67,.3),0_1px_3px_1px_rgba(60,64,67,.15)] hover:z-10 hover:bg-white transition-all"
             >
-              <div className="flex items-center gap-1.5 shrink-0 text-gray-300">
+              <div className="hidden sm:flex items-center gap-1.5 shrink-0 text-gray-300">
                 <GripVertical className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 <Square className="w-4 h-4 hover:text-gray-600 opacity-60" onClick={(e) => e.stopPropagation()} />
               </div>
               
-              <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden border border-gray-200 shrink-0">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gray-100 overflow-hidden border border-gray-200 shrink-0">
                 <img 
                   src={product.image_url || product.image} 
                   alt={product.name} 
@@ -157,27 +157,27 @@ export function ProductsTab({ products, onAdd, onBulkImport, onEdit, onDelete, o
                 />
               </div>
               
-              <div className="flex-1 truncate flex items-center gap-2">
+              <div className="flex-1 truncate flex items-center gap-2 sm:gap-4">
                 <div className="flex flex-col min-w-0 flex-1">
-                  <span className="font-bold text-gray-900 truncate">{product.name}</span>
-                  <span className="text-[10px] text-gray-400 font-mono tracking-tighter">ID: #{product.id?.slice(0,8)}</span>
+                  <span className="font-bold text-gray-900 truncate text-[11px] sm:text-[13px]">{product.name}</span>
+                  <span className="text-[9px] text-gray-400 font-mono tracking-tighter">ID: #{product.id?.slice(0,6)}</span>
                 </div>
                 
-                <div className="hidden md:flex flex-col w-32 shrink-0">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Koleksiyon</span>
-                  <span className="font-medium text-gray-700 truncate">{product.collection || '—'}</span>
+                <div className="flex flex-col w-16 sm:w-32 shrink-0">
+                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Kol.</span>
+                  <span className="text-[10px] sm:text-[12px] font-medium text-gray-700 truncate">{product.collection || '—'}</span>
                 </div>
                 
-                <div className="hidden sm:flex flex-col w-24 shrink-0 text-right">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Fiyat</span>
-                  <span className="font-bold text-gray-900">{product.price}</span>
+                <div className="flex flex-col w-12 sm:w-24 shrink-0 text-right">
+                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Fiyat</span>
+                  <span className="text-[10px] sm:text-[12px] font-bold text-gray-900">{product.price}</span>
                 </div>
 
-                <div className="hidden lg:flex flex-col w-20 shrink-0 text-right mr-4">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Stok</span>
-                  <div className="flex items-center justify-end gap-1.5">
-                    <div className={`w-1.5 h-1.5 rounded-full ${(product.stock_count || 0) > 5 ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'}`} />
-                    <span className="font-bold text-gray-900">{product.stock_count || 0}</span>
+                <div className="flex flex-col w-10 sm:w-20 shrink-0 text-right">
+                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Stok</span>
+                  <div className="flex items-center justify-end gap-1 sm:gap-1.5">
+                    <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${(product.stock_count || 0) > 5 ? 'bg-emerald-500' : 'bg-rose-500 animate-pulse'}`} />
+                    <span className="text-[10px] sm:text-[12px] font-bold text-gray-900">{product.stock_count || 0}</span>
                   </div>
                 </div>
               </div>

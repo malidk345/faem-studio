@@ -174,18 +174,18 @@ export default function Admin() {
               <ShoppingCart className="w-4 h-4" />
             </div>
             <div className="flex flex-col relative">
-              <button 
+              <button
                 onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
                 className="flex items-center gap-1 text-[14px] font-medium leading-tight hover:text-emerald-600 transition-colors cursor-pointer outline-none"
               >
                 Faem Admin Panel
                 <ChevronsUpDown className="w-3.5 h-3.5 text-gray-400" />
               </button>
-              
+
               {/* Dropdown */}
               <AnimatePresence>
                 {isAdminMenuOpen && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 5 }}
@@ -218,9 +218,9 @@ export default function Admin() {
           <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 focus-within:ring-2 focus-within:ring-emerald-500/20 focus-within:border-emerald-500 transition-all">
               <Search className="w-3.5 h-3.5 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Dashboard'da ara..." 
+              <input
+                type="text"
+                placeholder="Dashboard'da ara..."
                 value={globalSearchTerm}
                 onChange={(e) => setGlobalSearchTerm(e.target.value)}
                 className="bg-transparent border-none outline-none text-[12px] w-48 placeholder:text-gray-400"
@@ -232,26 +232,25 @@ export default function Admin() {
               )}
             </div>
 
-            <button 
+            <button
               onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
               className="sm:hidden w-7 h-7 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50"
             >
               <Search className="w-3.5 h-3.5" />
             </button>
 
-            <button 
+            <button
               title={hasError ? "Veritabanı Bağlantı Hatası" : "Veritabanı Bağlı"}
-              className={`w-7 h-7 flex items-center justify-center rounded-full border transition-all ${
-                hasError 
-                  ? 'border-red-200 bg-red-50 text-red-600' 
+              className={`w-7 h-7 flex items-center justify-center rounded-full border transition-all ${hasError
+                  ? 'border-red-200 bg-red-50 text-red-600'
                   : 'border-emerald-200 bg-emerald-50 text-emerald-600'
-              }`}
+                }`}
             >
               <Plug className="w-3.5 h-3.5" />
             </button>
-            
+
             <div className="relative">
-              <div 
+              <div
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 className="w-7 h-7 rounded-full overflow-hidden bg-emerald-600 flex items-center justify-center text-[10px] font-bold text-white cursor-pointer ring-2 ring-transparent hover:ring-emerald-200 transition-all shadow-sm"
               >
@@ -272,14 +271,14 @@ export default function Admin() {
                       <p className="text-[10px] text-gray-500 font-medium truncate mt-0.5">{user?.email}</p>
                     </div>
                     <div className="p-1.5">
-                      <button 
+                      <button
                         onClick={() => { handleTabChange('settings'); setIsUserMenuOpen(false); }}
                         className="w-full text-left px-3 py-2 text-[12px] font-semibold text-gray-700 hover:bg-gray-50 rounded-lg flex items-center gap-2 transition-colors"
                       >
                         <SettingsIcon className="w-3.5 h-3.5 text-gray-400" />
                         Profil Ayarları
                       </button>
-                      <button 
+                      <button
                         onClick={() => logout()}
                         className="w-full text-left px-3 py-2 text-[12px] font-semibold text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-2 transition-colors"
                       >
@@ -291,7 +290,7 @@ export default function Admin() {
                 )}
               </AnimatePresence>
             </div>
-            <button 
+            <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden w-7 h-7 flex items-center justify-center rounded border border-gray-200 text-gray-500 hover:bg-gray-50"
             >
@@ -312,10 +311,10 @@ export default function Admin() {
               <div className="p-3">
                 <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-xl px-3 py-2 focus-within:ring-2 focus-within:ring-emerald-500/20 transition-all">
                   <Search className="w-4 h-4 text-gray-400" />
-                  <input 
+                  <input
                     autoFocus
-                    type="text" 
-                    placeholder="Dashboard'da ara..." 
+                    type="text"
+                    placeholder="Dashboard'da ara..."
                     value={globalSearchTerm}
                     onChange={(e) => setGlobalSearchTerm(e.target.value)}
                     className="bg-transparent border-none outline-none text-[13px] w-full font-medium"
@@ -338,11 +337,10 @@ export default function Admin() {
               <button
                 key={item.url}
                 onClick={() => handleTabChange(item.url)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[13px] font-medium transition-all whitespace-nowrap ${
-                  activeTab === item.url 
-                  ? 'bg-emerald-50 text-emerald-600' 
-                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
-                }`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-[13px] font-medium transition-all whitespace-nowrap ${activeTab === item.url
+                    ? 'bg-emerald-50 text-emerald-600'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
+                  }`}
               >
                 {item.title}
               </button>
@@ -422,15 +420,15 @@ export default function Admin() {
                     ))}
                   </div>
                 ))}
-                
+
                 {products.filter(p => p.name.toLowerCase().includes(globalSearchTerm.toLowerCase())).length === 0 &&
-                 orders.filter(o => o.user.toLowerCase().includes(globalSearchTerm.toLowerCase()) || o.shortId.toLowerCase().includes(globalSearchTerm.toLowerCase())).length === 0 &&
-                 customers.filter(c => c.name?.toLowerCase().includes(globalSearchTerm.toLowerCase()) || c.email?.toLowerCase().includes(globalSearchTerm.toLowerCase())).length === 0 && (
-                  <div className="p-12 text-center">
-                    <Search className="w-12 h-12 text-gray-100 mx-auto mb-4" />
-                    <p className="text-sm font-medium text-gray-500">Sonuç bulunamadı.</p>
-                  </div>
-                )}
+                  orders.filter(o => o.user.toLowerCase().includes(globalSearchTerm.toLowerCase()) || o.shortId.toLowerCase().includes(globalSearchTerm.toLowerCase())).length === 0 &&
+                  customers.filter(c => c.name?.toLowerCase().includes(globalSearchTerm.toLowerCase()) || c.email?.toLowerCase().includes(globalSearchTerm.toLowerCase())).length === 0 && (
+                    <div className="p-12 text-center">
+                      <Search className="w-12 h-12 text-gray-100 mx-auto mb-4" />
+                      <p className="text-sm font-medium text-gray-500">Sonuç bulunamadı.</p>
+                    </div>
+                  )}
               </div>
             </div>
           </motion.div>
@@ -442,22 +440,22 @@ export default function Admin() {
         {isMenuOpen && (
           <>
             {/* Backdrop */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMenuOpen(false)}
               className="fixed inset-0 top-[45px] bg-black/10 backdrop-blur-[2px] z-[80] md:hidden"
             />
-            
+
             {/* Dropdown Content */}
-            <motion.div 
+            <motion.div
               initial={{ y: -10, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -10, opacity: 0 }}
-              className="fixed top-[45px] left-0 right-0 bg-white border-b border-gray-200 z-[90] md:hidden shadow-2xl overflow-hidden"
+              className="fixed top-[45px] left-0 right-0 bottom-0 bg-white z-[90] md:hidden flex flex-col shadow-2xl overflow-hidden"
             >
-              <div className="p-4 bg-gray-50/50">
+              <div className="flex-1 overflow-y-auto p-4 bg-gray-50/50">
                 <div className="grid grid-cols-2 gap-2">
                   {navGroups.map((item, index) => (
                     <motion.button
@@ -469,15 +467,13 @@ export default function Admin() {
                         handleTabChange(item.url);
                         setIsMenuOpen(false);
                       }}
-                      className={`flex flex-col items-start gap-2 p-3 rounded-xl border transition-all active:scale-[0.97] ${
-                        activeTab === item.url 
-                          ? 'bg-white border-emerald-600 text-emerald-600 shadow-sm' 
+                      className={`flex flex-col items-start gap-2 p-3 rounded-xl border transition-all active:scale-[0.97] ${activeTab === item.url
+                          ? 'bg-white border-emerald-600 text-emerald-600 shadow-sm'
                           : 'bg-white border-gray-100 text-gray-600 hover:border-gray-300'
-                      }`}
+                        }`}
                     >
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        activeTab === item.url ? 'bg-emerald-600 text-white' : 'bg-gray-50 text-gray-400'
-                      }`}>
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${activeTab === item.url ? 'bg-emerald-600 text-white' : 'bg-gray-50 text-gray-400'
+                        }`}>
                         <item.icon className="w-4 h-4" />
                       </div>
                       <span className="text-[11px] font-bold tracking-tight uppercase">{item.title}</span>
@@ -493,7 +489,7 @@ export default function Admin() {
                   </div>
                   <span className="text-[10px] font-black text-gray-900 uppercase tracking-tighter">{user?.name}</span>
                 </div>
-                <button 
+                <button
                   onClick={() => setIsMenuOpen(false)}
                   className="text-[10px] font-black text-emerald-600 uppercase tracking-widest"
                 >
