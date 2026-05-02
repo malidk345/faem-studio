@@ -54,69 +54,66 @@ export function DashboardTab({ orders, products }: DashboardTabProps) {
   }).format(dailyRevenue);
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6 sm:gap-8">
       {/* Last Product Area */}
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-md text-gray-500 shrink-0">
-          <Package className="w-4 h-4" />
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center border border-gray-200 rounded-md text-gray-500 shrink-0">
+          <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </div>
-        <div className="flex-1 border-b-[1.5px] border-dotted border-gray-300 pb-1 overflow-hidden flex items-center justify-between">
-          <span className="text-[13px] text-gray-600 font-medium truncate block">
-            Eklenen Son Ürün:{' '}
+        <div className="flex-1 border-b-[1px] sm:border-b-[1.5px] border-dotted border-gray-300 pb-1 overflow-hidden flex items-center justify-between">
+          <span className="text-[11px] sm:text-[13px] text-gray-600 font-medium truncate block">
+            Son Ürün:{' '}
             <span className="font-bold text-gray-900 mx-1">{lastProduct?.name || '—'}</span>
-            {lastProduct && (
-              <span className="text-blue-600 hover:underline cursor-pointer font-mono">/products/{lastProduct.id.slice(0, 8)}</span>
-            )}
           </span>
-          <span className="text-[12px] text-gray-400 font-mono hidden sm:block">
-            {format(new Date(), 'EEE, MMM d, HH:mm', { locale: tr })}
+          <span className="text-[10px] text-gray-400 font-mono hidden xs:block">
+            {format(new Date(), 'HH:mm', { locale: tr })}
           </span>
         </div>
       </div>
 
       {/* E-Commerce Status Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Daily Revenue */}
-        <div className="flex items-center gap-4">
-          <div className="w-[56px] h-[56px] flex items-center justify-center border border-gray-200 rounded-xl shrink-0 text-emerald-600 bg-emerald-50">
-            <DollarSign className="w-5 h-5 stroke-[1.5]" />
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-[56px] sm:h-[56px] flex items-center justify-center border border-gray-200 rounded-lg sm:rounded-xl shrink-0 text-emerald-600 bg-emerald-50">
+            <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.5]" />
           </div>
-          <div className="flex flex-col justify-center">
-            <span className="text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase mb-0.5">Günlük Ciro</span>
-            <span className="text-[17px] font-medium text-gray-900">{formattedDailyRevenue}</span>
+          <div className="flex flex-col justify-center min-w-0">
+            <span className="text-[8px] sm:text-[10px] font-semibold tracking-[0.1em] text-gray-500 uppercase mb-0.5 truncate">Günlük</span>
+            <span className="text-sm sm:text-[17px] font-black text-gray-900 truncate">{formattedDailyRevenue}</span>
           </div>
         </div>
 
         {/* Total Revenue */}
-        <div className="flex items-center gap-4">
-          <div className="w-[56px] h-[56px] flex items-center justify-center border border-gray-200 rounded-xl shrink-0 text-blue-600 bg-blue-50">
-            <Landmark className="w-5 h-5 stroke-[1.5]" />
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-[56px] sm:h-[56px] flex items-center justify-center border border-gray-200 rounded-lg sm:rounded-xl shrink-0 text-blue-600 bg-blue-50">
+            <Landmark className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.5]" />
           </div>
-          <div className="flex flex-col justify-center">
-            <span className="text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase mb-0.5">Toplam Ciro</span>
-            <span className="text-[17px] font-medium text-gray-900">{formattedRevenue}</span>
+          <div className="flex flex-col justify-center min-w-0">
+            <span className="text-[8px] sm:text-[10px] font-semibold tracking-[0.1em] text-gray-500 uppercase mb-0.5 truncate">Toplam</span>
+            <span className="text-sm sm:text-[17px] font-black text-gray-900 truncate">{formattedRevenue}</span>
           </div>
         </div>
 
         {/* Growth Rate */}
-        <div className="flex items-center gap-4">
-          <div className="w-[56px] h-[56px] flex items-center justify-center border border-gray-200 rounded-xl shrink-0 text-indigo-600 bg-indigo-50">
-            <TrendingUp className="w-5 h-5 stroke-[1.5]" />
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-[56px] sm:h-[56px] flex items-center justify-center border border-gray-200 rounded-lg sm:rounded-xl shrink-0 text-indigo-600 bg-indigo-50">
+            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.5]" />
           </div>
-          <div className="flex flex-col justify-center">
-            <span className="text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase mb-0.5">Büyüme Hızı</span>
-            <span className="text-[17px] font-medium text-indigo-600">+12.5% M/o/M</span>
+          <div className="flex flex-col justify-center min-w-0">
+            <span className="text-[8px] sm:text-[10px] font-semibold tracking-[0.1em] text-gray-500 uppercase mb-0.5 truncate">Büyüme</span>
+            <span className="text-sm sm:text-[17px] font-black text-indigo-600 truncate">+12.5%</span>
           </div>
         </div>
 
         {/* Pending Orders */}
-        <div className="flex items-center gap-4">
-          <div className="w-[56px] h-[56px] flex items-center justify-center border border-gray-200 rounded-xl shrink-0 text-amber-500 bg-amber-50">
-            <Clock className="w-5 h-5 stroke-[1.5]" />
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-[56px] sm:h-[56px] flex items-center justify-center border border-gray-200 rounded-lg sm:rounded-xl shrink-0 text-amber-500 bg-amber-50">
+            <Clock className="w-4 h-4 sm:w-5 sm:h-5 stroke-[1.5]" />
           </div>
-          <div className="flex flex-col justify-center">
-            <span className="text-[10px] font-semibold tracking-[0.15em] text-gray-500 uppercase mb-0.5">Bekleyenler</span>
-            <span className="text-[17px] font-medium text-gray-900">{pendingOrdersCount} İşlem Bekliyor</span>
+          <div className="flex flex-col justify-center min-w-0">
+            <span className="text-[8px] sm:text-[10px] font-semibold tracking-[0.1em] text-gray-500 uppercase mb-0.5 truncate">Bekleyen</span>
+            <span className="text-sm sm:text-[17px] font-black text-gray-900 truncate">{pendingOrdersCount} Adet</span>
           </div>
         </div>
       </div>
@@ -124,21 +121,15 @@ export function DashboardTab({ orders, products }: DashboardTabProps) {
       {/* Activity Feed Section */}
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col text-[13px] shadow-sm min-h-[400px]">
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 text-gray-600 bg-white">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between px-3 sm:px-4 py-2 border-b border-gray-200 text-gray-600 bg-white">
+          <div className="hidden sm:flex items-center gap-4">
             <div className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 p-1 rounded">
               <Square className="w-4 h-4" />
               <ChevronDown className="w-3 h-3" />
             </div>
-            <div className="cursor-pointer hover:bg-gray-100 p-1 rounded">
-              <RotateCw className="w-4 h-4" />
-            </div>
-            <div className="cursor-pointer hover:bg-gray-100 p-1 rounded">
-              <MoreVertical className="w-4 h-4" />
-            </div>
           </div>
-          <div className="flex items-center gap-4 text-xs">
-            <span className="hidden sm:inline">1-{Math.min(orders.length, 16)} of {orders.length}</span>
+          <div className="flex flex-1 sm:flex-none items-center justify-between sm:justify-end gap-2 sm:gap-4 text-xs">
+            <span className="font-bold text-[10px] uppercase tracking-tighter text-gray-400">Son Hareketler</span>
             <div className="flex items-center gap-1">
               <div className="cursor-pointer hover:bg-gray-100 p-1 rounded">
                 <ChevronLeft className="w-4 h-4 text-gray-400" />
@@ -147,23 +138,6 @@ export function DashboardTab({ orders, products }: DashboardTabProps) {
                 <ChevronRight className="w-4 h-4" />
               </div>
             </div>
-            <div className="hidden sm:flex items-center gap-1 cursor-pointer hover:bg-gray-100 p-1 rounded">
-              <Keyboard className="w-4 h-4" />
-              <ChevronDown className="w-3 h-3" />
-            </div>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex items-center border-b border-gray-200 overflow-x-auto hide-scrollbar bg-white">
-          <div className="flex items-center gap-3 px-4 py-3 border-b-2 border-emerald-600 text-emerald-600 min-w-max cursor-pointer bg-emerald-50/30">
-            <ShoppingCart className="w-4 h-4" />
-            <span className="font-medium">Tüm Siparişler</span>
-          </div>
-          <div className="flex items-center gap-3 px-4 py-3 text-gray-600 hover:bg-gray-50 cursor-pointer min-w-max">
-            <Clock className="w-4 h-4 text-amber-500" />
-            <span className="font-medium">Bekleyen</span>
-            <span className="px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-medium">{pendingOrdersCount}</span>
           </div>
         </div>
 
@@ -172,41 +146,37 @@ export function DashboardTab({ orders, products }: DashboardTabProps) {
           {orders.slice(0, 15).map((order) => (
             <div 
               key={order.id} 
-              className="group flex items-center gap-2 px-2 py-2 border-b border-gray-100 cursor-pointer hover:shadow-[inset_1px_0_0_#dadce0,inset_-1px_0_0_#dadce0,0_1px_2px_0,0_1px_3px_1px_rgba(60,64,67,.15)] hover:z-10 hover:bg-white"
+              className="group flex items-center gap-2 px-2 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50/50 transition-all active:scale-[0.99]"
             >
-              <div className="flex items-center gap-1.5 shrink-0 text-gray-400 pl-1">
+              <div className="hidden xs:flex items-center gap-1.5 shrink-0 text-gray-300 pl-1">
                 <GripVertical className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Square className="w-4 h-4 hover:text-gray-600 opacity-60" />
               </div>
               
-              <div className={`w-24 shrink-0 truncate text-[10px] font-bold uppercase tracking-wider ${
-                order.status === 'pending' ? 'text-amber-600' : 
-                order.status === 'delivered' ? 'text-emerald-600' : 
-                'text-blue-600'
-              }`}>
-                {order.status === 'pending' ? 'Bekliyor' : order.status === 'delivered' ? 'Teslim Edildi' : 'İşlemde'}
-              </div>
-              
-              <div className="flex-1 truncate flex items-center gap-2">
-                <span className="font-bold text-gray-900 w-[90px] shrink-0 font-mono text-[11px]">#{order.order_number}</span>
-                <span className="text-gray-700 w-[120px] shrink-0 truncate">{order.customer_name || 'Misafir'}</span>
+              <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-4">
+                <div className="flex flex-col w-20 sm:w-24 shrink-0">
+                  <span className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-tighter truncate ${
+                    order.status === 'pending' ? 'text-amber-600' : 
+                    order.status === 'delivered' ? 'text-emerald-600' : 
+                    'text-blue-600'
+                  }`}>
+                    {order.status === 'pending' ? 'Bekliyor' : order.status === 'delivered' ? 'Teslim' : 'İşlemde'}
+                  </span>
+                  <span className="font-mono text-[9px] sm:text-[11px] font-bold text-gray-400">#{order.order_number?.slice(0,6).toUpperCase()}</span>
+                </div>
+
+                <div className="flex flex-col flex-1 min-w-0">
+                  <span className="font-bold text-gray-900 truncate text-[11px] sm:text-[13px]">{order.customer_name || 'Misafir'}</span>
+                  <span className="text-[9px] text-gray-400 truncate opacity-60 hidden xs:inline">{format(new Date(order.rawDate), 'HH:mm • dd MMM', { locale: tr })}</span>
+                </div>
                 
-                <span className="font-medium text-gray-700 shrink-0 hidden md:inline w-[100px] text-right">{order.total}</span>
-                
-                <span className="text-gray-400 hidden sm:inline">-</span>
-                <span className="text-gray-500 truncate hidden lg:inline text-xs">
-                  {order.items?.map(i => i.product_name).join(', ')}
-                </span>
+                <div className="flex flex-col w-14 sm:w-24 shrink-0 text-right">
+                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Tutar</span>
+                  <span className="font-black text-gray-900 text-[11px] sm:text-[13px]">{order.total}</span>
+                </div>
               </div>
               
-              <div className="shrink-0 w-16 sm:w-20 text-right text-[11px] font-bold text-gray-400 group-hover:hidden">
-                {format(new Date(order.rawDate), 'HH:mm')}
-              </div>
-              
-              <div className="shrink-0 items-center gap-3 text-gray-500 hidden group-hover:flex pr-2">
-                <Package className="w-4 h-4 hover:text-gray-900" />
-                <Truck className="w-4 h-4 hover:text-gray-900" />
-                <CheckCircle className="w-4 h-4 hover:text-gray-900" />
+              <div className="shrink-0 flex items-center pr-1 sm:pr-2">
+                <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
               </div>
             </div>
           ))}

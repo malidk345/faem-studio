@@ -126,41 +126,41 @@ export function JournalTab() {
   }
 
   return (
-    <div className="space-y-10">
-      <div className="flex items-center justify-between mb-2">
+    <div className="space-y-8 sm:space-y-10">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">Stüdyo Günlüğü</h2>
-          <p className="text-zinc-500 text-[11px] font-medium uppercase tracking-wider mt-1">Marka hikayelerini ve editorial içerikleri yönetin.</p>
+          <h2 className="text-xl sm:text-3xl font-bold tracking-tight text-zinc-900">Stüdyo Günlüğü</h2>
+          <p className="text-zinc-500 text-[9px] sm:text-[11px] font-bold uppercase tracking-widest mt-1">Marka hikayelerini ve editorial içerikleri yönetin.</p>
         </div>
-        <Button onClick={() => setEditingPost({ title: '', excerpt: '', content: '', image_url: '', category: 'Editorial' })} className="bg-zinc-900 text-white rounded-xl px-4 sm:px-6 font-semibold h-11 uppercase text-[10px] tracking-wider">
-          <Plus size={16} className="mr-2" /> Yeni İçerik Ekle
+        <Button onClick={() => setEditingPost({ title: '', excerpt: '', content: '', image_url: '', category: 'Editorial' })} className="bg-zinc-900 text-white rounded-xl px-4 sm:px-6 font-black h-10 sm:h-11 uppercase text-[10px] tracking-wider active:scale-95 transition-all">
+          <Plus size={14} className="mr-2" /> Yeni İçerik
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {posts.map((post) => (
           <motion.div 
             key={post.id} 
             layoutId={post.id}
-            className="group apple-card rounded-[1.5rem] overflow-hidden hover:-translate-y-1 transition-all duration-300"
+            className="group apple-card rounded-[1.2rem] sm:rounded-[1.5rem] overflow-hidden hover:-translate-y-1 transition-all duration-300 active:scale-[0.98]"
           >
             <div className="aspect-video overflow-hidden relative">
               <img src={post.image_url} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
             </div>
-            <div className="p-5 sm:p-6">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-zinc-400">{post.category}</span>
-                <span className="text-[10px] font-medium text-zinc-400">{new Date(post.created_at).toLocaleDateString()}</span>
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-wider text-zinc-400">{post.category}</span>
+                <span className="text-[8px] sm:text-[10px] font-bold text-zinc-300">{new Date(post.created_at).toLocaleDateString()}</span>
               </div>
-              <h3 className="text-lg font-semibold tracking-tight leading-tight text-zinc-900 mb-2">{post.title}</h3>
-              <p className="text-xs text-zinc-500 line-clamp-2 font-medium leading-relaxed mb-4">{post.excerpt}</p>
+              <h3 className="text-base sm:text-lg font-black tracking-tight leading-tight text-zinc-900 mb-2 line-clamp-2">{post.title}</h3>
+              <p className="text-[11px] sm:text-xs text-zinc-500 line-clamp-2 font-medium leading-relaxed mb-4 opacity-70">{post.excerpt}</p>
               
-              <div className="flex items-center justify-end gap-2 pt-4 border-t border-zinc-100">
-                <Button variant="ghost" size="icon" onClick={() => setEditingPost(post)} className="w-10 h-10 rounded-xl hover:bg-zinc-100">
-                  <Edit size={16} className="text-zinc-400 group-hover:text-black transition-colors" />
+              <div className="flex items-center justify-end gap-2 pt-4 border-t border-zinc-50">
+                <Button variant="ghost" size="icon" onClick={() => setEditingPost(post)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl hover:bg-zinc-50">
+                  <Edit size={14} className="text-zinc-400 group-hover:text-black transition-colors" />
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => deletePost(post.id)} className="w-10 h-10 rounded-xl hover:bg-rose-50 hover:text-rose-500">
-                  <Trash2 size={16} />
+                <Button variant="ghost" size="icon" onClick={() => deletePost(post.id)} className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl hover:bg-rose-50 hover:text-rose-500">
+                  <Trash2 size={14} />
                 </Button>
               </div>
             </div>
@@ -169,9 +169,9 @@ export function JournalTab() {
       </div>
 
       {posts.length === 0 && !loading && (
-        <div className="h-64 flex flex-col items-center justify-center border border-dashed border-zinc-200 bg-zinc-50/50 rounded-[2rem]">
-          <BookOpen className="text-zinc-300 mb-4" size={48} />
-          <p className="text-zinc-500 font-semibold text-[11px] uppercase tracking-wider">Henüz yazı bulunmuyor.</p>
+        <div className="h-48 sm:h-64 flex flex-col items-center justify-center border border-dashed border-zinc-200 bg-zinc-50/50 rounded-[1.5rem] sm:rounded-[2rem]">
+          <BookOpen className="text-zinc-200 mb-3 sm:mb-4" size={32} sm:size={48} />
+          <p className="text-zinc-400 font-black text-[9px] sm:text-[11px] uppercase tracking-wider">Henüz yazı bulunmuyor.</p>
         </div>
       )}
     </div>

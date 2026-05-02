@@ -158,18 +158,18 @@ export function ReviewsTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-black tracking-tighter text-zinc-900">Müşteri Yorumları</h2>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mt-1">Geribildirim Yönetimi</p>
+          <h2 className="text-xl sm:text-3xl font-black tracking-tighter text-zinc-900">Müşteri Yorumları</h2>
+          <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mt-1">Geribildirim Yönetimi</p>
         </div>
-        <div className="flex items-center gap-3 bg-zinc-50 px-4 py-2 rounded-xl border border-zinc-100">
-           <MessageSquare size={16} className="text-zinc-400" />
-           <span className="text-[11px] font-black uppercase tracking-widest text-zinc-600">{reviews.length} Toplam Yorum</span>
+        <div className="flex items-center gap-2 sm:gap-3 bg-zinc-50 px-3 sm:px-4 py-2 rounded-xl border border-zinc-100 shrink-0">
+           <MessageSquare size={14} className="text-zinc-400" />
+           <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-zinc-600">{reviews.length} Toplam</span>
         </div>
       </div>
 
-      <div className="apple-card overflow-hidden">
+      <div className="apple-card overflow-x-auto hide-scrollbar">
         <DataTable columns={columns} data={reviews} searchKey="profiles" />
       </div>
     </div>

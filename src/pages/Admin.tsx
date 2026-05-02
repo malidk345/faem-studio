@@ -502,7 +502,7 @@ export default function Admin() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main className="px-4 py-6 md:px-8 max-w-5xl mx-auto w-full">
+      <main className="px-3 sm:px-6 md:px-8 max-w-[1400px] mx-auto w-full">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab + (isEditing ? '_editing' : '_listing')}

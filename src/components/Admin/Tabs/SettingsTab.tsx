@@ -49,16 +49,16 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
   };
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-6 sm:space-y-8 pb-10 sm:pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">Sistem Ayarları</h2>
-           <p className="text-zinc-500 text-[11px] font-medium uppercase tracking-wider mt-1">Mağaza, Kargo ve Operasyon Konfigürasyonu</p>
+           <h2 className="text-xl sm:text-3xl font-bold tracking-tight text-zinc-900">Sistem Ayarları</h2>
+           <p className="text-zinc-500 text-[9px] sm:text-[11px] font-bold uppercase tracking-widest mt-1">Mağaza ve Operasyon Konfigürasyonu</p>
         </div>
-        <Button onClick={handleSave} disabled={loading} className="bg-zinc-900 text-white rounded-xl px-6 font-semibold h-11 uppercase text-[10px] tracking-wider active:scale-95 transition-all">
-          {loading ? <RefreshCw size={16} className="mr-2 animate-spin" /> : <Save size={16} className="mr-2" />}
-          Değişiklikleri Kaydet
+        <Button onClick={handleSave} disabled={loading} className="w-full sm:w-auto bg-black text-white rounded-xl px-6 font-black h-11 uppercase text-[10px] tracking-wider active:scale-95 transition-all shadow-lg">
+          {loading ? <RefreshCw size={14} className="mr-2 animate-spin" /> : <Save size={14} className="mr-2" />}
+          Kaydet
         </Button>
       </div>
 

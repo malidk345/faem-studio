@@ -67,52 +67,52 @@ export function CustomersTab({ customers, orders }: CustomersTabProps) {
   return (
     <div className="space-y-6">
       {/* Header & Stats Header Area */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-           <h2 className="text-2xl font-bold tracking-tight text-gray-900">Müşteri Yönetimi</h2>
-           <p className="text-gray-500 text-[11px] font-bold uppercase tracking-widest mt-1">Müşteri Veritabanı ve Sadakat</p>
+           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-gray-900">Müşteri Yönetimi</h2>
+           <p className="text-gray-500 text-[9px] sm:text-[11px] font-bold uppercase tracking-widest mt-1">Müşteri Veritabanı ve Sadakat</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-100 flex flex-col items-end">
-            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-tighter">Toplam Müşteri</span>
-            <span className="text-lg font-bold text-emerald-700 leading-tight">{enrichedCustomers.length}</span>
+          <div className="px-2 sm:px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-100 flex flex-col items-end shrink-0">
+            <span className="text-[8px] sm:text-[10px] font-bold text-emerald-600 uppercase tracking-tighter">Toplam</span>
+            <span className="text-sm sm:text-lg font-bold text-emerald-700 leading-tight">{enrichedCustomers.length}</span>
           </div>
-          <div className="px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-100 flex flex-col items-end">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Dönüşüm</span>
-            <span className="text-lg font-bold text-gray-700 leading-tight">%{(activeCustomers / (enrichedCustomers.length || 1) * 100).toFixed(0)}</span>
+          <div className="px-2 sm:px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-100 flex flex-col items-end shrink-0">
+            <span className="text-[8px] sm:text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Dönüşüm</span>
+            <span className="text-sm sm:text-lg font-bold text-gray-700 leading-tight">%{(activeCustomers / (enrichedCustomers.length || 1) * 100).toFixed(0)}</span>
           </div>
         </div>
       </div>
 
       {/* Insights Row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white">
-          <div className="w-12 h-12 flex items-center justify-center border border-emerald-100 rounded-lg shrink-0 text-emerald-600 bg-emerald-50">
-            <TrendingUp className="w-5 h-5" />
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="flex items-center gap-3 p-3 sm:p-4 rounded-xl border border-gray-100 bg-white">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-emerald-100 rounded-lg shrink-0 text-emerald-600 bg-emerald-50">
+            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="text-[10px] font-bold tracking-[0.1em] text-gray-500 uppercase mb-0.5">Toplam Hacim (LTV)</span>
-            <span className="text-lg font-bold text-gray-900 leading-tight">{formattedRevenue}</span>
+            <span className="text-[8px] sm:text-[10px] font-bold tracking-[0.1em] text-gray-500 uppercase mb-0.5">Toplam Hacim</span>
+            <span className="text-sm sm:text-lg font-bold text-gray-900 leading-tight">{formattedRevenue}</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white">
-          <div className="w-12 h-12 flex items-center justify-center border border-indigo-100 rounded-lg shrink-0 text-indigo-600 bg-indigo-50">
-            <Activity className="w-5 h-5" />
+        <div className="flex items-center gap-3 p-3 sm:p-4 rounded-xl border border-gray-100 bg-white">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-indigo-100 rounded-lg shrink-0 text-indigo-600 bg-indigo-50">
+            <Activity className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="text-[10px] font-bold tracking-[0.1em] text-gray-500 uppercase mb-0.5">Aktif Alıcılar</span>
-            <span className="text-lg font-bold text-gray-900 leading-tight">{activeCustomers} Müşteri Satın Aldı</span>
+            <span className="text-[8px] sm:text-[10px] font-bold tracking-[0.1em] text-gray-500 uppercase mb-0.5">Aktif Alıcılar</span>
+            <span className="text-sm sm:text-lg font-bold text-gray-900 leading-tight">{activeCustomers} Kişi</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white">
-          <div className="w-12 h-12 flex items-center justify-center border border-blue-100 rounded-lg shrink-0 text-blue-600 bg-blue-50">
-            <ShoppingBag className="w-5 h-5" />
+        <div className="flex items-center gap-3 p-3 sm:p-4 rounded-xl border border-gray-100 bg-white">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center border border-blue-100 rounded-lg shrink-0 text-blue-600 bg-blue-50">
+            <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="text-[10px] font-bold tracking-[0.1em] text-gray-500 uppercase mb-0.5">Ortalama Harcama</span>
-            <span className="text-lg font-bold text-gray-900 leading-tight">
+            <span className="text-[8px] sm:text-[10px] font-bold tracking-[0.1em] text-gray-500 uppercase mb-0.5">Ort. Harcama</span>
+            <span className="text-sm sm:text-lg font-bold text-gray-900 leading-tight">
               {new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 })
                 .format(activeCustomers > 0 ? totalRevenue / activeCustomers : 0)}
             </span>
@@ -123,8 +123,8 @@ export function CustomersTab({ customers, orders }: CustomersTabProps) {
       {/* Customers Feed Area */}
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col text-[13px] shadow-sm min-h-[500px]">
         {/* Toolbar */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 text-gray-600 bg-white">
-          <div className="flex items-center gap-4">
+        <div className="flex items-center justify-between px-3 sm:px-4 py-2 border-b border-gray-200 text-gray-600 bg-white">
+          <div className="hidden sm:flex items-center gap-4">
             <div className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
               <Square className="w-4 h-4" />
               <ChevronDown className="w-3 h-3" />
@@ -132,23 +132,19 @@ export function CustomersTab({ customers, orders }: CustomersTabProps) {
             <div className="cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
               <RotateCw className="w-4 h-4" />
             </div>
-            <div className="cursor-pointer hover:bg-gray-100 p-1 rounded transition-colors">
-              <MoreVertical className="w-4 h-4" />
-            </div>
           </div>
-          <div className="flex items-center gap-4 text-xs font-medium">
-            <div className="flex items-center gap-2 bg-gray-50 px-2 py-1 rounded border border-gray-100">
+          <div className="flex flex-1 sm:flex-none items-center justify-between sm:justify-end gap-2 sm:gap-4 text-xs font-medium">
+            <div className="flex flex-1 sm:flex-none items-center gap-2 bg-gray-50 px-2 py-1 rounded border border-gray-100">
               <Search className="w-3.5 h-3.5 text-gray-400" />
               <input 
                 type="text" 
                 placeholder="Müşterilerde ara..." 
-                className="bg-transparent border-none outline-none text-xs w-32 sm:w-48"
+                className="bg-transparent border-none outline-none text-[11px] sm:text-xs w-full sm:w-48"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <span className="hidden sm:inline">1-{Math.min(filteredCustomers.length, 16)} of {filteredCustomers.length}</span>
-            <div className="flex items-center gap-1">
+            <div className="hidden xs:flex items-center gap-1">
               <div className="cursor-pointer hover:bg-gray-100 p-1 rounded">
                 <ChevronLeft className="w-4 h-4 text-gray-400" />
               </div>
@@ -164,49 +160,35 @@ export function CustomersTab({ customers, orders }: CustomersTabProps) {
           {filteredCustomers.map((customer) => (
             <div 
               key={customer.id} 
-              className="group flex items-center gap-4 px-3 py-3 border-b border-gray-100 cursor-pointer hover:shadow-[inset_1px_0_0_#dadce0,inset_-1px_0_0_#dadce0,0_1px_2px_0_rgba(60,64,67,.3),0_1px_3px_1px_rgba(60,64,67,.15)] hover:z-10 hover:bg-white transition-all"
+              className="group flex items-center gap-2 sm:gap-4 px-2 sm:px-3 py-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50/50 transition-all active:scale-[0.99]"
             >
-              <div className="flex items-center gap-1.5 shrink-0 text-gray-300">
+              <div className="hidden xs:flex items-center gap-1.5 shrink-0 text-gray-300 pl-1">
                 <GripVertical className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Square className="w-4 h-4 hover:text-gray-600 opacity-60" />
               </div>
               
-              <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-200 flex items-center justify-center shrink-0">
-                <span className="text-xs font-bold text-gray-500 uppercase">{customer.name?.charAt(0) || '?'}</span>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+                <span className="text-[10px] sm:text-xs font-black text-emerald-600 uppercase">{customer.name?.charAt(0) || '?'}</span>
               </div>
               
-              <div className="flex-1 truncate flex items-center gap-4">
+              <div className="flex-1 min-w-0 flex items-center gap-2 sm:gap-4">
                 <div className="flex flex-col min-w-0 flex-1">
-                  <span className="font-bold text-gray-900 truncate">{customer.name || 'İsimsiz'}</span>
-                  <span className="text-[10px] text-gray-400 font-medium truncate">{customer.email}</span>
+                  <span className="font-bold text-gray-900 truncate text-[11px] sm:text-[13px]">{customer.name || 'İsimsiz'}</span>
+                  <span className="text-[9px] sm:text-[10px] text-gray-400 font-medium truncate opacity-70">{customer.email}</span>
                 </div>
                 
-                <div className="hidden md:flex flex-col w-24 shrink-0">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Tip</span>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider ${customer.role === 'admin' ? 'text-indigo-600' : customer.role === 'guest' ? 'text-gray-400' : 'text-emerald-600'}`}>
-                    {customer.role === 'admin' ? 'Yönetici' : customer.role === 'guest' ? 'Misafir' : 'Üye'}
-                  </span>
-                </div>
-                
-                <div className="hidden sm:flex flex-col w-24 shrink-0 text-right">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Sipariş</span>
-                  <span className="font-bold text-gray-900">{customer.orderCount}</span>
+                <div className="flex flex-col w-12 sm:w-24 shrink-0">
+                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Sipariş</span>
+                  <span className="font-bold text-gray-900 text-[10px] sm:text-[12px]">{customer.orderCount}</span>
                 </div>
 
-                <div className="hidden lg:flex flex-col w-32 shrink-0 text-right mr-4">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">LTV</span>
-                  <span className="font-bold text-gray-900 text-emerald-600">{customer.formattedTotalSpent}</span>
+                <div className="flex flex-col w-16 sm:w-32 shrink-0 text-right">
+                  <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Harcanan</span>
+                  <span className="font-black text-emerald-600 text-[10px] sm:text-[12px]">{customer.formattedTotalSpent}</span>
                 </div>
               </div>
               
-              <div className="shrink-0 w-20 text-right text-[11px] font-bold text-gray-400 group-hover:hidden uppercase tracking-tighter">
-                {customer.lastOrderDate}
-              </div>
-              
-              <div className="shrink-0 flex items-center gap-3 text-gray-400 hidden group-hover:flex pr-2">
-                <Mail className="w-4 h-4 hover:text-blue-600 transition-colors" />
-                <UserCircle className="w-4 h-4 hover:text-gray-900 transition-colors" />
-                <MoreVertical className="w-4 h-4 text-gray-400" />
+              <div className="shrink-0 flex items-center pr-1 sm:pr-2">
+                <ChevronRight className="w-3.5 h-3.5 text-gray-300" />
               </div>
             </div>
           ))}
