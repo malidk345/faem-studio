@@ -15,18 +15,24 @@ import {
   Square,
   GripVertical,
   CheckCircle,
-  Truck
+  Truck,
+  Eye
 } from 'lucide-react';
 import type { AdminOrder } from "@/hooks/useAdminData";
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { OrderDetailSheet } from '../Modals/OrderDetailSheet';
 
 interface DashboardTabProps {
   orders: AdminOrder[];
   products: any[];
+  onUpdateStatus: (id: string, status: string) => void;
 }
 
-export function DashboardTab({ orders, products }: DashboardTabProps) {
+export function DashboardTab({ orders, products, onUpdateStatus }: DashboardTabProps) {
+  const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
+
   // Metrics calculations from real data
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalNumeric, 0);
   const pendingOrdersCount = orders.filter(o => o.status === 'pending' || o.status === 'processing').length;
@@ -52,6 +58,11 @@ export function DashboardTab({ orders, products }: DashboardTabProps) {
     currency: 'TRY', 
     maximumFractionDigits: 0 
   }).format(dailyRevenue);
+
+  const handleOrderClick = (order: AdminOrder) => {
+    setSelectedOrder(order);
+    setIsDetailOpen(true);
+  };
 
   return (
     <div className="flex flex-col gap-6 sm:gap-8">
@@ -146,7 +157,8 @@ export function DashboardTab({ orders, products }: DashboardTabProps) {
           {orders.slice(0, 15).map((order) => (
             <div 
               key={order.id} 
-              className="group flex items-center gap-3 px-3 py-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50/50 transition-all active:scale-[0.995]"
+              onClick={() => handleOrderClick(order)}
+              className="group flex items-center gap-3 px-3 py-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-all active:scale-[0.995]"
             >
               <div className="hidden xs:flex items-center gap-2 shrink-0 text-gray-300 pl-1">
                 <GripVertical className="w-4.5 h-4.5 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -161,17 +173,20 @@ export function DashboardTab({ orders, products }: DashboardTabProps) {
                   }`}>
                     {order.status === 'pending' ? 'Bekliyor' : order.status === 'delivered' ? 'Teslim' : 'İşlemde'}
                   </span>
-                  <span className="font-mono text-[10px] sm:text-[12px] font-bold text-gray-400">#{order.order_number?.slice(0,8).toUpperCase()}</span>
+                  <span className="font-mono text-[10px] sm:text-[12px] font-bold text-gray-400">#{order.shortId.toUpperCase()}</span>
                 </div>
 
                 <div className="flex flex-col flex-1 min-w-0">
-                  <span className="font-bold text-gray-900 truncate text-[12px] sm:text-[14px]">{order.customer_name || 'Misafir'}</span>
+                  <span className="font-bold text-gray-900 truncate text-[12px] sm:text-[14px]">{order.user || 'Misafir'}</span>
                   <span className="text-[10px] text-gray-400 truncate opacity-70 hidden xs:inline">{format(new Date(order.rawDate), 'HH:mm • dd MMMM yyyy', { locale: tr })}</span>
                 </div>
                 
                 <div className="flex flex-col w-16 sm:w-32 shrink-0 text-right">
                   <span className="text-[9px] sm:text-[11px] font-bold text-gray-400 uppercase tracking-tighter">Toplam</span>
-                  <span className="font-black text-gray-900 text-[12px] sm:text-[15px]">{order.total}</span>
+                  <div className="flex items-center justify-end gap-2">
+                    <span className="font-black text-gray-900 text-[12px] sm:text-[15px]">{order.total}</span>
+                    <Eye className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-900 transition-colors" />
+                  </div>
                 </div>
               </div>
               
@@ -187,6 +202,13 @@ export function DashboardTab({ orders, products }: DashboardTabProps) {
           )}
         </div>
       </div>
+
+      <OrderDetailSheet 
+        order={selectedOrder}
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        onUpdateStatus={onUpdateStatus}
+      />
     </div>
   );
 }

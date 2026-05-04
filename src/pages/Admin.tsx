@@ -64,7 +64,6 @@ import { MessagesTab } from '../components/Admin/Tabs/MessagesTab';
 import { ReviewsTab } from '../components/Admin/Tabs/ReviewsTab';
 import { HeaderNotifications } from '../components/Admin/HeaderNotifications';
 import { BulkImportModal } from '../components/Admin/Modals/BulkImportModal';
-import { HelpTab } from '../components/Admin/Tabs/HelpTab';
 
 const navGroups = [
   { title: "Dashboard", url: "dashboard", icon: LayoutDashboard },
@@ -79,7 +78,6 @@ const navGroups = [
   { title: "Vitrin", url: "cms", icon: Monitor },
   { title: "Günlük", url: "journal", icon: BookOpen },
   { title: "Ayarlar", url: "settings", icon: SettingsIcon },
-  { title: "Yardım", url: "help", icon: HelpCircle },
 ];
 
 export default function Admin() {
@@ -386,11 +384,6 @@ export default function Admin() {
             ))}
           </div>
 
-          <div className="hidden sm:flex items-center gap-2.5 ml-4">
-            <span className="text-[12px] font-medium text-gray-400 mr-1">Destek</span>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 hover:bg-gray-50">
-              <HelpCircle className="w-3.5 h-3.5" />
-            </button>
             <button className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-200 text-gray-500 relative hover:bg-gray-50">
               <UserCircle className="w-3.5 h-3.5" />
               <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-emerald-500 rounded-full border border-white"></div>
@@ -404,7 +397,6 @@ export default function Admin() {
             </button>
           </div>
         </div>
-      </div>
 
       {/* Global Search Results Overlay */}
       <AnimatePresence>
@@ -550,7 +542,7 @@ export default function Admin() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
           >
-            {activeTab === 'dashboard' && <DashboardTab orders={orders} products={products} />}
+            {activeTab === 'dashboard' && <DashboardTab orders={orders} products={products} onUpdateStatus={updateOrderStatus} />}
 
             {activeTab === 'products' && (
               isEditing ? (
@@ -592,7 +584,6 @@ export default function Admin() {
             {activeTab === 'cms' && <CmsTab collections={collections} />}
             {activeTab === 'settings' && <SettingsTab settings={settings} onUpdateSettings={updateSettings} />}
             {activeTab === 'messages' && <MessagesTab messages={messages} onToggleRead={toggleMessageRead} onDelete={deleteMessage} />}
-            {activeTab === 'help' && <HelpTab />}
           </motion.div>
         </AnimatePresence>
       </main>
