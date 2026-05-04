@@ -27,8 +27,8 @@ export default function Cart() {
           className="flex flex-col gap-4"
         >
           <span className="text-[10px] font-normal uppercase tracking-[0.4em] text-black/30 font-['Handjet',sans-serif]">Shopping Bag</span>
-          <h1 className="text-5xl sm:text-7xl font-bold tracking-tighter leading-none italic">Sepetiniz.</h1>
-          <p className="text-black/40 text-sm max-w-sm font-medium mt-4">
+          <h1 className="text-5xl sm:text-7xl font-semibold tracking-tighter leading-none italic">Sepetiniz.</h1>
+          <p className="text-black/40 text-sm max-w-sm font-semibold mt-4">
             Ekipmanlarınızı gözden geçirin ve maceraya hazır olduğunuzdan emin olun.
           </p>
         </motion.div>
@@ -49,7 +49,7 @@ export default function Cart() {
                     <ShoppingBag className="text-black/20" size={24} />
                   </div>
                   <p className="text-black/30 uppercase font-bold tracking-widest text-xs">Sepetiniz şu an boş</p>
-                  <Link to="/shop" className="text-sm font-black underline underline-offset-8 decoration-1 hover:text-black/60 transition-colors">
+                  <Link to="/shop" className="text-sm font-bold underline underline-offset-8 decoration-1 hover:text-black/60 transition-colors">
                     ALIŞVERİŞE BAŞLA
                   </Link>
                 </motion.div>
@@ -134,8 +134,8 @@ export default function Cart() {
                   <span className="text-[10px] font-normal uppercase tracking-widest font-['Handjet',sans-serif]">ÜCRETSİZ</span>
                 </div>
                 <div className="pt-6 border-t border-black/5 flex justify-between items-baseline">
-                  <span className="text-lg font-black italic">Toplam</span>
-                  <span className="text-3xl font-black tracking-tighter">₺{cartTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
+                  <span className="text-lg font-bold italic">Toplam</span>
+                  <span className="text-3xl font-bold tracking-tighter">₺{cartTotal.toLocaleString('tr-TR', { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
 

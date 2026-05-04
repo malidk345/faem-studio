@@ -172,7 +172,7 @@ export default function Home() {
                 <div className="flex justify-center mt-12">
                   <Link 
                     to={slide.link} 
-                    className="group relative overflow-hidden bg-transparent border border-white/40 text-white px-10 py-3.5 rounded-full transition-all hover:bg-white hover:text-black hover:border-white active:scale-95 shadow-xl"
+                    className="group relative overflow-hidden bg-transparent border border-white/40 text-white px-10 py-3.5 rounded-[4px] transition-all hover:bg-white hover:text-black hover:border-white active:scale-95 shadow-xl"
                   >
                     <span className="relative z-10 flex items-center gap-3">
                       <span className="text-[12px] font-bold uppercase tracking-[0.2em]">{slide.buttonText || 'Keşfet'}</span>
@@ -190,8 +190,8 @@ export default function Home() {
               <button 
                 key={i} 
                 onClick={() => setActiveSlide(i)}
-                className={`transition-all duration-500 ease-in-out rounded-full ${
-                  i === activeSlide ? 'w-10 h-1 bg-white' : 'w-2 h-2 bg-white/20'
+                className={`transition-all duration-500 ease-in-out ${
+                  i === activeSlide ? 'w-10 h-1 bg-white rounded-none' : 'w-2 h-2 bg-white/20 rounded-none'
                 }`}
               />
             ))}

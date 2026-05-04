@@ -155,24 +155,24 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-md mx-auto p-8 rounded-[2rem] bg-white border border-zinc-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)]"
+      className="w-full max-w-md mx-auto p-8 rounded-xl bg-white border border-zinc-100 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)]"
     >
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center">
+          <div className="w-10 h-10 rounded-lg bg-black flex items-center justify-center">
             <CreditCard className="text-white" size={20} />
           </div>
           <div>
-            <h2 className="text-lg font-black tracking-tight">Güvenli Ödeme</h2>
-            <p className="text-[10px] uppercase font-bold text-zinc-400 tracking-widest">Tami Sanal POS</p>
+            <h2 className="text-lg font-bold tracking-tight">Güvenli Ödeme</h2>
+            <p className="text-[10px] uppercase font-semibold text-zinc-400 tracking-widest">Tami Sanal POS</p>
           </div>
         </div>
-        <Badge variant="outline" className="text-[10px] font-black border-zinc-100 bg-zinc-50 py-1">
+        <Badge variant="outline" className="text-[10px] font-bold border-zinc-100 bg-zinc-50 py-1">
           {amount} TL
         </Badge>
       </div>
 
-      <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-100 flex gap-3">
+      <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-100 flex gap-3">
         <Info className="text-amber-600 shrink-0" size={18} />
         <p className="text-[11px] font-medium text-amber-800 leading-relaxed">
           Şu an <strong>Test Modu</strong> aktif. Lütfen Tami test kartlarını kullanarak deneme yapınız.
@@ -181,25 +181,25 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-1.5">
-          <Label htmlFor="cardHolderName" className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 ml-1">Kart Üzerindeki İsim</Label>
+          <Label htmlFor="cardHolderName" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Kart Üzerindeki İsim</Label>
           <Input 
             id="cardHolderName" 
             placeholder="AD SOYAD" 
             required
-            className="h-12 rounded-xl border-zinc-100 focus:ring-black bg-zinc-50/50 font-medium"
+            className="h-12 rounded-lg border-zinc-100 focus:ring-black bg-zinc-50/50 font-medium"
             value={formData.cardHolderName}
             onChange={handleInputChange}
           />
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="cardNumber" className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 ml-1">Kart Numarası</Label>
+          <Label htmlFor="cardNumber" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Kart Numarası</Label>
           <div className="relative">
             <Input 
               id="cardNumber" 
               placeholder="0000 0000 0000 0000" 
               required
-              className="h-12 rounded-xl border-zinc-100 focus:ring-black bg-zinc-50/50 font-mono text-base tracking-wider"
+              className="h-12 rounded-lg border-zinc-100 focus:ring-black bg-zinc-50/50 font-mono text-base tracking-wider"
               value={formData.cardNumber}
               onChange={handleInputChange}
             />
@@ -211,24 +211,24 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <Label htmlFor="expiryDate" className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 ml-1">Sona Erme</Label>
+            <Label htmlFor="expiryDate" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">Sona Erme</Label>
             <Input 
               id="expiryDate" 
               placeholder="AA/YY" 
               required
-              className="h-12 rounded-xl border-zinc-100 focus:ring-black bg-zinc-50/50 font-mono"
+              className="h-12 rounded-lg border-zinc-100 focus:ring-black bg-zinc-50/50 font-mono"
               value={formData.expiryDate}
               onChange={handleInputChange}
             />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="cvv" className="text-[11px] font-bold uppercase tracking-wider text-zinc-500 ml-1">CVC</Label>
+            <Label htmlFor="cvv" className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500 ml-1">CVC</Label>
             <Input 
               id="cvv" 
               placeholder="000" 
               required
               type="password"
-              className="h-12 rounded-xl border-zinc-100 focus:ring-black bg-zinc-50/50 font-mono"
+              className="h-12 rounded-lg border-zinc-100 focus:ring-black bg-zinc-50/50 font-mono"
               value={formData.cvv}
               onChange={handleInputChange}
             />
@@ -238,7 +238,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         <Button 
           type="submit" 
           disabled={loading}
-          className="w-full h-14 rounded-2xl bg-black hover:bg-zinc-800 text-white font-black text-sm uppercase tracking-widest mt-4 group overflow-hidden relative"
+          className="w-full h-14 rounded-xl bg-black hover:bg-zinc-800 text-white font-bold text-sm uppercase tracking-widest mt-4 group overflow-hidden relative"
         >
           <AnimatePresence mode="wait">
             {loading ? (
@@ -273,8 +273,8 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         <div className="h-4 w-px bg-zinc-300" />
         <Lock size={20} />
         <div className="flex flex-col">
-          <span className="text-[9px] font-black uppercase tracking-tighter leading-none">Secure</span>
-          <span className="text-[9px] font-black uppercase tracking-tighter leading-none">Checkout</span>
+          <span className="text-[9px] font-bold uppercase tracking-tighter leading-none">Secure</span>
+          <span className="text-[9px] font-bold uppercase tracking-tighter leading-none">Checkout</span>
         </div>
       </div>
     </motion.div>

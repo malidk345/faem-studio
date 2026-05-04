@@ -1,42 +1,25 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
+// 1. CORS Ayarları
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, pg-api-version, pg-auth-token, correlationid',
 }
 
-// TAMI CONFIG (Sandbox)
-const TAMI_CONFIG = {
-  merchantNumber: Deno.env.get('TAMI_MERCHANT_NUMBER') || '77006950',
-  terminalNumber: Deno.env.get('TAMI_TERMINAL_NUMBER') || '84006953',
-  jwk_k: Deno.env.get('TAMI_JWK_K') || '0edad05a-7ea7-40f1-a80c-d600121ca51b',
-  jwk_kid: Deno.env.get('TAMI_JWK_KID') || 'TEST_KID_VALUE',
-  secretKey: Deno.env.get('TAMI_SECRET_KEY') || '0edad05a-7ea7-40f1-a80c-d600121ca51b', // Genelde jwk_k ile aynıdır
-  apiUrl: 'https://sandbox-paymentapi.tami.com.tr/payment/auth',
-  completeUrl: 'https://sandbox-paymentapi.tami.com.tr/payment/complete-3ds'
-}
-
-/**
- * Base64Url Encoding Helper
- */
+// 2. Yardımcı Fonksiyon: Base64Url Encoding (JWS Standartı için)
 function base64UrlEncode(data: Uint8Array): string {
-  return btoa(String.fromCharCode(...data))
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
+  let base64 = btoa(String.fromCharCode(...data));
+  return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-/**
- * Tami V3 JWS Generator (HS512)
- */
-async function generateSecurityHash(payload: any) {
+// 3. Yardımcı Fonksiyon: Tami V3 Güvenlik Hash'i (JWS HS512)
+async function generateSecurityHash(payload: any, jwk_k: string, jwk_kid: string) {
   const encoder = new TextEncoder();
   
   const header = {
     alg: "HS512",
     typ: "JWT",
-    kid: TAMI_CONFIG.jwk_kid
+    kid: jwk_kid
   };
 
   const encodedHeader = base64UrlEncode(encoder.encode(JSON.stringify(header)));
@@ -44,7 +27,7 @@ async function generateSecurityHash(payload: any) {
 
   const secret = await crypto.subtle.importKey(
     "raw",
-    encoder.encode(TAMI_CONFIG.jwk_k),
+    encoder.encode(jwk_k),
     { name: "HMAC", hash: "SHA-512" },
     false,
     ["sign"]
@@ -57,17 +40,13 @@ async function generateSecurityHash(payload: any) {
   );
 
   const encodedSignature = base64UrlEncode(new Uint8Array(signature));
-
   return `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
 }
 
-/**
- * Tami V3 PG-Auth-Token Hash Generator
- * SHA-256 of (merchantNumber + terminalNumber + secretKey)
- */
-async function generateAuthHash() {
+// 4. Yardımcı Fonksiyon: PG-Auth-Token Hash Oluşturucu (SHA-256)
+async function generateAuthHash(merchant: string, terminal: string, secret: string) {
   const encoder = new TextEncoder();
-  const inputString = `${TAMI_CONFIG.merchantNumber}${TAMI_CONFIG.terminalNumber}${TAMI_CONFIG.secretKey}`;
+  const inputString = `${merchant}${terminal}${secret}`;
   const data = encoder.encode(inputString);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   
@@ -76,25 +55,40 @@ async function generateAuthHash() {
   return btoa(hashBinary);
 }
 
+// 5. ANA SERVİS (Edge Function)
 serve(async (req) => {
+  // CORS Ön kontrolü
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
-    const { action, ...data } = await req.json()
+    // Çevresel Değişkenleri Al (Supabase Dashboard'dan set edilmeli)
+    const TAMI_MERCHANT = Deno.env.get('TAMI_MERCHANT_NUMBER');
+    const TAMI_TERMINAL = Deno.env.get('TAMI_TERMINAL_NUMBER');
+    const TAMI_SECRET = Deno.env.get('TAMI_JWK_K'); 
+    const TAMI_KID = Deno.env.get('TAMI_JWK_KID');
+    const TAMI_API_URL = 'https://sandbox-paymentapi.tami.com.tr/payment/auth';
+    const TAMI_COMPLETE_URL = 'https://sandbox-paymentapi.tami.com.tr/payment/complete-3ds';
 
-    // ACTION: Initiate 3D Payment
+    if (!TAMI_MERCHANT || !TAMI_TERMINAL || !TAMI_SECRET || !TAMI_KID) {
+      throw new Error("Supabase Environment Variables (TAMI) eksik! Dashboard üzerinden TAMI_MERCHANT_NUMBER, TAMI_TERMINAL_NUMBER, TAMI_JWK_K ve TAMI_JWK_KID değerlerini set edin.");
+    }
+
+    const { action, ...data } = await req.json();
+    const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+
+    // AKSİYON: 3D Ödeme Başlat (auth)
     if (action === 'init-3d') {
       const { 
         orderId, amount, cardHolderName, cardNumber, expiryMonth, expiryYear, cvv, callbackUrl,
         firstName, lastName, email, phone 
       } = data;
 
+      // İstek Gövdesi (Tami V3 Standartı)
       const bodyWithoutHash = {
         orderId: orderId,
-        amount: amount,
+        amount: String(amount),
         currency: 'TRY',
         installmentCount: 1,
         paymentType: 'SALE',
@@ -109,7 +103,7 @@ serve(async (req) => {
         },
         card: {
           holderName: cardHolderName,
-          number: cardNumber,
+          number: cardNumber.replace(/\s/g, ''),
           expireMonth: expiryMonth,
           expireYear: expiryYear,
           cvv: cvv
@@ -117,19 +111,19 @@ serve(async (req) => {
         callbackUrl: callbackUrl
       };
 
-      const securityHash = await generateSecurityHash(bodyWithoutHash);
+      // İmza ve Auth Token Üretimi
+      const securityHash = await generateSecurityHash(bodyWithoutHash, TAMI_SECRET, TAMI_KID);
       const requestBody = { ...bodyWithoutHash, securityHash };
-      
-      const authHash = await generateAuthHash();
+      const authHash = await generateAuthHash(TAMI_MERCHANT, TAMI_TERMINAL, TAMI_SECRET);
 
-      console.log('Initiating Tami V3 Payment for Order:', orderId);
+      console.log(`[Tami] ${orderId} numaralı işlem başlatılıyor...`);
 
-      const response = await fetch(TAMI_CONFIG.apiUrl, {
+      const response = await fetch(TAMI_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'PG-Api-Version': 'v3',
-          'PG-Auth-Token': `${TAMI_CONFIG.merchantNumber}:${TAMI_CONFIG.terminalNumber}:${authHash}`,
+          'PG-Auth-Token': `${TAMI_MERCHANT}:${TAMI_TERMINAL}:${authHash}`,
           'correlationId': crypto.randomUUID()
         },
         body: JSON.stringify(requestBody)
@@ -140,21 +134,21 @@ serve(async (req) => {
 
       if (!response.ok || result.success === false) {
         return new Response(JSON.stringify({ 
-          error: result.message || 'Tami ödeme başlatma hatası',
+          error: result.message || 'Ödeme başlatılamadı',
           details: result 
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400,
+          status: 400
         });
       }
 
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
+        status: 200
       });
     }
 
-    // ACTION: Complete 3D Payment
+    // AKSİYON: 3D Ödeme Tamamla (complete)
     if (action === 'complete-3d') {
       const { tamiId, orderId } = data;
 
@@ -163,22 +157,20 @@ serve(async (req) => {
         orderId: orderId
       };
 
-      const securityHash = await generateSecurityHash(bodyWithoutHash);
-      const requestBody = { ...bodyWithoutHash, securityHash };
-      
-      const authHash = await generateAuthHash();
+      const securityHash = await generateSecurityHash(bodyWithoutHash, TAMI_SECRET, TAMI_KID);
+      const authHash = await generateAuthHash(TAMI_MERCHANT, TAMI_TERMINAL, TAMI_SECRET);
 
-      console.log('Completing Tami V3 Payment for TamiID:', tamiId);
+      console.log(`[Tami] ${orderId} numaralı işlem tamamlanıyor (TamiID: ${tamiId})...`);
 
-      const response = await fetch(TAMI_CONFIG.completeUrl, {
+      const response = await fetch(TAMI_COMPLETE_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'PG-Api-Version': 'v3',
-          'PG-Auth-Token': `${TAMI_CONFIG.merchantNumber}:${TAMI_CONFIG.terminalNumber}:${authHash}`,
+          'PG-Auth-Token': `${TAMI_MERCHANT}:${TAMI_TERMINAL}:${authHash}`,
           'correlationId': crypto.randomUUID()
         },
-        body: JSON.stringify(requestBody)
+        body: JSON.stringify({ ...bodyWithoutHash, securityHash })
       });
 
       const result = await response.json();
@@ -190,27 +182,26 @@ serve(async (req) => {
           details: result 
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400,
+          status: 400
         });
       }
 
       return new Response(JSON.stringify(result), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
+        status: 200
       });
     }
 
     return new Response(JSON.stringify({ error: 'Geçersiz aksiyon' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
+      status: 400
     });
 
   } catch (error: any) {
-    console.error('Edge Function Error:', error);
+    console.error('[Edge Function Error]:', error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
+      status: 500
     });
   }
 })
-

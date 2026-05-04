@@ -102,7 +102,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* ── Compact Info Layer ── */}
       <Link to={`/product/${product.id}`} className="mt-4 flex flex-col gap-1">
         <div className="flex items-start justify-between gap-4">
-          <h3 className="text-[14px] md:text-[15px] font-bold text-black tracking-tight leading-tight group-hover:text-black/60 transition-colors">
+          <h3 className="text-[14px] md:text-[15px] font-semibold text-black tracking-tight leading-tight group-hover:text-black/60 transition-colors">
             {product.name}
           </h3>
         </div>
