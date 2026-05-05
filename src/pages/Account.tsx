@@ -64,24 +64,24 @@ export default function Account() {
       <div className="max-w-[1400px] mx-auto px-4 md:px-12">
         
         {/* Editorial Header */}
-        <div className="mb-12 md:mb-20 flex flex-col md:flex-row md:items-end justify-between gap-10">
-          <div className="flex items-center gap-6 md:gap-10">
-            <div className="relative group">
-              <div className="w-20 h-20 md:w-32 md:h-32 bg-black text-white rounded-[2px] flex items-center justify-center text-3xl md:text-5xl font-black shadow-2xl overflow-hidden">
+        <div className="mb-8 md:mb-20 flex flex-col md:flex-row md:items-end justify-between gap-6 md:gap-10">
+          <div className="flex items-center gap-4 md:gap-10">
+            <div className="relative group shrink-0">
+              <div className="w-14 h-14 md:w-32 md:h-32 bg-black text-white rounded-[2px] flex items-center justify-center text-xl md:text-5xl font-black shadow-2xl overflow-hidden">
                 {user.name.charAt(0)}
                 <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent opacity-50" />
               </div>
-              <div className="absolute -bottom-2 -right-2 bg-[#ddff34] text-black text-[9px] font-bold px-2 py-1 rounded-[1px] font-['Handjet',sans-serif] tracking-widest uppercase">
+              <div className="absolute -bottom-1 -right-1 bg-[#ddff34] text-black text-[7px] md:text-[9px] font-bold px-1.5 py-0.5 rounded-[1px] font-['Handjet',sans-serif] tracking-widest uppercase">
                 {t('account.member')}
               </div>
             </div>
             
-            <div className="flex flex-col gap-1">
-              <h1 className="text-2xl md:text-5xl font-bold tracking-tighter leading-none text-black">
+            <div className="flex flex-col gap-0.5">
+              <h1 className="text-xl md:text-5xl font-bold tracking-tighter leading-none text-black">
                 {user.name}
               </h1>
-              <p className="text-black/40 text-[12px] font-medium tracking-tight mt-1">
-                {user.email} — Profile ID: <span className="font-['Handjet',sans-serif] text-[14px] opacity-100 text-black/60">{user.id.slice(0, 8).toUpperCase()}</span>
+              <p className="text-black/40 text-[11px] md:text-[12px] font-medium tracking-tight">
+                {user.email} — <span className="font-['Handjet',sans-serif] text-[12px] md:text-[14px] opacity-100 text-black/60 hidden sm:inline">ID: {user.id.slice(0, 8).toUpperCase()}</span>
               </p>
             </div>
           </div>
@@ -146,16 +146,16 @@ export default function Account() {
                     animate={{ opacity: 1, y: 0 }} 
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="p-5 md:p-12"
+                    className="p-4 md:p-12"
                   >
-                    <div className="flex justify-between items-end mb-12">
+                    <div className="flex justify-between items-end mb-8 md:mb-12">
                       <div>
-                        <span className="text-[11px] font-normal text-black/30 font-['Handjet',sans-serif] uppercase tracking-[0.3em] block mb-2">
+                        <span className="text-[10px] md:text-[11px] font-normal text-black/30 font-['Handjet',sans-serif] uppercase tracking-[0.3em] block mb-1 md:mb-2">
                           Transaction History
                         </span>
-                        <h2 className="text-3xl font-bold tracking-tighter">{t('account.history')}</h2>
+                        <h2 className="text-2xl md:text-3xl font-bold tracking-tighter">{t('account.history')}</h2>
                       </div>
-                      <span className="text-[14px] font-normal text-black/60 font-['Handjet',sans-serif] border border-black/[0.08] px-3 py-1 rounded-[1px]">
+                      <span className="text-[12px] md:text-[14px] font-normal text-black/60 font-['Handjet',sans-serif] border border-black/[0.08] px-2 py-0.5 md:px-3 md:py-1 rounded-[1px]">
                         {orders.length} ITEMS
                       </span>
                     </div>
@@ -226,7 +226,7 @@ export default function Account() {
                     animate={{ opacity: 1, y: 0 }} 
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="p-5 md:p-12"
+                    className="p-4 md:p-12"
                   >
                     <div className="flex justify-between items-end mb-12">
                       <div>
@@ -278,7 +278,7 @@ export default function Account() {
                     animate={{ opacity: 1, y: 0 }} 
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="p-5 md:p-12"
+                    className="p-4 md:p-12"
                   >
                     <div className="mb-12">
                       <span className="text-[11px] font-normal text-black/30 font-['Handjet',sans-serif] uppercase tracking-[0.3em] block mb-2">
@@ -332,14 +332,14 @@ function NavBtn({ active, label, icon, onClick, count }: any) {
   return (
     <button 
       onClick={onClick}
-      className={`flex items-center justify-between px-6 py-4 rounded-[1px] text-[13px] font-bold transition-all whitespace-nowrap min-w-max lg:min-w-0 ${
+      className={`flex items-center justify-between px-4 py-3 md:px-6 md:py-4 rounded-[1px] text-[12px] md:text-[13px] font-bold transition-all whitespace-nowrap min-w-max lg:min-w-0 ${
         active 
           ? 'bg-black text-white shadow-2xl shadow-black/20 scale-[1.02] z-10' 
           : 'text-black/40 hover:text-black hover:bg-black/5'
       }`}
     >
-      <div className="flex items-center gap-4">
-        <span className={`${active ? 'text-white' : 'text-black/20'}`}>{icon}</span>
+      <div className="flex items-center gap-3 md:gap-4">
+        <span className={`${active ? 'text-white' : 'text-black/20'} shrink-0 scale-90 md:scale-100`}>{icon}</span>
         <span className="uppercase tracking-[0.1em]">{label}</span>
       </div>
       {count !== undefined && (
@@ -356,8 +356,8 @@ function NavBtn({ active, label, icon, onClick, count }: any) {
 function ProfileField({ label, value }: { label: string, value: string }) {
     return (
         <div className="flex flex-col gap-3 group">
-            <span className="text-[11px] font-normal text-black/30 font-['Handjet',sans-serif] uppercase tracking-[0.3em]">{label}</span>
-            <div className="text-[18px] md:text-2xl font-bold border-b border-black/[0.08] pb-4 flex items-center justify-between transition-all group-hover:border-black/30">
+            <span className="text-[10px] md:text-[11px] font-normal text-black/30 font-['Handjet',sans-serif] uppercase tracking-[0.3em]">{label}</span>
+            <div className="text-[16px] md:text-2xl font-bold border-b border-black/[0.08] pb-3 md:pb-4 flex items-center justify-between transition-all group-hover:border-black/30">
                 <span className="tracking-tighter">{value}</span>
                 <button className="text-[11px] font-bold uppercase tracking-widest text-black/20 hover:text-black transition-all font-['Handjet',sans-serif]">
                    Düzenle
