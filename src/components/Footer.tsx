@@ -64,6 +64,7 @@ export default function Footer() {
           <div className="flex flex-col gap-2.5">
             <h4 className="text-[9px] font-bold uppercase tracking-[0.3em] text-neutral-300 mb-1">Hukuki</h4>
             <Link to="/legal/about" className="text-[12px] font-medium text-neutral-500 hover:text-neutral-800 transition-colors">Hakkımızda</Link>
+            <Link to="/legal/terms" className="text-[12px] font-medium text-neutral-500 hover:text-neutral-800 transition-colors">Kullanım Koşulları</Link>
             <Link to="/legal/distance-sales" className="text-[12px] font-medium text-neutral-500 hover:text-neutral-800 transition-colors">Mesafeli Satış Sözleşmesi</Link>
             <Link to="/legal/returns" className="text-[12px] font-medium text-neutral-500 hover:text-neutral-800 transition-colors">İade ve İptal</Link>
             <Link to="/legal/privacy" className="text-[12px] font-medium text-neutral-500 hover:text-neutral-800 transition-colors">Gizlilik Politikası</Link>

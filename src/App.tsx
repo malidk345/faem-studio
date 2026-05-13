@@ -19,6 +19,7 @@ import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
 import MainLayout from './layouts/MainLayout';
 import { GlobalPageLoader } from './components/GlobalPageLoader';
+import LegalNotice from './components/LegalNotice';
 import { Toaster } from 'sonner';
 
 function AppRoutes() {
@@ -49,6 +50,7 @@ function AppRoutes() {
         <Route path="/legal/distance-sales" element={<MainLayout><Legal /></MainLayout>} />
         <Route path="/legal/returns" element={<MainLayout><Legal /></MainLayout>} />
         <Route path="/legal/privacy" element={<MainLayout><Legal /></MainLayout>} />
+        <Route path="/legal/terms" element={<MainLayout><Legal /></MainLayout>} />
         <Route path="/legal/about" element={<MainLayout><Legal /></MainLayout>} />
         <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
         <Route path="*" element={<MainLayout><NotFound /></MainLayout>} />
@@ -64,6 +66,7 @@ export default function App() {
         <CartProvider>
           <Router>
             <Toaster position="top-center" richColors />
+            <LegalNotice />
             <AppRoutes />
           </Router>
         </CartProvider>
