@@ -41,6 +41,10 @@ Supabase üzerinde uygulanan Row Level Security (RLS) politikaları ve SQL scrip
     *   **Risk:** Üretim ortamında (production) loglarda hassas veriler (kart sahibi ismi vb.) kalabilir.
     *   **Öneri:** Production ortamında loglama seviyesi düşürülmeli ve hassas veriler maskelenmelidir.
 
+*   **Doğrulanmamış Ödeme Bildirimleri (Webhook/Callback):** `tami-callback` fonksiyonu, gelen isteğin gerçekten Tami'den gelip gelmediğini doğrulamamaktadır (imza kontrolü yoktur).
+    *   **Risk (Kritik):** Kötü niyetli bir kişi, herhangi bir sipariş ID'sini kullanarak bu endpoint'e istek atabilir ve ödeme yapılmadığı halde siparişi "Ödendi" durumuna getirebilir.
+    *   **Öneri:** Tami tarafından gönderilen imza (hash) parametresi, `TAMI_SECRET` kullanılarak doğrulanmadan sipariş durumu güncellenmemelidir.
+
 ## Özet ve Aksiyon Planı
 
 1.  **Hemen:** `profiles` tablosundaki RLS politikasını `auth.uid() = id` olacak şekilde güncelleyin.
