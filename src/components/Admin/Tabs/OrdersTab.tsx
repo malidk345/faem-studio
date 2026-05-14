@@ -31,8 +31,9 @@ export function OrdersTab({ orders, onUpdateStatus }: OrdersTabProps) {
 
   const filteredOrders = orders.filter(o => {
     const matchesSearch = 
-      o.order_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      o.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.shortId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       o.user?.toLowerCase().includes(searchTerm.toLowerCase());
       
     if (!matchesSearch) return false;

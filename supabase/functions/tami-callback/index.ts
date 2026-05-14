@@ -6,6 +6,30 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+function returnIframeMessage(success: boolean, orderId: string | null, message: string) {
+  return new Response(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Payment Callback</title>
+      </head>
+      <body>
+        <script>
+          window.parent.postMessage({
+            type: 'tami-callback',
+            success: ${success},
+            orderId: '${orderId}',
+            message: '${message.replace(/'/g, "\\'")}'
+          }, '*');
+        </script>
+      </body>
+    </html>
+  `, {
+    headers: { 'Content-Type': 'text/html; charset=utf-8', ...corsHeaders },
+    status: 200
+  });
+}
+
 serve(async (req) => {
   // CORS handled
   if (req.method === 'OPTIONS') {
@@ -34,7 +58,41 @@ serve(async (req) => {
     const { orderId, success, tamiId, message } = data;
     const isSuccess = success === 'true' || success === true || data.status === 'success';
 
-    if (isSuccess && orderId) {
+    if (isSuccess && orderId && tamiId) {
+      // We must call complete-3ds on our server to finalize payment
+      console.log(`Finalizing payment for order ${orderId} with Tami...`);
+
+      const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
+      const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? '';
+
+      const completeResponse = await fetch(`${supabaseUrl}/functions/v1/tami-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`
+        },
+        body: JSON.stringify({
+          action: 'complete-3d',
+          tamiId: tamiId,
+          orderId: orderId
+        })
+      });
+
+      const completeResult = await completeResponse.json();
+      console.log('Tami Complete Payment Result:', completeResult);
+
+      if (!completeResponse.ok || completeResult.success === false) {
+         console.error('Failed to complete payment:', completeResult.message || completeResult.error);
+
+         // Update as failed if it exists
+         await supabase
+          .from('orders')
+          .update({ payment_status: 'failed', admin_note: completeResult.message || completeResult.error })
+          .eq('id', orderId);
+
+         return returnIframeMessage(false, orderId, completeResult.message || completeResult.error || 'Ödeme tamamlanamadı');
+      }
+
       // 1. Update Order in Database
       const { error: dbError } = await supabase
         .from('orders')
@@ -50,8 +108,7 @@ serve(async (req) => {
         console.error('Database Update Error:', dbError);
       }
 
-      // 2. Redirect to Success Page
-      return Response.redirect(`${Deno.env.get('FRONTEND_URL') || 'https://faemstore.com'}/order/success/${orderId}`, 302);
+      return returnIframeMessage(true, orderId, 'Ödeme başarılı');
     } else {
       console.warn('Payment failed or cancelled:', message);
       
@@ -63,12 +120,11 @@ serve(async (req) => {
           .eq('id', orderId);
       }
 
-      // 3. Redirect to Error Page
-      return Response.redirect(`${Deno.env.get('FRONTEND_URL') || 'https://faemstore.com'}/order/error?message=${encodeURIComponent(message || 'Ödeme iptal edildi')}`, 302);
+      return returnIframeMessage(false, orderId, message || 'Ödeme iptal edildi');
     }
 
   } catch (error: any) {
     console.error('Callback Handler Error:', error.message);
-    return Response.redirect(`${Deno.env.get('FRONTEND_URL') || 'https://faemstore.com'}/order/error?message=Sistem Hatası`, 302);
+    return returnIframeMessage(false, null, 'Sistem Hatası');
   }
 })
