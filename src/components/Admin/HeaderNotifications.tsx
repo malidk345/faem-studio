@@ -50,7 +50,7 @@ export function HeaderNotifications({ orders }: HeaderNotificationsProps) {
     if (unreadCount > prevCountRef.current) {
       // 1. Play Sound
       if (audioRef.current) {
-        audioRef.current.play().catch(e => console.log('Audio play blocked'));
+        audioRef.current.play().catch(() => { /* Ignore audio play blocked error */ });
       }
 
       // 2. Browser Notification
@@ -66,7 +66,7 @@ export function HeaderNotifications({ orders }: HeaderNotificationsProps) {
         description: 'Detaylar için bildirim merkezini kontrol edin.',
         action: {
           label: 'Görüntüle',
-          onClick: () => console.log('Siparişe git')
+          onClick: () => { /* TODO: Siparişe git */ }
         },
       });
     }
