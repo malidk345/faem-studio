@@ -101,7 +101,6 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
 
       const [expiryMonth, expiryYear] = formData.expiryDate.split('/');
       
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://idqnxgtleerpanujcdfn.supabase.co';
       const response = await PaymentService.initiate3DPayment({
         orderId: orderData.id,
         amount: numericAmount,
@@ -110,7 +109,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         expiryMonth,
         expiryYear: `20${expiryYear}`,
         cvv: formData.cvv,
-        callbackUrl: `${supabaseUrl}/functions/v1/tami-callback`,
+        callbackUrl: `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/tami-callback`,
         // Pass mandatory buyer details for V3
         firstName: shippingAddress.firstName,
         lastName: shippingAddress.lastName,

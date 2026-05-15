@@ -8,11 +8,7 @@ const corsHeaders = {
 
 // 2. Yardımcı Fonksiyon: Base64Url Encoding (JWS Standartı için)
 function base64UrlEncode(data: Uint8Array): string {
-  let binary = "";
-  for (let i = 0; i < data.byteLength; i++) {
-    binary += String.fromCharCode(data[i]);
-  }
-  let base64 = btoa(binary);
+  let base64 = btoa(String.fromCharCode(...data));
   return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
