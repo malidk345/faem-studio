@@ -14,7 +14,6 @@ import { CartItem } from '@/context/CartContext';
 interface PaymentFormProps {
   amount: string;
   numericAmount: string;
-  orderId: string;
   cartItems: CartItem[];
   shippingAddress: {
     firstName: string;
@@ -28,7 +27,7 @@ interface PaymentFormProps {
   onSuccess: (htmlContent: string) => void;
 }
 
-export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount, orderId, cartItems, shippingAddress, onSuccess }) => {
+export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount, cartItems, shippingAddress, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     cardHolderName: '',
