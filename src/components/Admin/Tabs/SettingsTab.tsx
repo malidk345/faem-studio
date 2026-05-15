@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Store, Globe, CreditCard, Mail, Truck, Save, RefreshCw, Shield, Bell } from 'lucide-react';
+import { Store, CreditCard, Mail, Truck, Save, RefreshCw, Shield, Bell } from 'lucide-react';
 import { supabase } from '../../../lib/supabase';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
