@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
@@ -64,11 +64,11 @@ export default function App() {
     <LanguageProvider>
       <AuthProvider>
         <CartProvider>
-          <Router>
+          <BrowserRouter>
             <Toaster position="top-center" richColors />
             <LegalNotice />
             <AppRoutes />
-          </Router>
+          </BrowserRouter>
         </CartProvider>
       </AuthProvider>
     </LanguageProvider>
