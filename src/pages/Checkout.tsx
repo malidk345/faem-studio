@@ -226,7 +226,7 @@ const CheckoutPage: React.FC = () => {
                 <PaymentForm 
                   amount={orderDetails.displayAmount} 
                   numericAmount={orderDetails.amount}
-                  orderId={`ORD-${Math.floor(Math.random() * 1000000)}`} // Temporary, will be updated by PaymentForm during insert
+                  orderId={`ORD-${crypto.randomUUID()}`} // Temporary, will be updated by PaymentForm during insert
                   cartItems={cartItems}
                   shippingAddress={addressData}
                   onSuccess={handlePaymentSuccess}
