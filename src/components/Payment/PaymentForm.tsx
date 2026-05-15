@@ -131,7 +131,20 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         
         if (paymentUrl) {
           // If a direct URL is provided, redirect the whole page
-          window.location.href = paymentUrl;
+          // Validate the URL to prevent Open Redirect vulnerabilities
+          try {
+            const parsedUrl = new URL(paymentUrl);
+            if (
+              parsedUrl.protocol !== 'https:' ||
+              !(parsedUrl.hostname === 'tami.com.tr' || parsedUrl.hostname.endsWith('.tami.com.tr'))
+            ) {
+              throw new Error('Güvenli olmayan ödeme bağlantısı tespit edildi.');
+            }
+            window.location.href = parsedUrl.toString();
+          } catch (e: any) {
+            console.error('URL Validation Error:', e);
+            throw new Error('Geçersiz veya güvenli olmayan ödeme bağlantısı.');
+          }
         } else {
           // If HTML form is provided (usually Base64 in V3), show the modal
           console.log('3D HTML found, passing to modal...');
