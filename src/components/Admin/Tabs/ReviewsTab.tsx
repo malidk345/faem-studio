@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { DataTable } from "../Theme/tasks/components/data-table";
-import { Star, Trash2, CheckCircle2, AlertCircle, MessageSquare } from 'lucide-react';
+import { Star, Trash2, MessageSquare } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from 'sonner';
