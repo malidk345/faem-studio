@@ -8,7 +8,11 @@ const corsHeaders = {
 
 // 2. Yardımcı Fonksiyon: Base64Url Encoding (JWS Standartı için)
 function base64UrlEncode(data: Uint8Array): string {
-  let base64 = btoa(String.fromCharCode(...data));
+  let binary = "";
+  for (let i = 0; i < data.byteLength; i++) {
+    binary += String.fromCharCode(data[i]);
+  }
+  let base64 = btoa(binary);
   return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
@@ -68,8 +72,8 @@ serve(async (req) => {
     const TAMI_TERMINAL = Deno.env.get('TAMI_TERMINAL_NUMBER');
     const TAMI_SECRET = Deno.env.get('TAMI_JWK_K'); 
     const TAMI_KID = Deno.env.get('TAMI_JWK_KID');
-    const TAMI_API_URL = 'https://sandbox-paymentapi.tami.com.tr/payment/auth';
-    const TAMI_COMPLETE_URL = 'https://sandbox-paymentapi.tami.com.tr/payment/complete-3ds';
+    const TAMI_API_URL = Deno.env.get('TAMI_API_URL') || 'https://sandbox-paymentapi.tami.com.tr/payment/auth';
+    const TAMI_COMPLETE_URL = Deno.env.get('TAMI_COMPLETE_URL') || 'https://sandbox-paymentapi.tami.com.tr/payment/complete-3ds';
 
     if (!TAMI_MERCHANT || !TAMI_TERMINAL || !TAMI_SECRET || !TAMI_KID) {
       throw new Error("Supabase Environment Variables (TAMI) eksik! Dashboard üzerinden TAMI_MERCHANT_NUMBER, TAMI_TERMINAL_NUMBER, TAMI_JWK_K ve TAMI_JWK_KID değerlerini set edin.");
