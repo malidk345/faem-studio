@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Trash2, Edit, Save, X, Image as ImageIcon, BookOpen } from 'lucide-react';
+import { Plus, Trash2, Edit, Save, X, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export function JournalTab() {
