@@ -6,7 +6,6 @@ import {
   ChevronLeft, ChevronRight, UserCircle, ShoppingBag,
   TrendingUp, Activity
 } from 'lucide-react';
-import { Button } from "@/components/ui/button";
 
 interface CustomersTabProps {
   customers: any[];
