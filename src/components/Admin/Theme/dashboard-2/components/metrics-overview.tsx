@@ -8,7 +8,7 @@ import {
   ShoppingCart, 
   BarChart3 
 } from "lucide-react"
-import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import type { AdminOrder } from "@/hooks/useAdminData"
 
