@@ -17,7 +17,7 @@ const LEGAL_CONTENT: Record<string, { title: string, icon: any, content: React.R
           <SectionTitle>1. TARAFLAR</SectionTitle>
           <p><strong>SATICI:</strong> Faem Studio (Bundan sonra "SATICI" olarak anılacaktır)<br />
           <strong>E-posta:</strong> faembutik@gmail.com<br />
-          <strong>ALICI:</strong> www.faem.studio internet sitesinden ürün satın alan gerçek veya tüzel kişi (Bundan sonra "ALICI" olarak anılacaktır).</p>
+          <strong>ALICI:</strong> www.faemstore.com internet sitesinden ürün satın alan gerçek veya tüzel kişi (Bundan sonra "ALICI" olarak anılacaktır).</p>
         </section>
 
         <section>
@@ -107,7 +107,7 @@ const LEGAL_CONTENT: Record<string, { title: string, icon: any, content: React.R
       <div className="space-y-4 text-zinc-600 text-[13px] leading-relaxed">
         <section>
           <SectionTitle>1. KULLANIM ŞARTLARI</SectionTitle>
-          <p>www.faem.studio sitesine girerek veya bu sitedeki herhangi bir bilgiyi kullanarak, aşağıdaki koşulları kabul etmiş sayılmaktasınız.</p>
+          <p>www.faemstore.com sitesine girerek veya bu sitedeki herhangi bir bilgiyi kullanarak, aşağıdaki koşulları kabul etmiş sayılmaktasınız.</p>
         </section>
 
         <section>
