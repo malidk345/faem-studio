@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -7,7 +6,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Loader2, ShieldCheck } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface Payment3DSModalProps {
   isOpen: boolean;
@@ -17,27 +15,6 @@ interface Payment3DSModalProps {
 
 export const Payment3DSModal: React.FC<Payment3DSModalProps> = ({ isOpen, onClose, htmlContent }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
-      // Allow messages only from our own domain/iframe
-      if (event.data?.type === 'tami-callback') {
-        const { success, orderId, message } = event.data;
-        if (success) {
-          toast.success("Ödeme başarıyla tamamlandı!");
-          navigate(`/order/success/${orderId}`);
-        } else {
-          toast.error(message || "Ödeme işlemi başarısız oldu.");
-          navigate(`/order/error?message=${encodeURIComponent(message || 'Ödeme iptal edildi')}`);
-        }
-        onClose();
-      }
-    };
-
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
-  }, [navigate, onClose]);
 
   useEffect(() => {
     if (isOpen && htmlContent && containerRef.current) {
