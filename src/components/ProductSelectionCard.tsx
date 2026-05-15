@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, ChevronDown, ChevronUp, X, Check } from 'lucide-react';
+import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Smooth easing curve — no spring bouncing, just fluid deceleration
 const smoothTransition = { duration: 0.45, ease: [0.25, 1, 0.5, 1] };
@@ -33,10 +36,24 @@ export default function ProductSelectionCard({
   product, selectedSize,
   setSelectedSize, handleAddToCart,
 }: ProductSelectionCardProps) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { isWishlisted, addWishlist, removeWishlist } = useWishlist();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [isAdding, setIsAdding] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
   const [sizeOpen, setSizeOpen] = useState(false);
+
+  const toggleWishlist = async () => {
+    if (!user) {
+      navigate('/signin');
+      return;
+    }
+    if (isWishlisted(product.id)) {
+      await removeWishlist(product.id);
+    } else {
+      await addWishlist(product.id);
+    }
+  };
 
   const stockCount = product.stock_count ?? 999;
   const isOutOfStock = stockCount <= 0;
@@ -114,8 +131,8 @@ export default function ProductSelectionCard({
                         {product.category} {isOutOfStock ? '/ TÜKENDI' : isLowStock ? `/ SON ${stockCount} ADET` : '/ ARCHIVE PIECE'}
                       </p>
                     </div>
-                    <button onClick={() => setIsWishlisted(!isWishlisted)} className="active:scale-90 transition-transform p-1.5">
-                      <Heart size={21} className={isWishlisted ? 'fill-white text-white' : 'text-white/40'} />
+                    <button onClick={toggleWishlist} className="active:scale-90 transition-transform p-1.5">
+                      <Heart size={21} className={isWishlisted(product.id) ? 'fill-white text-white' : 'text-white/40'} />
                     </button>
                   </div>
                 </div>

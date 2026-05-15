@@ -12,6 +12,7 @@ import { Button } from '../components/ui/button';
 import { AnimatePresence } from 'motion/react';
 import { useSEO } from '../hooks/useSEO';
 import { useAuth } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
 import { useLanguage } from '../context/LanguageContext';
 import { toast } from 'sonner';
 import ProductCard from '../components/ProductCard';
@@ -167,7 +168,7 @@ export default function ProductDetail() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { isWishlisted, addWishlist, removeWishlist } = useWishlist();
   const [wishlistLoading, setWishlistLoading] = useState(false);
   const [reviews, setReviews] = useState<any[]>([]);
 
@@ -258,16 +259,6 @@ export default function ProductDetail() {
       }
     };
 
-    const fetchWishlistStatus = async () => {
-      if (!user || !id) return;
-      try {
-        const { data } = await supabase.from('wishlist').select('id').eq('user_id', user.id).eq('product_id', id).maybeSingle();
-        setIsWishlisted(!!data);
-      } catch (e) {
-        // Wishlist check failed silently
-      }
-    };
-
     const fetchRelated = async (category: string, collection: string) => {
       try {
         let query = supabase
@@ -305,7 +296,6 @@ export default function ProductDetail() {
     };
 
     fetchProductFlow();
-    fetchWishlistStatus();
   }, [id, user]);
 
   const toggleWishlist = async () => {
@@ -313,17 +303,15 @@ export default function ProductDetail() {
       navigate('/signin');
       return;
     }
+    if (!id) return;
+
     setWishlistLoading(true);
     try {
-      if (isWishlisted) {
-        await supabase.from('wishlist').delete().eq('user_id', user.id).eq('product_id', id);
-        setIsWishlisted(false);
+      if (isWishlisted(id)) {
+        await removeWishlist(id);
       } else {
-        await supabase.from('wishlist').insert({ user_id: user.id, product_id: id });
-        setIsWishlisted(true);
+        await addWishlist(id);
       }
-    } catch (err) {
-      console.error(err);
     } finally {
       setWishlistLoading(false);
     }
@@ -516,7 +504,7 @@ export default function ProductDetail() {
               {/* Utility Grid - Refined Layout */}
               <div className="grid grid-cols-4 gap-2 mt-4">
                 {[
-                  { icon: Heart, label: 'Kaydet', action: toggleWishlist, loading: wishlistLoading, active: isWishlisted },
+                  { icon: Heart, label: 'Kaydet', action: toggleWishlist, loading: wishlistLoading, active: id ? isWishlisted(id) : false },
                   { icon: Share2, label: 'Paylaş', action: handleShare },
                   { icon: MessageSquare, label: 'Yorum', action: () => document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth' }) },
                   { icon: Ruler, label: 'Beden', action: () => setShowRecommender(true) }

@@ -16,6 +16,7 @@ import Cart from './pages/Cart';
 import Contact from './pages/Contact';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
+import { WishlistProvider } from './context/WishlistContext';
 import { LanguageProvider } from './context/LanguageContext';
 import MainLayout from './layouts/MainLayout';
 import { GlobalPageLoader } from './components/GlobalPageLoader';
@@ -63,13 +64,15 @@ export default function App() {
   return (
     <LanguageProvider>
       <AuthProvider>
-        <CartProvider>
-          <Router>
-            <Toaster position="top-center" richColors />
-            <LegalNotice />
-            <AppRoutes />
-          </Router>
-        </CartProvider>
+        <WishlistProvider>
+          <CartProvider>
+            <Router>
+              <Toaster position="top-center" richColors />
+              <LegalNotice />
+              <AppRoutes />
+            </Router>
+          </CartProvider>
+        </WishlistProvider>
       </AuthProvider>
     </LanguageProvider>
   );
