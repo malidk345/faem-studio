@@ -9,7 +9,8 @@
     "preview": "npm run build && wrangler dev",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "test": "node --experimental-strip-types --test src/utils/__tests__/*.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
