@@ -19,12 +19,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
+import { useSearchParams } from 'react-router-dom';
 
 interface HeaderNotificationsProps {
   orders: any[];
 }
 
 export function HeaderNotifications({ orders }: HeaderNotificationsProps) {
+  const [, setSearchParams] = useSearchParams();
   const recentOrders = orders.slice(0, 5);
   const unreadCount = orders.filter(o => o.status === 'pending' || o.status === 'new').length;
   const prevCountRef = useRef(unreadCount);
@@ -66,7 +68,7 @@ export function HeaderNotifications({ orders }: HeaderNotificationsProps) {
         description: 'Detaylar için bildirim merkezini kontrol edin.',
         action: {
           label: 'Görüntüle',
-          onClick: () => { /* TODO: Siparişe git */ }
+          onClick: () => { setSearchParams({ tab: 'orders' }); }
         },
       });
     }
@@ -124,7 +126,11 @@ export function HeaderNotifications({ orders }: HeaderNotificationsProps) {
           <div className="py-2 space-y-1 max-h-[400px] overflow-y-auto hide-scrollbar">
             {recentOrders.length > 0 ? (
               recentOrders.map((order, i) => (
-                <DropdownMenuItem key={order.id} className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 cursor-pointer group transition-all">
+                <DropdownMenuItem
+                  key={order.id}
+                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 cursor-pointer group transition-all"
+                  onClick={() => setSearchParams({ tab: 'orders' })}
+                >
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border transition-all ${
                     order.status === 'pending' 
                       ? 'bg-white border-white text-black shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
@@ -158,7 +164,11 @@ export function HeaderNotifications({ orders }: HeaderNotificationsProps) {
           </div>
           <DropdownMenuSeparator className="bg-white/10 mx-2" />
           <div className="p-2">
-            <Button variant="ghost" className="w-full text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl h-10 transition-all">
+            <Button
+              variant="ghost"
+              className="w-full text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white hover:bg-white/5 rounded-xl h-10 transition-all"
+              onClick={() => setSearchParams({ tab: 'orders' })}
+            >
               Tüm Bildirimleri Yönet
             </Button>
           </div>

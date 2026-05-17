@@ -259,7 +259,7 @@ export function SettingsTab({ settings: dbSettings, onUpdateSettings }: any) {
                           body: {
                             title: 'Test Bildirimi 🔔',
                             body: 'Faem Studio bildirim sistemi başarıyla çalışıyor!',
-                            url: '/fatihveemirinadminportali'
+                            url: '/admin'
                           }
                         });
 
