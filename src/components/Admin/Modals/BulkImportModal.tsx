@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
 import { 
   Dialog, 
   DialogContent, 
@@ -32,13 +32,34 @@ export function BulkImportModal({ isOpen, onClose, onSuccess, refreshData }: Bul
       setFile(selectedFile);
       
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const data = new Uint8Array(event.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const json = XLSX.utils.sheet_to_json(worksheet);
-        setPreviewData(json.slice(0, 5)); // Show first 5 rows
+      reader.onload = async (event) => {
+        const data = event.target?.result as ArrayBuffer;
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(data);
+        const worksheet = workbook.worksheets[0];
+
+        if (worksheet) {
+          const headers: string[] = [];
+          const rows: any[] = [];
+
+          worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber === 1) {
+              row.eachCell((cell, colNumber) => {
+                headers[colNumber] = cell.text;
+              });
+            } else {
+              const rowData: any = {};
+              row.eachCell((cell, colNumber) => {
+                if (headers[colNumber]) {
+                  rowData[headers[colNumber]] = cell.value;
+                }
+              });
+              rows.push(rowData);
+            }
+          });
+
+          setPreviewData(rows.slice(0, 5)); // Show first 5 rows
+        }
       };
       reader.readAsArrayBuffer(selectedFile);
     }
@@ -52,11 +73,31 @@ export function BulkImportModal({ isOpen, onClose, onSuccess, refreshData }: Bul
       const reader = new FileReader();
       reader.onload = async (e) => {
         try {
-          const data = new Uint8Array(e.target?.result as ArrayBuffer);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const sheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[sheetName];
-          const json: any[] = XLSX.utils.sheet_to_json(worksheet);
+          const data = e.target?.result as ArrayBuffer;
+          const workbook = new ExcelJS.Workbook();
+          await workbook.xlsx.load(data);
+          const worksheet = workbook.worksheets[0];
+
+          const json: any[] = [];
+
+          if (worksheet) {
+            const headers: string[] = [];
+            worksheet.eachRow((row, rowNumber) => {
+              if (rowNumber === 1) {
+                row.eachCell((cell, colNumber) => {
+                  headers[colNumber] = cell.text;
+                });
+              } else {
+                const rowData: any = {};
+                row.eachCell((cell, colNumber) => {
+                  if (headers[colNumber]) {
+                    rowData[headers[colNumber]] = cell.value;
+                  }
+                });
+                json.push(rowData);
+              }
+            });
+          }
 
           if (!json || json.length === 0) throw new Error("Excel dosyası boş veya okunamadı.");
 
