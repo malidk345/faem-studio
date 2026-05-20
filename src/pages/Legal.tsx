@@ -21,10 +21,14 @@ const LEGAL_CONTENT: Record<string, { title: string, icon: any, content: React.R
           <SectionTitle>MADDE 1 - TARAFLAR</SectionTitle>
           <SubTitle>1.1. SATICI:</SubTitle>
           <p>
-            <strong>Satıcı Unvan:</strong> Faem Store<br />
-            <strong>Tel:</strong> 0850 304 44 74<br />
-            <strong>E-posta:</strong> info@faemstore.com / faembutik@gmail.com<br />
-            <strong>Adres:</strong> KOCASİNAN MERKEZ MAH. KÖSE SOKAK NO: 3 A BAHÇELİEVLER/ İSTANBUL
+            <strong>Satıcı Unvan:</strong> FAEM BUTİK TEKSTİL VE TİCARET LİMİTED ŞİRKETİ<br />
+            <strong>Adres:</strong> Barbaros Mahallesi 177. Sokak No:4 Daire:1 Bağcılar / İstanbul<br />
+            <strong>Tel:</strong> 05372418169<br />
+            <strong>E-posta:</strong> faembutik@gmail.com<br />
+            <strong>KEP Adresi:</strong> faembutik@hs03.kep.tr<br />
+            <strong>Vergi Numarası:</strong> 3841003553<br />
+            <strong>Mersis Numarası:</strong> 0384100355300001<br />
+            <strong>Ticaret Sicil Numarası:</strong> 1111936
           </p>
           <SubTitle>1.2. ALICI:</SubTitle>
           <p>www.faemstore.com internet sitesinden sipariş veren gerçek veya tüzel kişi.</p>
@@ -89,7 +93,7 @@ const LEGAL_CONTENT: Record<string, { title: string, icon: any, content: React.R
         <section>
           <p>İade işlemi öncesinde dikkat etmeniz gereken konular aşağıda sıralanmıştır:</p>
           <p>Ürünü iade etmeden önce orijinal ambalajı ile ya da orijinal ambalaja eş değer gelecek bir paketleme sistemi ile geri göndermiş olmanız koşulu aranmaktadır.</p>
-          <p>İade talebinizi cayma hakkı süresi dolmadan <strong>info@faemstore.com</strong> adresine e-posta göndererek veya <strong>0850 304 44 74</strong> numaralı çağrı merkezimizi arayarak iletebilirsiniz.</p>
+          <p>İade talebinizi cayma hakkı süresi dolmadan <strong>faembutik@gmail.com</strong> adresine e-posta göndererek veya <strong>05372418169</strong> numaralı iletişim hattımızı arayarak iletebilirsiniz.</p>
         </section>
 
         <section>
@@ -112,7 +116,7 @@ const LEGAL_CONTENT: Record<string, { title: string, icon: any, content: React.R
         <section>
           <SectionTitle>Müşteri Hizmetleri</SectionTitle>
           <p>"Güvenli Alışveriş" felsefesi ile yola çıktığımız markamızda müşteri memnuniyetinin sürdürülebilirliğini sağlamak öncelikli gayemizdir.</p>
-          <p>Hafta içi 09:00-18:00 saatleri arasında çağrı merkezimizden bizlere ulaşabilir veya destek e-posta adresimize yazabilirsiniz.</p>
+          <p>Hafta içi 09:00-18:00 saatleri arasında iletişim hattımızdan (05372418169) bizlere ulaşabilir veya destek e-posta adresimize (faembutik@gmail.com) yazabilirsiniz.</p>
         </section>
       </div>
     )
@@ -124,7 +128,7 @@ const LEGAL_CONTENT: Record<string, { title: string, icon: any, content: React.R
       <div className="space-y-4 text-zinc-600 text-[13px] leading-relaxed">
         <section>
           <SectionTitle>Kişisel Verilerin Korunması</SectionTitle>
-          <p>Değerli Müşterimiz, bir kişinin kimliğini belirlemeye yarayan her türlü bilgi kişisel veridir. Kişisel verileriniz, ürünlerimizi müşterilerimizin istek ve ihtiyaçları doğrultusunda geliştirmek, satış, pazarlama ve tanıtım faaliyetlerimizi yürütebilmek amacıyla Faem Store tarafından 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında "Veri Sorumlusu" sıfatıyla toplanmakta ve işlenmektedir.</p>
+          <p>Değerli Müşterimiz, bir kişinin kimliğini belirlemeye yarayan her türlü bilgi kişisel veridir. Kişisel verileriniz, ürünlerimizi müşterilerimizin istek ve ihtiyaçları doğrultusunda geliştirmek, satış, pazarlama ve tanıtım faaliyetlerimizi yürütebilmek amacıyla FAEM BUTİK TEKSTİL VE TİCARET LİMİTED ŞİRKETİ tarafından 6698 sayılı Kişisel Verilerin Korunması Kanunu kapsamında "Veri Sorumlusu" sıfatıyla toplanmakta ve işlenmektedir.</p>
         </section>
 
         <section>
@@ -157,10 +161,10 @@ const LEGAL_CONTENT: Record<string, { title: string, icon: any, content: React.R
         <section>
           <SectionTitle>Veri Sorumlusu İletişim Bilgileri</SectionTitle>
           <p>
-            <strong>Veri Sorumlusu:</strong> Faem Store<br />
-            <strong>Adres:</strong> KOCASİNAN MERKEZ MAH. KÖSE SOKAK NO:3 A BAHÇELİEVLER/İSTANBUL<br />
-            <strong>E-posta Adresi:</strong> info@faemstore.com<br />
-            <strong>Telefon:</strong> 0850 304 44 74
+            <strong>Veri Sorumlusu:</strong> FAEM BUTİK TEKSTİL VE TİCARET LİMİTED ŞİRKETİ<br />
+            <strong>Adres:</strong> Barbaros Mahallesi 177. Sokak No:4 Daire:1 Bağcılar / İstanbul<br />
+            <strong>E-posta Adresi:</strong> faembutik@gmail.com<br />
+            <strong>Telefon:</strong> 05372418169
           </p>
         </section>
       </div>
@@ -173,7 +177,7 @@ const LEGAL_CONTENT: Record<string, { title: string, icon: any, content: React.R
       <div className="space-y-4 text-zinc-600 text-[13px] leading-relaxed">
         <section>
           <SectionTitle>SİTE KULLANIM ŞARTLARI</SectionTitle>
-          <p>Lütfen sitemizi kullanmadan evvel bu "site kullanım şartları"nı dikkatlice okuyunuz. Sitemizdeki web sayfaları ve ona bağlı tüm sayfalar www.faemstore.com adresindeki Faem Store firmasının malıdır ve onun tarafından işletilir.</p>
+          <p>Lütfen sitemizi kullanmadan evvel bu "site kullanım şartları"nı dikkatlice okuyunuz. Sitemizdeki web sayfaları ve ona bağlı tüm sayfalar www.faemstore.com adresindeki FAEM BUTİK TEKSTİL VE TİCARET LİMİTED ŞİRKETİ firmasının malıdır ve onun tarafından işletilir.</p>
           <p>Sizler ('Kullanıcı') sitede sunulan tüm hizmetleri kullanırken aşağıdaki şartlara tabi olduğunuzu, bağlı olduğunuz yasalara göre sözleşme imzalama hakkına ve 18 yaşın üzerinde olduğunuzu kabul etmiş sayılırsınız.</p>
         </section>
 
