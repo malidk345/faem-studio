@@ -99,7 +99,14 @@ serve(async (req) => {
     const TAMI_TERMINAL = Deno.env.get('TAMI_TERMINAL_NUMBER');
     const TAMI_SECRET = Deno.env.get('TAMI_JWK_K');
     const TAMI_KID = Deno.env.get('TAMI_JWK_KID');
-    const TAMI_COMPLETE_URL = Deno.env.get('TAMI_COMPLETE_URL') || 'https://sandbox-paymentapi.tami.com.tr/payment/complete-3ds';
+    
+    // Canlı/Test ortamı seçimi (TAMI_IS_PRODUCTION varsayılan olarak 'true' ise canlı API kullanılır)
+    const TAMI_IS_PRODUCTION = Deno.env.get('TAMI_IS_PRODUCTION') === 'true';
+    const defaultCompleteUrl = TAMI_IS_PRODUCTION 
+      ? 'https://paymentapi.tami.com.tr/payment/complete-3ds' 
+      : 'https://sandbox-paymentapi.tami.com.tr/payment/complete-3ds';
+
+    const TAMI_COMPLETE_URL = Deno.env.get('TAMI_COMPLETE_URL') || defaultCompleteUrl;
 
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',

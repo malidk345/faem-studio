@@ -185,12 +185,14 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ amount, numericAmount,
         </Badge>
       </div>
 
-      <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-100 flex gap-3">
-        <Info className="text-amber-600 shrink-0" size={18} />
-        <p className="text-[11px] font-medium text-amber-800 leading-relaxed">
-          Şu an <strong>Test Modu</strong> aktif. Lütfen Tami test kartlarını kullanarak deneme yapınız.
-        </p>
-      </div>
+      {import.meta.env.VITE_TAMI_IS_PRODUCTION !== 'true' && (
+        <div className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-100 flex gap-3">
+          <Info className="text-amber-600 shrink-0" size={18} />
+          <p className="text-[11px] font-medium text-amber-800 leading-relaxed">
+            Şu an <strong>Test Modu</strong> aktif. Lütfen Tami test kartlarını kullanarak deneme yapınız.
+          </p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-1.5">
