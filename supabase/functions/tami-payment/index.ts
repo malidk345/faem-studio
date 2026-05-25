@@ -143,12 +143,16 @@ serve(async (req) => {
       console.log('Tami Auth Response:', result);
 
       if (!response.ok || result.success === false) {
+        // HTTP 200 olarak dönüyoruz ki Supabase istemci kütüphanesi 'non-2xx' genel hatası fırlatmasın.
+        // Böylece ön yüz, dönen gerçek hata mesajını (result.message) doğrudan ekranda gösterebilecek.
         return new Response(JSON.stringify({ 
+          success: false,
           error: result.message || 'Ödeme başlatılamadı',
+          message: result.message || 'Ödeme başlatılamadı',
           details: result 
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400
+          status: 200
         });
       }
 
@@ -209,9 +213,13 @@ serve(async (req) => {
 
   } catch (error: any) {
     console.error('[Edge Function Error]:', error.message);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      success: false, 
+      error: error.message,
+      message: error.message 
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 500
+      status: 200
     });
   }
 })
